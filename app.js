@@ -88,18 +88,12 @@ function down(instant){
 /* ============================================================
    ÍCONOS
    ============================================================ */
-var SUN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
-/* Fase 6 · el arco+horizonte solo (sin flecha) se leía igual de ambiguo entre amanecer/atardecer que el DUSK anterior —
-   la flecha hacia arriba es lo que de verdad distingue "saliendo" de "cayendo" (mismo criterio que íconos tipo Feather).
-   Se le agregan además los dos rayos diagonales (sin ellos se perdía que era un sol, se veía solo como una flecha). */
-var SUNRISE='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0"/><path d="M2 18h20"/><path d="M12 9V4"/><path d="M9 7l3-3 3 3"/><path d="M6.5 11.5L5 10"/><path d="M17.5 11.5L19 10"/></svg>';
-var PIN='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-7.5-7-12a7 7 0 0 1 14 0c0 4.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>';
-var WARN='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>';
+var WARN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>';
 /* Fase 6 · portada de la Bóveda: un ícono simple por carpeta, mismo trazo 2 y linecap/linejoin round en las cuatro */
-var CLIP_IC='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>';
-var TUBE_IC='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><path d="M10 2v13a2 2 0 0 0 4 0V2"/><path d="M10 12h4"/></svg>';
-var PILL_IC='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(45 12 12)"/><line x1="8.5" y1="15.5" x2="15.5" y2="8.5"/></svg>';
-var FOLDER_IC='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
+var CLIP_IC='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>';
+var TUBE_IC='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6"/><path d="M10 2v13a2 2 0 0 0 4 0V2"/><path d="M10 12h4"/></svg>';
+var PILL_IC='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(45 12 12)"/><line x1="8.5" y1="15.5" x2="15.5" y2="8.5"/></svg>';
+var FOLDER_IC='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
 
 /* ============================================================
    TARJETAS / CICLO DE VIDA
@@ -129,7 +123,7 @@ var PROFILES = {
       p3:'Marta', r3:'Mamá · a veces le ayudas', i3:'MA', iu:'SO',
       t1:'Control pediátrico', t1l:'control pediátrico',
       /* Fase 10 · Brief 03: pista de "Para quién" en Pegar texto */
-      pistaPeg:'Por ser pediatría, ¿es de {p2} o de {p1}?',
+      pistaPeg:'Por ser pediatría, ¿es de {p2} o de {p1}?', pegCand:['MT','SF'], /* Fase 10 · Brief 47b: las personas que nombra la pista */
       t2:'Cirugía ambulatoria', t2x:'cirugía ambulatoria',
       t3:'Losartán 50mg', t3n:'Losartán',
       lab:'Perfil lipídico', labl:'perfil lipídico',
@@ -153,7 +147,7 @@ var PROFILES = {
     /* Fase 10 · Rediseño · Brief 09: colores por rol (dueña lavanda, i1 mandarina, i2 cielo, i3 niebla), iniciales oscuras; tint = fondo suave de la persona */
     col:{SF:'#FFB054', MT:'#7DB8FF', SO:'#B69CFF', MA:'#C9D2D5'},
     tint:{SF:'#FFF7EC', MT:'#F1F7FF', SO:'#F7F4FF', MA:'#F1F4F5'},
-    dark:{SF:'#02171C', MT:'#02171C', SO:'#02171C', MA:'#02171C'},
+    dark:{SF:'var(--r-texto)', MT:'var(--r-texto)', SO:'var(--r-texto)', MA:'var(--r-texto)'}, /* Fase 10 · Brief 22: rol, no hex */
     hide:[],
     nac:{SO:'14/05/1990', SF:'18/10/2025', MA:'23/08/1961'} /* Fase 10 · Rediseño · Brief 13b (corrección 2): fechas de arranque (OB_NAC); la de {p2} es nac2raw */
   },
@@ -166,7 +160,7 @@ var PROFILES = {
       p2:'Rosa',  r2:'Mamá · 78 años', i2:'RO',
       p3:'Julián',r3:'Hermano · a veces le ayudas', i3:'JU', iu:'MC',
       t1:'Control de cardiología', t1l:'control de cardiología',
-      pistaPeg:'Por ser cardiología, ¿es de {p1} o de {p3}?', /* Fase 10 · Brief 03 */
+      pistaPeg:'Por ser cardiología, ¿es de {p1} o de {p3}?', pegCand:['MT','MA'], /* Fase 10 · Brief 03. Brief 47b: {p1} ocupa el lugar de MT (SF oculta) */
       t2:'Resonancia de rodilla', t2x:'resonancia de rodilla',
       t3:'Enalapril 20mg', t3n:'Enalapril',
       lab:'Hemograma completo', labl:'hemograma',
@@ -189,7 +183,7 @@ var PROFILES = {
     /* Fase 10 · Rediseño · Brief 09: colores por rol (dueña lavanda, i1 mandarina, i2 cielo, i3 niebla), iniciales oscuras; tint = fondo suave de la persona · en Martha, Rosa (MT) es la persona 1: mandarina */
     col:{SF:'#FFB054', MT:'#FFB054', SO:'#B69CFF', MA:'#C9D2D5'},
     tint:{SF:'#FFF7EC', MT:'#FFF7EC', SO:'#F7F4FF', MA:'#F1F4F5'},
-    dark:{SF:'#02171C', MT:'#02171C', SO:'#02171C', MA:'#02171C'},
+    dark:{SF:'var(--r-texto)', MT:'var(--r-texto)', SO:'var(--r-texto)', MA:'var(--r-texto)'}, /* Fase 10 · Brief 22: rol, no hex */
     hide:['SF'],
     nac:{SO:'02/02/1970', MA:'15/11/1974'} /* Fase 10 · Rediseño · Brief 13b (corrección 2) */
   },
@@ -202,7 +196,7 @@ var PROFILES = {
       p2:'Jorge',  r2:'Papá · 64 años', i2:'JO',
       p3:'Daniel', r3:'Pareja · a veces le ayudas', i3:'DA', iu:'LA',
       t1:'Control de medicina general', t1l:'control de medicina general',
-      pistaPeg:'Medicina general puede ser de cualquiera. ¿Es de {p1} o de {p2}?', /* Fase 10 · Brief 03 */
+      pistaPeg:'Medicina general puede ser de cualquiera. ¿Es de {p1} o de {p2}?', pegCand:['SF','MT'], /* Fase 10 · Brief 03. Brief 47b */
       t2:'Endoscopia digestiva', t2x:'endoscopia digestiva',
       t3:'Sertralina 50mg', t3n:'Sertralina',
       lab:'Hemograma completo', labl:'hemograma',
@@ -225,7 +219,7 @@ var PROFILES = {
     /* Fase 10 · Rediseño · Brief 09: colores por rol (dueña lavanda, i1 mandarina, i2 cielo, i3 niebla), iniciales oscuras; tint = fondo suave de la persona */
     col:{SF:'#FFB054', MT:'#7DB8FF', SO:'#B69CFF', MA:'#C9D2D5'},
     tint:{SF:'#FFF7EC', MT:'#F1F7FF', SO:'#F7F4FF', MA:'#F1F4F5'},
-    dark:{SF:'#02171C', MT:'#02171C', SO:'#02171C', MA:'#02171C'},
+    dark:{SF:'var(--r-texto)', MT:'var(--r-texto)', SO:'var(--r-texto)', MA:'var(--r-texto)'}, /* Fase 10 · Brief 22: rol, no hex */
     hide:[],
     nac:{SO:'20/06/1994', SF:'30/01/1963', MA:'11/09/1992'} /* Fase 10 · Rediseño · Brief 13b (corrección 2): Amparo en 1963 (no 1964) para que tenga 63 como en la historia */
   }
@@ -266,12 +260,31 @@ function buildPeople(){
   r.setProperty('--mateo',pr.col.MT); r.setProperty('--sofia',pr.col.SF); r.setProperty('--sonia',pr.col.SO);
   /* Fase 10 · Rediseño · Brief 09: sin variantes -av; se escriben --marta y los tintes (--x-t) desde PROFILES, la única fuente */
   r.setProperty('--marta',pr.col.MA);
-  r.setProperty('--mateo-t',pr.tint.MT); r.setProperty('--sofia-t',pr.tint.SF);
-  r.setProperty('--sonia-t',pr.tint.SO); r.setProperty('--marta-t',pr.tint.MA);
+  pintarTintes(); /* Fase 10 · Brief 49: los tintes dependen del tema */
   /* quién existe de verdad en esta familia: sin duplicados */
   SLOTS=['SO','MT','SF','MA'].filter(function(k){ return pr.hide.indexOf(k)<0; });
 }
 var SLOTS=['SO','MT','SF','MA'];
+/* Fase 10 · Brief 49 · Modo oscuro. Los tintes (--x-t) van en línea en <html>, así que en oscuro también se escriben desde aquí:
+   el color de la persona al 18 % sobre la superficie (marta, que es gris, al 14 %). En claro, los de PROFILES */
+function pintarTintes(){
+  var pr=PROFILES[PROF], r=document.documentElement.style, osc=document.documentElement.getAttribute('data-tema')==='oscuro';
+  var T={MT:'mateo', SF:'sofia', SO:'sonia', MA:'marta'};
+  for(var k in T) r.setProperty('--'+T[k]+'-t', osc ? 'color-mix(in srgb, var(--'+T[k]+') '+(k==='MA'?14:18)+'%, var(--r-superficie))' : pr.tint[k]);
+}
+/* Fase 10 · Brief 49 · Apariencia: 'claro' | 'oscuro' | 'sistema'. Arranca en Claro; se recuerda en localStorage.
+   Es preferencia de quien presenta: resetDemo() no la toca */
+var TEMA='claro', temaMQ=window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+try{ var temaGuardado=localStorage.getItem('taremi-tema'); if(['claro','oscuro','sistema'].indexOf(temaGuardado)>=0) TEMA=temaGuardado; }catch(e){}
+function aplicarTema(valor){
+  if(valor) TEMA=valor;
+  var osc = TEMA==='oscuro' || (TEMA==='sistema' && temaMQ && temaMQ.matches);
+  if(osc) document.documentElement.setAttribute('data-tema','oscuro'); else document.documentElement.removeAttribute('data-tema');
+  pintarTintes();
+  try{ localStorage.setItem('taremi-tema', TEMA); }catch(e){}
+}
+if(temaMQ){ var temaCambio=function(){ if(TEMA==='sistema') aplicarTema(); }; if(temaMQ.addEventListener) temaMQ.addEventListener('change', temaCambio); else if(temaMQ.addListener) temaMQ.addListener(temaCambio); }
+aplicarTema();
 /* las iniciales del avatar vienen del perfil, el color no cambia nunca */
 function paintAvatars(root){
   var list=(root||document).querySelectorAll('.av[data-p], .av-one[data-p]');
@@ -280,7 +293,7 @@ function paintAvatars(root){
     if(ic){
       a.textContent=ic;
       a.classList.add('av-ic');
-      a.style.setProperty('--ic-ring', PCOL[k]||'var(--border)');
+      a.style.setProperty('--ic-ring', PCOL[k]||'var(--r-borde)');
     } else if(INIT[k]){
       a.textContent=INIT[k];
       a.classList.remove('av-ic'); /* Fase 10 · Rediseño · Brief 13b (corrección 2): se puede volver a las iniciales */
@@ -296,7 +309,7 @@ function openIconSheet(k){
      blanco al centro, como el avatar con ícono. La primera son sus iniciales, para volver a ellas (data-iconopt vacío) */
   document.getElementById('iconSheetSub').textContent = k==='SO' ? 'Tu color no cambia, solo el dibujo.' : 'Su color no cambia, solo el dibujo.';
   var grid=document.getElementById('iconGrid');
-  grid.style.setProperty('--ic-ring', PCOL[k]||'var(--border)');
+  grid.style.setProperty('--ic-ring', PCOL[k]||'var(--r-borde)');
   var h='<button type="button" class="ic-opt ic-ini'+(PICON[k]?'':' sel')+'" data-iconopt="" aria-label="Iniciales">'+INIT[k]+'</button>';
   ANIMALS.forEach(function(a){
     h+='<button type="button" class="ic-opt'+(PICON[k]===a?' sel':'')+'" data-iconopt="'+a+'">'+a+'</button>';
@@ -354,7 +367,7 @@ function personaNoAgregada(k){
   var d=detOk ? DETECT[k] : null; return !(d && d.nivel && !d.fuera);
 }
 function personaFuera(k){ var d=detDe(k); return !!(d && d.fuera) || personaNoAgregada(k); }
-function nivelDe(k){ if(k==='SO') return 'siempre'; if(esPropia()) return OB_NIVEL[detSlot(k)]||'siempre'; var d=detDe(k); return (d && d.nivel) ? d.nivel : (k==='MA' ? 'aveces' : 'siempre'); } /* Fase 10 · Brief 18: en la propia historia, el nivel elegido en el paso 3 (sale la regla del Brief 15 que dejaba a todas en "siempre") */
+function nivelDe(k){ if(k==='SO') return 'siempre'; if(OB_NIVEL[detSlot(k)]) return OB_NIVEL[detSlot(k)]; /* Fase 10 · Brief 30: también quien se agregó desde Familia (#I1) */ if(esPropia()) return 'siempre'; var d=detDe(k); return (d && d.nivel) ? d.nivel : (k==='MA' ? 'aveces' : 'siempre'); } /* Fase 10 · Brief 18: en la propia historia, el nivel elegido en el paso 3 (sale la regla del Brief 15 que dejaba a todas en "siempre") */
 /* un trámite solo se ve (Inicio, avisos, Calendario, mascota) si su persona está en "Le cuidas siempre" */
 function personaVisible(c){ var k=fx(c.av); return !personaFuera(k) && nivelDe(k)==='siempre'; }
 function setCard(k, o, toast){
@@ -367,61 +380,102 @@ function setCard(k, o, toast){
 
 var DRAFT_IC='<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
 /* Fase Móvil · chevron de las cards de "Necesita tu atención", mismo trazo abierto que ya usan los botones "Volver" (topBack/stBack/hiloBack: M15 18l-6-6 6-6), espejado hacia la derecha — a pedido, reemplaza la flecha "→" por sentirse más intuitivo */
-var CARD_CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-/* Fase Móvil · separa la acción del prefijo de persona en un sub tipo '{p1} · Agendar la cita' → 'Agendar la cita', reusado por cardHTML y por el saludo de la mascota (2.3 del brief) para no repetir el regex ni parsear el string a mano en cada lugar */
+var CARD_CHEV='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+/* Fase 10 · Brief 28 · Lucide: chevron-down, x, check y el «!» de circle-alert (sin el círculo). Reemplazan a ▾, ✕ y ! sueltos */
+var CHEV_D='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+var X_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+var ALERT_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
+/* OK_IC sube aquí (antes ≈2230) para que PASOS_OK lo encuentre al cargar; los atributos ceden ante el CSS de cada contenedor */
+var OK_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+/* Fase Móvil · separa la acción del prefijo de persona en un sub tipo '{p1} · Agendar la cita' → 'Agendar la cita', reusado por el saludo de la mascota (2.3 del brief) para no repetir el regex ni parsear el string a mano en cada lugar */
 function actionOnly(sub){ return sub.replace(/^\{\w+\}\s*·\s*/,'').replace(/<\/?em>/g,''); }
-/* Fase 6 · tarjeta destacada: la primera trabada, o si no hay, la primera accionable — hero=true la marca */
-/* Fase Móvil · attn=true marca las tarjetas dentro de "Necesita tu atención": sombra elevada + flecha "→", mismo refuerzo que ya tenía solo la hero */
-function cardHTML(c, hero, attn){
-  var red = c.st==='trabado', av=fx(c.av), col=PCOL[av]||'var(--border)';
-  var sub=c.sub, d=DRAFTS[c.k];
-  /* Nombre de la persona: sale del prefijo de marcador de c.sub ORIGINAL, antes de que el borrador lo reemplace */
-  var whoMatch = c.sub.match(/^(\{\w+\})\s*·\s*/);
-  var who = whoMatch ? '<span class="card-who">'+whoMatch[1]+'</span>' : '';
-  /* H05: si hay una selección sin confirmar, la tarjeta lo dice — como el borrador de WhatsApp */
-  if(d && d.slot && !red) sub='<span class="draft">'+DRAFT_IC+'Borrador:</span> <span style="color:var(--amarillo)">'+d.slot.replace(' · ',', ')+'</span>';
-  /* Fase 6 · acción primero (R1): el título pasa a ser la acción (ya vivía en sub, sin repetir a la persona) y el nombre del trámite baja a subtítulo */
-  var action = actionOnly(sub);
-  if(hero){
-    /* excepto la destacada: lleva el trámite de título y la acción (siempre la original, ignorando el borrador) en su botón */
-    var heroAction = actionOnly(c.sub);
-    var meta='';
-    if(d && d.slot && !red){
-      meta = '<span class="card-meta"><span class="draft">'+DRAFT_IC+'Borrador:</span> <span style="color:var(--amarillo)">'+d.slot.replace(' · ',', ')+'</span></span>';
-    } else if(red){
-      meta = '<span class="card-meta">'+heroAction+'</span>';
-    }
-    var cta = red ? 'Ver qué puedo hacer' : heroAction;
-    /* Fase Móvil · el CTA sale de .card-main (columna flex compartida con av/pill, que le reservaba su ancho para toda la fila aunque el pill fuera corto) a .card-top como hermano — así ocupa el ancho completo de .card-in, no solo la columna del medio. Mismo ajuste pedido en varias sesiones anteriores, sin éxito por quedarse dentro de esa columna. */
-    return '<button type="button" class="card card--hero'+(red?' warn':'')+'" data-thread="'+c.k+'"'+(red?'':' style="background:'+col+'"')+'>'+
-      '<span class="card-in">'+
-        '<span class="card-top">'+
-          '<span class="av" data-p="'+av+'" style="background:'+col+'">'+av+'</span>'+
-          '<span class="card-main">'+who+'<span class="card-title">'+c.t+'</span>'+meta+'</span>'+
-          '<span class="pill '+c.pc+'">'+c.pill+'</span>'+
-        '</span>'+
-        '<span class="card-cta">'+cta+'<span class="cta-ic" aria-hidden="true">'+CARD_CHEV+'</span></span>'+
-      '</span></button>';
-  }
-  return '<button type="button" class="card'+(red?' warn':'')+(attn?' card-attn':'')+'" data-thread="'+c.k+'"'+(red?'':' style="background:'+col+'"')+'>'+
-    '<span class="card-in">'+
-      '<span class="av" data-p="'+av+'" style="background:'+col+'">'+av+'</span>'+
-      '<span class="card-main">'+who+'<span class="card-title">'+action+'</span><span class="card-sub">'+c.t+'</span></span>'+
-      '<span class="pill '+c.pc+'">'+c.pill+'</span>'+
-      (attn?'<span class="card-arrow" aria-hidden="true">'+CARD_CHEV+'</span>':'')+
-    '</span></button>';
-}
+/* Fase 10 · Brief 39: cardHTML() salió — la fila fresca de Inicio, su último uso, pasa a todoRowHTML() */
 
 /* Fase 6 · H04: Notificaciones deja de escribir su propio texto y lee el mismo estado que la tarjeta.
    Fase 10 · Rediseño · Brief 12: es pantalla propia (#NOTIF); los mismos avisos se reparten en dos grupos
    ("Necesita tu atención" / "Para que sepas") y el círculo del ícono toma su color de una clase (.r/.a/.v) */
 var notifHay=false;
+/* Fase 10 · Brief 48: Configuración. Cuatro grupos (.wgt-lbl + .det-grp) y "Solo en esta demo" al final.
+   Permisos y avisos solo informan (sin interruptores). Los avisos son los que existen en renderNotif():
+   cita mañana, la EPS niega o incumple el plazo, llegan resultados (el de medicamentos todavía no existe). */
+function cfgHace(t){
+  var m = t ? Math.floor((Date.now()-t)/60000) : 0;
+  if(m<1) return 'hace un momento';
+  if(m<60) return 'hace '+m+' minuto'+(m===1?'':'s');
+  var h=Math.floor(m/60); return 'hace '+h+' hora'+(h===1?'':'s');
+}
+/* Fase 10 · Brief 48c: Configuración por secciones. Apariencia arriba; Correo, Permisos y Avisos plegables (data-rev/data-revb,
+   como la consulta) que arrancan cerrados al entrar (cerrar=true desde show) y se conservan al repintar por una acción. */
+function renderConfig(cerrar){
+  var box=document.getElementById('cfgBody'); if(!box) return;
+  var abiertos={};
+  if(!cerrar) [].forEach.call(box.querySelectorAll('[data-revb^="cfg-"]'), function(b){ if(b.style.display!=='none') abiertos[b.getAttribute('data-revb')]=1; });
+  var mail = cuentaMail || fx('{mail}');
+  /* Fase 10 · Brief 48b: una sola forma de fila. Ícono (Lucide, --r-texto-2) · nombre corto en negrilla · descripción en gris ·
+     estado corto a la derecha (.cfg-est); "Permitido" y "Conectado" llevan un check en --r-exito-texto */
+  var SV='<svg class="cfg-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+  var IC={
+    user:SV+'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+    mail:SV+'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>',
+    camera:SV+'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>',
+    mic:SV+'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>',
+    calendar:SV+'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    alert:SV+'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    lock:SV+'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>', /* Fase 10 · Brief 48c */
+    bell:SV+'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+    file:SV+'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+  };
+  var OK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  function fila(ic, t, sub, est){
+    var ok = est==='Permitido' || est==='Conectado';
+    return '<div class="fam-r">'+IC[ic]+'<span class="card-main"><span class="card-title cfg-t">'+t+'</span>'+(sub?'<span class="card-sub">'+sub+'</span>':'')+'</span>'+
+      (est?'<span class="cfg-est'+(ok?' ok':'')+'">'+(ok?OK:'')+est+'</span>':'')+'</div>';
+  }
+  function grupo(t, filas){ return '<div class="wgt-lbl">'+t+'</div><div class="det-grp">'+filas+'</div>'; }
+  var CHEV='<svg class="epi-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  function pleg(key, ic, t, sub, est, cuerpo){
+    var on=!!abiertos[key], ok = est==='Conectado';
+    return '<button type="button" class="fam-r cfg-pl" data-rev="'+key+'" aria-expanded="'+on+'">'+IC[ic]+
+      '<span class="card-main"><span class="card-title cfg-t">'+t+'</span>'+(sub?'<span class="card-sub">'+sub+'</span>':'')+'</span>'+
+      (est?'<span class="cfg-est'+(ok?' ok':'')+'">'+(ok?OK:'')+est+'</span>':'')+CHEV+'</button>'+
+      '<div class="cfg-plb" data-revb="'+key+'"'+(on?'':' style="display:none;"')+'>'+cuerpo+'</div>';
+  }
+  var h = cfgToast ? '<div class="toast" role="status">'+cfgToast+'</div>' : ''; cfgToast=null;
+  /* Fase 10 · Brief 49 · Brief 48c: Apariencia arriba, en un control segmentado de una fila (.cfg-seg) */
+  h+='<div class="wgt-lbl" id="cfgTemaLbl">Apariencia</div><div class="cfg-seg" role="radiogroup" aria-labelledby="cfgTemaLbl">'+
+    [['claro','Claro'],['oscuro','Oscuro'],['sistema','Como mi celular']].map(function(o){ var on=TEMA===o[0];
+      return '<button type="button" class="'+(on?'sel':'')+'" role="radio" aria-checked="'+on+'" data-tema="'+o[0]+'">'+o[1]+'</button>'; }).join('')+'</div>';
+  h+=grupo('Tu cuenta', '<div class="fam-r"><span class="av" data-p="SO" style="background:'+PCOL.SO+'">'+INIT.SO+'</span>'+
+    '<span class="card-main"><span class="card-title cfg-t">'+V.u+'</span><span class="card-sub">'+mail+' · '+(cuentaGoogle?'Con Google':'Con tu correo')+'</span></span></div>');
+  var perm=[mailConnected&&'correo', camUsada&&'cámara', micUsado&&'micrófono'].filter(Boolean);
+  var permRes = !perm.length ? 'Ninguno todavía' : cap1(perm.length===1 ? perm[0] : perm.slice(0,-1).join(', ')+' y '+perm[perm.length-1]);
+  h+='<div class="det-grp cfg-secs">'+ /* sin título de grupo: cada fila ya dice qué es */
+    pleg('cfg-mail', 'mail', 'Correo', '', mailConnected?'Conectado':'Sin conectar', mailConnected
+      ? '<p class="cfg-intro">'+mail+'<br>Lo revisé '+cfgHace(mailRevisado)+'</p>'+
+        '<div class="cfg-acc"><button type="button" class="btn-s" data-cfgrevisar="1">Revisar ahora</button>'+
+        '<button type="button" class="close-dest danger" data-cfgoff="1">Desconectar mi correo</button></div>'
+      : '<div class="cfg-acc"><button type="button" class="btn-p" data-tap="fabmail">Conectar tu correo</button></div>')+
+    pleg('cfg-perm', 'lock', 'Permisos', permRes, '',
+      fila('mail', 'Correo', 'Para buscar órdenes, resultados y autorizaciones.', mailConnected?'Permitido':'Aún no')+
+      fila('camera', 'Cámara', 'Para escanear tus documentos.', camUsada?'Permitido':'Aún no')+
+      fila('mic', 'Micrófono', 'Para dictarme y resumir la consulta.', micUsado?'Permitido':'Aún no')+
+      '<p class="cfg-intro">Te pido cada permiso la primera vez que lo necesito. Para cambiarlos, ve a los ajustes de tu celular.</p>')+
+    pleg('cfg-avisos', 'bell', 'Avisos', 'Citas, tu EPS y resultados', '',
+      '<p class="cfg-intro">Te aviso solo cuando hay algo que hacer.</p>'+
+      fila('calendar', 'Citas', 'Un día antes, con lo que hay que llevar.')+
+      fila('alert', 'Tu EPS', 'Si niega o se pasa del plazo, con el siguiente paso.')+
+      fila('file', 'Resultados', 'Cuando llegan.'))+'</div>';
+  h+=grupo('Solo en esta demo',
+    '<button type="button" class="menu-i" data-otrahist="1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 11V9a2 2 0 0 1 2-2h16"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a2 2 0 0 1-2 2H3"/></svg>Cambiar de historia</button>'+
+    '<button type="button" class="menu-i" id="cfgReset"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reiniciar el prototipo</button>');
+  box.innerHTML=fx(h); paintAvatars(box);
+}
 function renderNotif(){
   var IC={
-    alerta:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
-    cal:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-    ok:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-    doc:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>'
+    alerta:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
+    cal:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    ok:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    doc:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>'
   };
   function item(tono,ic,t,d,when){ return '<div class="notif"><span class="notif-ic '+tono+'">'+IC[ic]+'</span><div class="notif-tx"><h5>'+t+'</h5><p>'+d+'</p><span class="notif-when">'+when+'</span></div></div>'; }
   var aten='', sepas='';
@@ -476,7 +530,8 @@ function paintNotifDot(){
    Velo sobre todo menos la barra, anillo turquesa en la pestaña del paso y burbuja con pico que la señala. */
 var TOUR_STEPS=[
   /* Fase 10 · Brief 17: scr = la pantalla que se ve detrás del velo en cada paso ('gen' = la conversación general, en su bienvenida) */
-  {nav:'inicio', scr:'A1', t:'Inicio', p:'Aquí te muestro solo lo que vence en el próximo mes, para que empieces por lo urgente.'},
+  {nav:'inicio', scr:'A1', t:'Inicio', p:'Aquí te muestro solo lo que vence en el próximo mes, para que empieces por lo urgente.',
+    pVacia:'Cuando tenga tus documentos, aquí te muestro solo lo que vence en el próximo mes.'} /* Fase 10 · Brief 39: con Inicio vacío */,
   {nav:'taremi', scr:'gen', t:'Taremi', p:'Pregúntame lo que quieras o cuéntame algo nuevo. Si es de un trámite, te llevo a él.'},
   {nav:'cal',    scr:'F1', t:'Calendario', p:'Tus citas y lo que falta agendar, aunque venza más adelante.'},
   {nav:'bov',    scr:'G1', t:'Bóveda', p:'Todos tus documentos, por persona.'}
@@ -500,7 +555,7 @@ function tourOpen(n){
 function tourPaint(){
   var st=TOUR_STEPS[tourStep], last=tourStep===TOUR_STEPS.length-1;
   document.getElementById('tourT').textContent=st.t;
-  document.getElementById('tourP').textContent=st.p;
+  document.getElementById('tourP').textContent=(appVacia && st.pVacia) || st.p; /* Fase 10 · Brief 39 */
   document.getElementById('tourNext').textContent=last?'Listo':'Siguiente';
   tourBub.style.setProperty('--bt-p', ((tourStep+1)/TOUR_STEPS.length*100)+'%');
   /* Fase 10 · Brief 17: detrás del velo, la pantalla del paso (show() pone la pestaña activa y el scroll arriba). La Bóveda, en la portada */
@@ -511,12 +566,23 @@ function tourPaint(){
   tourPlace();
 }
 /* la burbuja se corre hacia adentro (16 px de margen) y el pico sigue apuntando al centro de la pestaña */
+/* Fase 10 · Brief 44 · marco fiel: en escritorio (768 px o más) #app mide 390 × 844 y, si la ventana es más baja, se reduce
+   entero con zoom. MARCO es esa escala (1 en celular). getBoundingClientRect() devuelve medidas ya escaladas y los left/top que
+   se escriben dentro de #app no lo están: quien mezcle los dos divide la diferencia por MARCO */
+var MARCO=1;
+function marcoEscala(){
+  var esc=matchMedia('(min-width:768px)').matches;
+  MARCO=esc ? Math.min(1, (window.innerHeight-48)/844) : 1;
+  document.documentElement.style.setProperty('--marco-escala', MARCO);
+}
+marcoEscala();
+window.addEventListener('resize', marcoEscala);
 function tourPlace(){
   if(tourStep<0) return;
   var app=document.getElementById('app').getBoundingClientRect();
   var tab=document.querySelector('#nav .nav-item[data-nav="'+TOUR_STEPS[tourStep].nav+'"]').getBoundingClientRect();
-  var w=tourBub.offsetWidth, cx=tab.left+tab.width/2-app.left;
-  var left=Math.max(16, Math.min(cx-w/2, app.width-16-w));
+  var w=tourBub.offsetWidth, cx=(tab.left+tab.width/2-app.left)/MARCO; /* Fase 10 · Brief 44 */
+  var left=Math.max(16, Math.min(cx-w/2, app.width/MARCO-16-w));
   tourBub.style.left=left+'px';
   tourBub.style.setProperty('--bt-x', Math.max(20, Math.min(cx-left, w-20))+'px');
 }
@@ -561,7 +627,7 @@ var TM_M={
   calma: {},
   piensa: { eLx:86, eRx:126, eY:92, armR:'M164 124C150 142 128 150 116 140', cejas:1, browL:'M72 80L90 80', browR:'M114 74L132 70', mouth:'M94 122C100 124 106 123 110 119', burbujas:1 },
   celebra: { armL:'M36 104C20 92 14 74 20 56', armR:'M164 100C180 88 188 70 182 52', arco:1, mouth:'M80 114C86 134 114 134 120 114Z', llena:1, chispas:1 },
-  atenta: { armL:'M36 124C52 142 76 148 90 142', armR:'M162 120C148 140 124 148 110 142', cejas:1, browL:'M68 84L88 78', browR:'M132 84L112 78', mouth:'M86 123C94 120 106 120 114 123' },
+  atenta: { armR:'M164 108C178 106 190 98 196 84', cejas:1, browL:'M70 78C76 73 85 72 92 75', browR:'M114 75C121 72 130 73 136 78', eLx:84, eRx:124, eY:97, mouth:'M92 120C98 125 106 125 113 120' }, /* Fase 10 · Brief 37: atenta señala, ya no se ve triste */
   descansa: { arco:1, arcL:'M72 98C77 104 85 104 90 98', arcR:'M110 98C115 104 123 104 128 98', mouth:'M92 121C97 124 103 124 108 121', zz:1 }
 };
 function mascotaSVG(gesto, px){
@@ -614,7 +680,6 @@ document.querySelector('.ob-hero .ob-m').innerHTML=mascotaSVG('hola', 140);
 mascotHd.addEventListener('keydown', function(e){ if((e.key==='Enter'||e.key===' ') && cur==='A1'){ e.preventDefault(); openThread('gen'); } });
 /* Fase 10 · Rediseño · Brief 11: ícono de "En curso", calendario con check (lienzo 42) */
 var CURSO_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 15l2 2 4-4"/></svg>';
-var BOX_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>';
 function ultimoT(k){
   var ms=(THREADS[k]||{}).msgs||[];
   for(var i=ms.length-1;i>=0;i--){ var m=ms[i]; if(m.who!=='t') continue;
@@ -624,16 +689,21 @@ function ultimoT(k){
   return '';
 }
 function todoRowHTML(c, gris){
-  var av=fx(c.av), th=THREADS[c.k]||{}, last=ultimoT(c.k);
+  var av=fx(c.av), th=THREADS[c.k]||{}, last=c.st==='resuelto' ? '' : ultimoT(c.k); /* Fase 10 · Brief 39: resuelto → abajo va c.sub («Sofía · Cita del…»), no el último mensaje */
   var prev = last ? fx(th.p)+' · '+last : fx(c.sub).replace(/<[^>]+>/g,'');
-  var nuevo = !gris && (!th.started || (th.msgs||[]).length>(th.seen||0));
+  /* Fase 10 · Brief 25: el borrador vuelve a la fila (H05), con el mismo marcado que tenía cardHTML(): persona · Borrador: fecha */
+  var d=DRAFTS[c.k];
+  if(d && d.slot && !gris && c.st!=='trabado'){
+    var wm=c.sub.match(/^(\{\w+\})\s*·\s*/), quien=fx(th.p || (wm ? wm[1] : ''));
+    prev = (quien ? quien+' · ' : '')+'<span class="draft">'+DRAFT_IC+'Borrador:</span> <span style="color:var(--r-pendiente)">'+d.slot.replace(' · ',', ')+'</span>';
+  }
   /* Fase 10 · Rediseño · Brief 11: cada fila es su propia tarjeta con el tinte de la persona (--tinte, desde TINTVAR); en curso, sin tinte */
   var tinte = (!gris && TINTVAR[av]) ? ' style="--tinte:var(--'+TINTVAR[av]+'-t)"' : '';
   return '<button type="button" class="todo-row'+(gris?' gris':'')+'" data-thread="'+c.k+'"'+tinte+'>'+
-    '<span class="av" data-p="'+av+'" style="background:'+(PCOL[av]||'var(--border)')+'">'+av+'</span>'+ /* Fase 10 · Brief 14 (corrección): en curso el avatar conserva su color o ícono */
+    '<span class="av" data-p="'+av+'" style="background:'+(PCOL[av]||'var(--r-borde)')+'">'+av+'</span>'+ /* Fase 10 · Brief 14 (corrección): en curso el avatar conserva su color o ícono */
     '<span class="card-main"><span class="todo-top"><span class="todo-t">'+c.t+'</span>'+(gris?'':'<span class="pill '+c.pc+'">'+c.pill+'</span>')+'</span>'+
     '<span class="todo-s">'+prev+'</span></span>'+
-    (nuevo?'<span class="todo-dot" aria-label="Sin revisar"></span>':'')+
+    /* Fase 10 · Brief 29: sale el punto «Sin revisar»; la pill ya dice el estado */
     '<span class="card-arrow" aria-hidden="true">'+CARD_CHEV+'</span></button>';
 }
 /* Fase 10 · Brief 07: saludo con jerarquía — "Hola, {u}." arriba y la frase debajo */
@@ -673,26 +743,12 @@ function renderInicio(){
   var nPend = agenda.length; /* Fase 10 · Brief 01 */
   var greet = '', hook = '';
   if(nPend>0){
-    /* Fase 10 · Brief 07: nombra los trámites como frase (c.frase), hasta 3; con más, "y otras cosas de tu lista" — nunca cuenta */
-    var nom=function(c){ return '<b>'+(c.frase||c.t)+'</b>'; };
-    /* Fase 10 · Brief 08f: los trámites nombrados de una misma persona (no la dueña: sus tarjetas no tienen fraseCorta) se juntan
-       y la persona se nombra una vez, al final del grupo. El grupo queda donde estaba el primero de la agenda */
-    var grupos=[];
-    agenda.slice(0, nPend>3 ? 2 : 3).forEach(function(c){
-      var suf = c.fraseCorta ? fx(c.frase).slice(fx(c.fraseCorta).length) : '';
-      var g = suf && grupos.filter(function(x){ return x.suf===suf; })[0];
-      if(g) g.cs.push(c); else grupos.push({suf:suf, cs:[c]});
-    });
-    var y=function(p, sep){ return p.length>1 ? p.slice(0,-1).join(', ')+sep+p[p.length-1] : p[0]; };
-    var junto = grupos.some(function(g){ return g.cs.length>1; });
-    var noms=grupos.map(function(g){
-      return g.cs.length<2 ? nom(g.cs[0]) : y(g.cs.map(function(c,i){ return '<b>'+(i===g.cs.length-1 ? c.frase : c.fraseCorta)+'</b>'; }), ' y ');
-    });
-    greet = 'Hoy te toca '+(nPend>3 ? noms.join(', ')+(junto?', y':' y')+' otras cosas de tu lista'
-      : y(noms, junto ? ', y ' : ' y '))+'.';
-    hook = nPend>1 ? 'Tócalos para empezar.' : 'Tócalo para empezar.';
+    /* Fase 10 · Brief 39: nombra solo el primero de la agenda (el más urgente); la lista de abajo ya trae el resto. Nunca cuenta */
+    var nom='<b>'+(agenda[0].frase||agenda[0].t)+'</b>';
+    greet = nPend>1 ? 'Empieza por '+nom+'. Lo demás está en tu lista.' : 'Hoy te toca '+nom+'.';
+    hook = nPend>1 ? 'Toca cada uno y te digo cómo.' : 'Tócalo y te digo cómo.';
   } else {
-    greet = 'Ya estás al día.';
+    greet = DOCS_PEND.length ? 'Tengo documentos que todavía no sé de quién son.' : 'Ya estás al día.'; /* Fase 10 · Brief 47 */
   }
   /* Fase 10 · Brief 04: la cara refleja urgencia, no cantidad — trabado → estancado; cita hoy/mañana/por confirmar o algo urgente por vencer → atento; lo demás → calma */
   var estado = trab.length ? 'estancado'
@@ -728,8 +784,10 @@ function renderInicio(){
     if(freshCard && !okFam(freshCard)) freshCard=null;
     freshConfirmKey=null;
   }
-  if(freshCard){ h += '<div class="fresh-h"><span class="fdot"></span><span>'+(freshCard.st==='resuelto'?'Resuelto ✓':'Confirmada ✓')+'</span></div>'+cardHTML(freshCard); }
+  /* Fase 10 · Brief 39: la fila fresca usa la misma fila que "Por hacer" (todoRowHTML, con tinte y sin franja); resuelto → "Lo último que resolviste" (la pill ya dice Resuelto) */
+  if(freshCard){ h += '<div class="fresh-h"><span class="fdot"></span><span>'+(freshCard.st==='resuelto'?'Lo último que resolviste':'Confirmada ✓')+'</span></div><div class="todo-list">'+todoRowHTML(freshCard)+'</div>'; }
   /* Fase 10 · Brief 06: "Necesita tu atención" (tarjetas + hero) pasa a la lista "Por hacer": una tarjeta blanca, una fila por trámite, mismo orden de la agenda */
+  h += docPendHTML(); /* Fase 10 · Brief 40: arriba de "Por hacer" o del vacío */
   if(nPend>0){
     h += '<h3 class="todo-h">Por hacer</h3><div class="todo-list">';
     agenda.forEach(function(c){ h+=todoRowHTML(c); });
@@ -740,7 +798,7 @@ function renderInicio(){
     /* Fase 10 · Brief 08d: si quedó algo accionable fuera por en30(), el vacío nombra el próximo y lleva al Calendario */
     var lejos = CARDS.filter(function(c){return c.st==='accionable' && okFam(c) && !en30(c);}).sort(function(a,b){ return (diasA(fechaLim(a))||0)-(diasA(fechaLim(b))||0) || a.ord-b.ord; })[0];
     if(lejos) h += '<div class="empty"><p>Nada urgente por ahora. Lo próximo es '+(lejos.frase||lejos.t)+', en el Calendario.</p><button type="button" class="link-u" data-go="F1">Ver en el Calendario</button></div>';
-    else h += '<div class="empty">'+mascotaSVG('calma', 112)+'<p>'+(bovPerson!=='all' ? 'Nada por hacer para '+PNAME[bovPerson]+'. Yo sigo pendiente de las fechas.' : 'Todo lo de esta semana está resuelto o en curso.')+'</p></div>';
+    else if(!(DOCS_PEND.length && bovPerson==='all')) h += '<div class="empty">'+mascotaSVG('calma', 112)+'<p>'+(bovPerson!=='all' ? 'Nada por hacer para '+PNAME[bovPerson]+'. Yo sigo pendiente de las fechas.' : 'Todo lo de esta semana está resuelto o en curso.')+'</p></div>';
   }
   /* Fase 10 · Brief 06: "En curso" como archivo plegado al final (reemplaza la entrada a Procesos en curso) */
   if(enc.length){
@@ -817,7 +875,7 @@ function bovMarcarNuevos(docs){
   bovAviso=docs;
   renderNotif();
 }
-function docIcon(){ return '<span class="doc-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-black)" stroke-width="1.7"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg></span>'; }
+function docIcon(){ return '<span class="doc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--r-texto)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg></span>'; }
 var TYNAME={orden:'Orden médica',autorizacion:'Autorización',resultado:'Resultado',soporte:'Historia clínica',certificado:'Certificado',
   mensaje:'Mensaje de la EPS'}; /* Fase 10 · Brief 03: la cita que llega pegando texto */
 function parentescoDe(code){
@@ -851,24 +909,28 @@ function docPend(d){
   var pill = d.dyn && !tramCerrado(d.dyn) ? (card(d.dyn).bov||[0,0,'pendiente']).slice(1) : docPill(d);
   return !!(pill && pill[1]==='pendiente');
 }
-/* Fase 10 · Brief 05: cola de .epi-h plegable: punto de pendiente (solo se ve cerrado) + flecha */
-function epiColaHTML(docs, hilo){
-  /* Fase 10 · Rediseño · Brief 11: en la Bóveda (hilo), "Pendiente" va como pill miel, no como punto (lienzo 48).
-     La confirmación del correo (renderConf) conserva el punto: ahí la pill apretaba el título */
-  var pend = !docs.some(docPend) ? '' : hilo ? '<span class="pill pendiente epi-pend">Pendiente</span>' : '<span class="epi-dot" role="img" aria-label="Tiene algo pendiente"></span>';
-  return '<span class="epi-cola">'+pend+
-    '<svg class="epi-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>';
+/* Fase 10 · Brief 05 · Brief 34: cola de .epi-h plegable = contador de documentos + flecha, igual en «Lo que encontré» y en la Bóveda.
+   Sale el punto de pendiente; en la Bóveda la pill «Pendiente» pasa a la segunda línea (epiPendHTML) */
+function epiPendHTML(docs){ return docs.some(docPend) ? '<span class="pill pendiente epi-pend">Pendiente</span>' : ''; }
+/* Fase 10 · Brief 44b: fecha = ep.dcorta. Con fecha, la cola es una columna de dos pisos (fecha arriba; contador y flecha abajo)
+   alineada arriba con el título; sin fecha («Sin consulta asociada») queda solo el piso de abajo, centrado como antes */
+function epiColaHTML(docs, fecha){
+  var n=docs.length;
+  return '<span class="epi-cola'+(fecha?' con-fecha':'')+'">'+(fecha?'<span class="epi-fecha">'+fecha+'</span>':'')+
+    '<span class="epi-cola-fila"><span class="epi-n" role="img" aria-label="'+n+' documento'+(n===1?'':'s')+'">'+n+'</span>'+ /* Fase 10 · Brief 41b: vuelve al número solo */
+    '<svg class="epi-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></span>';
 }
 /* Fase 10 · Rediseño · Brief 11: hilo=true (Bóveda · documentos, lienzo 49 opción D): sin ícono de documento; tarjeta blanca con
    título, pill y flecha, y un punto del color de la persona sobre la línea de la consulta (--pc, del contenedor) */
-function docRowHTML(d, flat, hilo){
+function docRowHTML(d, flat, hilo, quieta){ /* Fase 10 · Brief 46: quieta = lo que todavía no está guardado («Lo que encontré», #famDocsList): <div> sin flecha ni data-docv */
   if(hilo){
     var hp=docPill(d);
     if(d.dyn && !tramCerrado(d.dyn)){ var hb=card(d.dyn).bov||['','Por radicar','pendiente']; hp=[hb[1],hb[2]]; }
-    return '<button type="button" class="epi-d hilo"'+(d.go ? ' data-go="'+d.go+'"' : ' data-docv="'+DOCS.indexOf(d)+'"')+'>'+
-      '<span class="epi-d-dot" aria-hidden="true"></span><span class="doc-t">'+d.t+'</span>'+
+    /* Fase 10 · Brief 29: .doc-fila sin ícono ni subtítulo, con el punto sobre la línea */
+    return (quieta ? '<div class="doc-fila">' : '<button type="button" class="doc-fila"'+(d.go ? ' data-go="'+d.go+'"' : ' data-docv="'+DOCS.indexOf(d)+'"')+'>')+
+      '<span class="epi-d-dot" aria-hidden="true"></span><span class="card-main"><span class="doc-t">'+d.t+'</span></span>'+
       (hp?'<span class="pill '+hp[1]+'">'+hp[0]+'</span>':'')+
-      '<span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
+      (quieta ? '</div>' : '<span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>');
   }
   var sub=d.s, pill=docPill(d);
   if(d.dyn && !tramCerrado(d.dyn)){ var b=card(d.dyn).bov||['{p2} · sin radicar','Por radicar','pendiente']; /* Fase 10 · Brief 06: "Por radicar" */ sub=b[0].replace(/^[^·]+ · /,''); pill=[b[1],b[2]]; }
@@ -877,7 +939,7 @@ function docRowHTML(d, flat, hilo){
   var icon;
   if(flat){ var pcode=fx(d.p); icon='<span class="av" data-p="'+pcode+'" style="background:'+PCOL[pcode]+'">'+pcode+'</span>'; }
   else icon=docIcon();
-  return '<button type="button" class="epi-d'+(flat?' flat':'')+'"'+target+'>'+icon+
+  return '<button type="button" class="doc-fila"'+target+'>'+icon+ /* Fase 10 · Brief 29: Fila de documento (avatar 40 en carpetas) */
      '<span class="card-main"><span class="doc-t">'+d.t+'</span><span class="doc-s">'+sub+'</span></span>'+
      (pill?'<span class="pill '+pill[1]+'">'+pill[0]+'</span>':'')+
      '<span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>'; /* Fase 10 · Brief 06: flecha, la fila es tocable */
@@ -891,12 +953,17 @@ function bovCatCount(cat){
     return okP && okCat;
   }).length;
 }
+/* Fase 10 · Brief 41: "Nuevo" solo distingue si algunas carpetas con documentos están marcadas y otras no; "Todos los documentos" nunca lo lleva */
+function bovNuevoDistingue(){
+  var conDocs=['ord','res','med'].filter(function(c){ return bovCatCount(c)>0; });
+  return conDocs.some(function(c){ return !BOVNEW[c]; });
+}
 function bovCatCard(cat, label, icon){
   var n=bovCatCount(cat), empty=(n===0);
   var countTxt = empty ? 'Nada guardado aquí' : (n+' documento'+(n===1?'':'s'));
   var tag = empty ? 'div' : 'button';
-  var nuevo = !empty && BOVNEW[cat]; /* Fase 10 · Brief 20: etiqueta "Nuevo" en vez del punto del Brief 19 */
-  return '<'+tag+(empty?'':' type="button" data-bovcat="'+cat+'"')+(nuevo?' aria-label="'+label+', tiene documentos nuevos"':'')+' class="bov-cat bov-cat--'+cat+(empty?' empty':'')+'">'+
+  var nuevo = cat!=='all' && !empty && BOVNEW[cat] && bovNuevoDistingue(); /* Fase 10 · Brief 20: etiqueta "Nuevo" en vez del punto del Brief 19 · Brief 41: solo donde distingue */
+  return '<'+tag+(empty?'':' type="button" data-bovcat="'+cat+'"')+(nuevo?' aria-label="'+label+', tiene documentos nuevos"':'')+' class="bov-cat bov-cat--'+cat+(empty?' vacia':'')+'">'+ /* Fase 10 · Brief 31: 'vacia' en vez de 'empty', que heredaba el bloque de pantalla vacía */
     '<span class="bov-cat-ic">'+icon+'</span>'+
     (nuevo ? '<span class="pill nuevo" aria-hidden="true">Nuevo</span>' : '')+
     '<span class="bov-cat-t">'+label+'</span>'+
@@ -913,21 +980,31 @@ function bovCatDots(cat){
   return '<span class="bov-cat-dots" aria-hidden="true">'+ps.map(function(p){ return '<span style="background:'+PCOL[p]+'"></span>'; }).join('')+'</span>';
 }
 /* Fase 10 · Brief 16: la etiqueta "Solo en esta demo" (la de #obDemo) en una fila; no es botón */
-var DEMO_TAG='<span class="chip-sim ob-demo en-fila"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg>Solo en esta demo</span>';
+var DEMO_TAG='<span class="chip-sim ob-demo en-fila"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg>Solo en esta demo</span>';
 /* Fase 10 · Brief 19: ¿la persona ya confirmó quién es esta persona? (la dueña, lo agregado en el paso 3 o lo confirmado en la detección) */
 function relConfirmada(code){
   if(code==='SO') return true;
   var id=detSlot(code);
   return obAgregados.indexOf(id)>=0 || !!(detOk && DETECT[id] && DETECT[id].rel && !DETECT[id].fuera);
 }
-function epiHeaderHTML(ep){
+/* Fase 10 · Brief 35: pend = pill «Pendiente» a 8 del nombre (solo en la Bóveda); bov = sin la etiqueta de demo, como antes en la Bóveda */
+function epiHeaderHTML(ep, pend, bov){
   if(!ep.p) return '<span class="epi-t"><b>'+ep.t+'</b><small>'+ep.s+'</small></span>';
   /* Fase 10 · Brief 19: la relación solo sale para ti y para quien agregaste en el paso 3 o confirmaste en la detección */
   var par=relConfirmada(ep.p) ? parentescoDe(ep.p) : '';
   /* Fase 6 · tarjeta menos cargada: sede y doctor ya viven con detalle en el visor del documento (#11) — aquí solo lo que ubica de un vistazo */
-  return '<span class="epi-t"><span class="epi-t-row"><b>'+ep.t+'</b>'+
-    (ep.dcorta?'<span class="epi-fecha">'+ep.dcorta+'</span>':'')+'</span>'+
-    '<small>'+PNAME[ep.p]+(par?' · '+par:'')+'</small>'+(ep.demo ? DEMO_TAG : '')+'</span>'; /* Fase 10 · Brief 16 */
+  return '<span class="epi-t"><b>'+ep.t+'</b>'+ /* Fase 10 · Brief 44b: la fecha sube a la cola (epiColaHTML); el título usa todo el ancho */
+    (pend ? '<small class="epi-sub"><span>'+PNAME[ep.p]+(par?' · '+par:'')+'</span>'+pend+'</small>' : '<small>'+PNAME[ep.p]+(par?' · '+par:'')+'</small>')+
+    (ep.demo && !bov ? DEMO_TAG : '')+'</span>'; /* Fase 10 · Brief 16 */
+}
+/* Fase 10 · Brief 35: un solo orden de consultas para la Bóveda y «Lo que encontré»: la fecha más reciente arriba (dcorta dd/mm/aa),
+   a igual fecha el orden de EPIS, «Sin consulta asociada» al final. Lo recién guardado lo sube renderBovResults() */
+function epiOrden(){
+  var k=function(ep){ var m=(ep.dcorta||'').split('/'); return m.length===3 ? +(m[2]+m[1]+m[0]) : -1; };
+  return EPIS.map(function(ep,i){ return {ep:ep, i:i}; }).sort(function(a,b){
+    var na=(a.ep.id==='na')-(b.ep.id==='na');
+    return na || (k(b.ep)-k(a.ep)) || (a.i-b.i);
+  }).map(function(o){ return o.ep; });
 }
 /* Fase 6 · editable=true agrega un lápiz sobre el avatar para elegir ícono (antes solo Mateo lo tenía, vía I3).
    Va como botón hermano del de navegación, no anidado, para no meter un <button> dentro de otro. */
@@ -956,13 +1033,13 @@ function famRows(attr, sub, editable, grouped){
     var val = attr==='data-setwho' ? (k+'|'+(k==='SO'?'Tú':nm)) : k;
     var row = '<button type="button" class="fam-r" '+attr+'="'+val+'">'+
        '<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+
-       '<span class="card-main"><span class="card-title" style="font-size:16px;">'+(k==='SO'&&attr!=='data-go'?'Tú':nm)+'</span>'+
+       '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+(k==='SO'&&attr!=='data-go'?'Tú':nm)+'</span>'+
        '<span class="card-sub">'+(k==='SO'?V.u:rel)+(sub?' · '+cnt+' documento'+(cnt===1?'':'s'):'')+'</span></span>'+
-       (attr==='data-go'?'<span class="chev">›</span>':'')+'</button>';
+       (attr==='data-go'?'<span class="chev">'+CARD_CHEV+'</span>':'')+'</button>';
     if(editable){
       h+='<div class="fam-r-row">'+row+
         '<button type="button" class="av-badge av-badge-sm" data-iconpick="'+k+'" aria-label="Elegir ícono para '+nm+'">'+
-        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>'+
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>'+
         '</button></div>';
     } else h+=row;
   });
@@ -970,9 +1047,12 @@ function famRows(attr, sub, editable, grouped){
 }
 function buildFamLists(){
   var w=document.getElementById('whoList'); if(w) w.innerHTML=famRows('data-setwho', false);
-  var g=document.getElementById('famScreen'); if(g) g.innerHTML=famRows('data-go2', false, true, true)+
+  /* Fase 10 · Brief 30: el toast de «Agregar familiar» sale una vez, y el botón solo si queda alguien de la historia por agregar */
+  var ft = famToast ? '<div class="toast" role="status">'+famToast+'</div>' : ''; famToast=null;
+  var g=document.getElementById('famScreen'); if(g) g.innerHTML=ft+famRows('data-go2', false, true, true)+
     /* Fase 10 · Brief 02: misma fila "Próximamente" de Configuración; no abre nada */
-    '<div class="menu-i soon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>Invitar a alguien que te ayude<span class="tag-soon">Próximamente</span></div>';
+    '<div class="menu-i soon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>Invitar a alguien que te ayude<span class="tag-soon">Próximamente</span></div>'+
+    (famSiguiente() ? '<button type="button" class="btn-p" data-go="I1" style="margin-top:var(--esp-s);">Agregar familiar</button>' : ''); /* Fase 10 · Brief 30: sale del HTML fijo de #FAM */
   paintAvatars(document);
 }
 
@@ -990,13 +1070,11 @@ function i3Name(k){
   if(e && e.nm && e.nm.trim()) return e.nm.trim();
   return k==='SO' ? V.u : PNAME[k];
 }
-/* token de parentesco (p.ej. "Hijo") a partir del dato combinado que ya usa famRows/parentescoDe
-   ("Hijo · 8 años") — si no calza con ninguna opción de RELS (p.ej. "Pareja", ya retirado del
-   selector), arranca sin preselección en vez de forzar un valor que no existe en la lista */
+/* token de parentesco (p.ej. "Hijo") a partir del dato combinado que ya usa famRows/parentescoDe ("Hijo · 8 años").
+   Fase 10 · Brief 43: la relación es texto libre, así que el token se usa tal cual (antes se descartaba si no estaba en RELS) */
 function i3RelToken(k){
   if(k==='SO') return '';
-  var tok=parentescoDe(k);
-  return RELS.indexOf(tok)>=0 ? tok : '';
+  return parentescoDe(k);
 }
 function i3RelLabel(p){ return p.rel==='Otro' ? (p.otro||'Otro') : p.rel; }
 function i3Subtitle(k){
@@ -1042,10 +1120,10 @@ function refrescarPersonas(){
   buildFamLists(); updateChip(); paintAvatars(document);
 }
 function i3DocCount(k){ return DOCS.filter(function(d){ return fx(d.p)===k; }).length; }
-var I3_PENCIL='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+var I3_PENCIL='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
 function i3AvatarHTML(k){
-  return '<div style="display:flex;justify-content:center;padding:8px 0 4px;position:relative;">'+
-    '<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+';width:98px;height:98px;font-size:32px;">'+INIT[k]+'</span>'+
+  return '<div style="display:flex;justify-content:center;padding:var(--esp-s) 0 var(--esp-xs);position:relative;">'+
+    '<span class="av av-ficha" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+ /* Fase 10 · Brief 27: medidas a .av-ficha */
     '<button type="button" class="av-badge" data-iconpick="'+k+'" aria-label="Elegir ícono" style="position:absolute;left:50%;bottom:6px;transform:translateX(38px);">'+I3_PENCIL+'</button>'+
     '</div>';
 }
@@ -1057,9 +1135,9 @@ function i3ViewHTML(k){
   if(dateRow){
     h+='<div class="doc-in"><span class="card-main"><span class="card-sub" style="margin:0">'+dateRow.label+'</span><span class="doc-t">'+dateRow.value+'</span></span></div>';
   } else {
-    h+='<div class="doc-in"><span class="card-main"><span class="card-sub" style="margin:0">Fecha de nacimiento</span><span class="doc-t" style="font-size:14px;font-weight:500;color:var(--muted);">Sin fecha registrada — puedes agregarla desde «Editar información»</span></span></div>';
+    h+='<div class="doc-in"><span class="card-main"><span class="card-sub" style="margin:0">Fecha de nacimiento</span><span class="doc-t" style="font-size:var(--fs-secundario);font-weight:var(--fw-regular);color:var(--r-texto-2);">Sin fecha registrada — puedes agregarla desde «Editar información»</span></span></div>';
   }
-  h+='<button type="button" class="doc-in" data-bov="'+k+'"><span class="card-main"><span class="card-sub" style="margin:0">Documentos guardados</span><span class="doc-t">'+cnt+' en la Bóveda</span></span><span class="chev">›</span></button>';
+  h+='<button type="button" class="doc-in" data-bov="'+k+'"><span class="card-main"><span class="card-sub" style="margin:0">Documentos guardados</span><span class="doc-t">'+cnt+' en la Bóveda</span></span><span class="chev">'+CARD_CHEV+'</span></button>';
   h+='<button type="button" class="btn-s" data-i3edit="1">Editar información</button>';
   /* no tiene sentido eliminarte a ti mismo de tu propia familia */
   /* Fase 8 · Estructura 1: "Eliminar perfil" no elimina nada de verdad — atenuado con "Próximamente",
@@ -1074,13 +1152,13 @@ function i3EditHTML(k){
   if(p.approx){
     h+='<div class="field"><label>Edad aproximada</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" maxlength="3" id="i3fEdad" placeholder="Años" value="'+p.edadAprox.replace(/"/g,'&quot;')+'">'+
       (p.nacErr
-        ? '<p class="err-msg"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'+p.nacErr+'</p>'
+        ? '<p class="err-msg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'+p.nacErr+'</p>'
         : '<p class="helper">Me ayuda a saber qué controles y exámenes le tocan según la edad.</p>')+ /* Fase 10 · Brief 18: sin vacunas */
       '<button type="button" class="ob-link" data-i3toggleaprox="1">Sí sé la fecha exacta</button></div>';
   } else {
     h+='<div class="field"><label>Fecha de nacimiento</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" maxlength="10" id="i3fNac" placeholder="dd / mm / aaaa" value="'+p.nac.replace(/"/g,'&quot;')+'">'+
       (p.nacErr
-        ? '<p class="err-msg"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'+p.nacErr+'</p>'
+        ? '<p class="err-msg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'+p.nacErr+'</p>'
         : '<p class="helper">Me ayuda a saber qué controles y exámenes le tocan según la edad.</p>')+ /* Fase 10 · Brief 18: sin vacunas */
       '<button type="button" class="ob-link" data-i3toggleaprox="1">No sé la fecha exacta</button></div>';
   }
@@ -1088,7 +1166,7 @@ function i3EditHTML(k){
     /* Fase 8 · Yifrah #9: "Parentesco" → "Relación" */
     h+='<div class="field"><label>Relación</label><div class="sel-wrap">'+
        '<button type="button" class="box'+(p.rel?' filled':'')+'" data-i3relopen="1" style="width:100%;">'+
-       '<span>'+(p.rel ? i3RelLabel(p) : 'Seleccionar')+'</span><span class="chev">▾</span></button></div></div>';
+       '<span>'+(p.rel ? i3RelLabel(p) : 'Seleccionar')+'</span><span class="chev">'+CHEV_D+'</span></button></div></div>';
   }
   var dirty = JSON.stringify(p) !== JSON.stringify(i3EditOrig);
   var ready = dirty && p.nm.trim() && (p.approx ? edadAproxValida(p.edadAprox).ok : fechaValida(p.nac).ok) && (k==='SO' || (p.rel && (p.rel!=='Otro' || p.otro.trim())));
@@ -1129,10 +1207,7 @@ function i3EnterEdit(k){
 }
 function renderI3RelSheet(){
   var sheet=document.getElementById('i3RelSheet'); if(!sheet || !i3Edit) return;
-  var h='';
-  RELS.forEach(function(r){ h+='<button type="button" class="m3i'+(i3Edit.rel===r?' sel':'')+'" data-i3rel="'+r+'">'+r+'</button>'; });
-  if(i3Edit.rel==='Otro') h+='<div class="m3-other"><input type="text" id="i3fOtro" placeholder="¿Qué es de ti?" value="'+(i3Edit.otro||'').replace(/"/g,'&quot;')+'"></div>';
-  document.getElementById('i3RelList').innerHTML=h;
+  document.getElementById('i3RelList').innerHTML=relPickerHTML(i3RelLabel(i3Edit), 'data-i3rel="{v}"', 'i3'); /* Fase 10 · Brief 43 */
 }
 function openI3RelSheet(){ renderI3RelSheet(); document.getElementById('i3RelSheet').style.display='flex'; }
 
@@ -1166,13 +1241,13 @@ function openViewer(ix){
     /* Fase 10 · Brief 02: los valores dependen de {lab} (V.labv / V.labn por perfil) */
     body+='<p class="v-lab">'+fx(d.t)+'</p>'+
       V.labv.split(';').map(function(r){ var f=r.split('|'); return '<div class="v-row"><span>'+f[0]+'</span><span'+(f[2]?' class="'+f[2]+'"':'')+'>'+f[1]+'</span></div>'; }).join('')+
-      '<p style="font-size:10.5px;color:#777;margin:16px 0 0;line-height:1.5;">Valores de referencia según edad. '+V.labn+'</p>';
+      '<p style="font-size:10.5px;color:var(--papel-texto-3);margin:16px 0 0;line-height:1.5;">Valores de referencia según edad. '+V.labn+'</p>';
   } else if(d.ty==='orden'){
     body+='<p class="v-lab">Orden de servicio</p>'+
       '<div class="v-row"><span>Servicio</span><span>'+fx(d.proc||d.t)+'</span></div>'+
       (medico?'<div class="v-row"><span>Médico</span><span>'+medico+'</span></div>':'')+
       '<div class="v-row"><span>Vigencia</span><span>30 días</span></div>'+
-      '<p style="font-size:10.5px;color:#777;margin:16px 0 0;line-height:1.5;">Presentar en el punto de atención con documento de identidad.</p>';
+      '<p style="font-size:10.5px;color:var(--papel-texto-3);margin:16px 0 0;line-height:1.5;">Presentar en el punto de atención con documento de identidad.</p>';
   } else if(d.ty==='autorizacion'){
     body+='<p class="v-lab">Autorización de servicio</p>'+
       '<div class="v-row"><span>Servicio autorizado</span><span>'+fx(d.t)+'</span></div>'+
@@ -1182,13 +1257,13 @@ function openViewer(ix){
     /* Fase 8 · Yifrah #6: mismo hecho que declara d.rel; sin "Contiene los datos de la atención…", que aquí sería falso.
        El dato no trae fecha de subida (ep 'na'), así que la fecha solo se dice si existe. */
     body+='<p class="v-lab">'+fx(d.t)+'</p>'+
-      '<p style="font-size:11px;color:#444;line-height:1.6;margin:0;">Lo subiste tú'+(fecha?' el '+fecha:'')+'. No viene de ninguna consulta ni de tu EPS.</p>';
+      '<p style="font-size:11px;color:var(--papel-texto-2);line-height:1.6;margin:0;">Lo subiste tú'+(fecha?' el '+fecha:'')+'. No viene de ninguna consulta ni de tu EPS.</p>';
   } else if(d.ty==='mensaje'){
     /* Fase 10 · Brief 03: la cita que llegó pegando texto muestra el mensaje tal cual */
     body+='<p class="v-lab">'+fx(d.t)+'</p><p class="v-msg">'+fx(PEG_MSG)+'</p>';
   } else {
     body+='<p class="v-lab">'+fx(d.t)+'</p>'+
-      '<p style="font-size:11px;color:#444;line-height:1.6;margin:0;">Documento de '+tipoDoc(d).toLowerCase()+
+      '<p style="font-size:11px;color:var(--papel-texto-2);line-height:1.6;margin:0;">Documento de '+tipoDoc(d).toLowerCase()+
       (fechaLarga?' emitido el '+fechaLarga:'')+'. Contiene los datos de la atención y las indicaciones del profesional tratante.</p>'+
       (medico||entidad?'<div class="v-row" style="margin-top:14px;"><span>Profesional</span><span>'+medico+'</span></div>'+
       '<div class="v-row"><span>Entidad</span><span>'+entidad+'</span></div>':'');
@@ -1215,21 +1290,21 @@ function openDocSheet(ix){
   var ep=null; EPIS.forEach(function(e){ if(e.id===d.ep) ep=Object.assign({},e); });
   d=Object.assign({}, d); d.p=fx(d.p);
   var h='<div class="grab"></div>'+
-    '<div class="doc-in" style="margin-bottom:14px;border-left:5px solid '+PCOL[d.p]+';border-radius:14px;">'+docIcon()+
+    '<div class="doc-fila" style="margin-bottom:var(--esp-m);border-left:5px solid '+PCOL[d.p]+';">'+docIcon()+ /* Fase 10 · Brief 29 */
     '<span class="card-main"><span class="doc-t">'+d.t+'</span><span class="doc-s">'+PNAME[d.p]+' · '+tipoDoc(d)+'</span></span></div>';
   if(ep && ep.id!=='na'){
-    h+='<p class="wgt-lbl" style="margin-bottom:8px;">De qué consulta salió</p>'+
-       '<div class="mm-card" style="margin-bottom:14px;"><div><h5>'+ep.t+'</h5><p>'+ep.s+' · '+ep.d+'</p></div></div>';
+    h+='<p class="wgt-lbl" style="margin-bottom:var(--esp-s);">De qué consulta salió</p>'+
+       '<div class="mm-card" style="margin-bottom:var(--esp-m);"><div><h5>'+ep.t+'</h5><p>'+ep.s+' · '+ep.d+'</p></div></div>';
   }
   if(d.rel){
-    h+='<p class="wgt-lbl" style="margin-bottom:8px;">Con qué está vinculado</p>'+
-       '<p style="font-size:14px;line-height:1.55;color:var(--text-black);margin:0 0 14px;">'+d.rel+'</p>';
+    h+='<p class="wgt-lbl" style="margin-bottom:var(--esp-s);">Con qué está vinculado</p>'+
+       '<p style="font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto);margin:0 0 var(--esp-m);">'+d.rel+'</p>';
   }
   var pth = d.relth || d.th;
-  if(pth && tramCerrado(pth)) h+='<button type="button" class="btn-s" data-act="ped.reabrir" data-k="'+pth+'" style="margin-bottom:9px;">Reabrir el trámite</button>'; /* Fase 10 · Brief 20 */
-  else if(pth) h+='<button type="button" class="btn-s" data-thread="'+pth+'" style="margin-bottom:9px;">Abrir ese trámite</button>';
-  h+='<button type="button" class="btn-p" data-docview="'+ix+'" style="margin-bottom:9px;">'+
-     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="margin-right:8px;"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Ver documento</button>'+
+  if(pth && tramCerrado(pth)) h+='<button type="button" class="btn-s" data-act="ped.reabrir" data-k="'+pth+'" style="margin-bottom:var(--esp-s);">Reabrir el trámite</button>'; /* Fase 10 · Brief 20 */
+  else if(pth) h+='<button type="button" class="btn-s" data-thread="'+pth+'" style="margin-bottom:var(--esp-s);">Abrir ese trámite</button>';
+  h+='<button type="button" class="btn-p" data-docview="'+ix+'" style="margin-bottom:var(--esp-s);">'+
+     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:var(--esp-s);" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Ver documento</button>'+
      '<button type="button" class="btn-s" data-close="1">Cerrar</button>';
   document.getElementById('scrimDocBody').innerHTML=fx(h); paintAvatars(document.getElementById('scrimDocBody'));
   document.getElementById('scrimDoc').style.display='flex';
@@ -1242,7 +1317,7 @@ function openDocsSheet(){
   document.getElementById('scrimDocs').style.display='flex';
 }
 /* Fase 10 · Brief 07: la flecha del filtro apunta hacia abajo (abre un menú, no navega) */
-var CHIP_CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>';
+var CHIP_CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>';
 function updateChip(){
   var chip=document.getElementById('famChip');
   /* Fase 8 · Esqueleto 2: sin nada guardado no hay nada que filtrar, el chip no se pinta */
@@ -1272,8 +1347,8 @@ function renderBoveda(){
   /* Fase 8 · Coherencia: appVacia (ver renderInicio) también cubre la primera Bóveda, sin tocar DOCS */
   if(appVacia){
     G1el.innerHTML='<div class="empty" style="padding-top:40px;">'+
-      '<div style="width:76px;height:76px;border-radius:50%;background:var(--turquesa-40);display:flex;align-items:center;justify-content:center;">'+
-      '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-black)" stroke-width="1.8" stroke-linecap="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="12" y1="12" x2="12" y2="18"/></svg>'+
+      '<div class="ic-vacio">'+ /* Fase 10 · Brief 28 */
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="12" y1="12" x2="12" y2="18"/></svg>'+
       '</div><h4>Tu Bóveda está vacía por ahora</h4>'+
       /* Fase 10 · Brief 17 (ajuste): en la propia historia no se escanea (Próximamente); se ofrece la bandeja, con el mismo botón de Inicio */
       (esPropia() ? '<p>Si busco en tu bandeja, guardo aquí lo que encuentre.</p>'+(mailConnected ? '' : '<button type="button" class="btn-p" data-tap="fabmail">Buscar en tu bandeja</button>')
@@ -1285,8 +1360,8 @@ function renderBoveda(){
   }
   if(loadFail){
     G1el.innerHTML='<div class="load-error">'+
-      '<div style="width:66px;height:66px;border-radius:50%;background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;">'+
-      '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><path d="M21 3v6h-6"/></svg></div>'+
+      '<div class="ic-vacio gris">'+ /* Fase 10 · Brief 28 */
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><path d="M21 3v6h-6"/></svg></div>'+
       '<h4>No pude cargar tus documentos</h4>'+
       '<p>Puede ser la conexión. Tus documentos siguen guardados, solo no logré traerlos ahora.</p>'+
       '<button type="button" class="btn-p" data-retry="bov">Reintentar</button></div>';
@@ -1306,9 +1381,10 @@ function renderBoveda(){
    búsqueda ya aplicada. El atrás de la portada sigue usando bovFrom, igual que antes de las carpetas. */
 function renderBovPortada(){
   var h='';
-  if(mailConnected) h+='<p class="bov-sync">Correo conectado · última sincronización: hace 2 horas</p>';
-  h+='<div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E6E76" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
+  /* Fase 10 · Brief 48: sale la línea fija de sincronización; el estado del correo vive en Configuración */
+  h+='<div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--r-texto-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
     '<input id="bovSearchPortada" type="text" placeholder="Buscar en la Bóveda…" value="'+(bovQuery||'').replace(/"/g,'&quot;')+'"></div>';
+  h+=docPendHTML(); /* Fase 10 · Brief 40: arriba de las carpetas */
   h+='<div class="bov-cats">'+
     bovCatCard('ord', FOLDER_LABELS.ord, CLIP_IC)+
     bovCatCard('res', FOLDER_LABELS.res, TUBE_IC)+
@@ -1354,7 +1430,7 @@ function renderBovFolder(cat){
     : 'No hay documentos con esos filtros.';
   var h = docs.length
     ? '<div class="bov-flat">'+docs.map(function(d){ return docRowHTML(d, true); }).join('')+'</div>'
-    : '<p style="font-size:15px;color:var(--muted);text-align:center;padding:30px 20px;line-height:1.6;">'+vacioBovTxt+'</p>';
+    : '<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">'+vacioBovTxt+'</p>';
   G1el.innerHTML=fx(h); paintAvatars(G1el);
   var sub = docs.length+' documento'+(docs.length===1?'':'s')+(bovPerson!=='all'?' · '+PNAME[bovPerson]:'');
   G1el.setAttribute('data-title', label);
@@ -1373,15 +1449,15 @@ function renderBovFolder(cat){
 function renderBovTodos(){
   if(cur==='G1') BOVNEW.all=false; /* Fase 10 · Brief 19: el punto de "Todos" se apaga al abrir "Todos" */
   var h='';
-  if(mailConnected) h+='<p class="bov-sync">Correo conectado · última sincronización: hace 2 horas</p>';
-  h+='<div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E6E76" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
+  /* Fase 10 · Brief 48: sale la línea fija de sincronización; el estado del correo vive en Configuración */
+  h+='<div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--r-texto-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
     '<input id="bovSearch" type="text" placeholder="Buscar en la Bóveda…" value="'+(bovQuery||'').replace(/"/g,'&quot;')+'">'+
-    (bovQuery?'<button type="button" class="clr" data-bovclear="1" aria-label="Borrar búsqueda"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>':'')+
+    (bovQuery?'<button type="button" class="clr" data-bovclear="1" aria-label="Borrar búsqueda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>':'')+
     '</div>';
-  /* Fase Móvil · Punto 4: la fila deslizable de .tab se pierde de vista en pantalla angosta —
+  /* Fase Móvil · Punto 4: la fila deslizable de pestañas se pierde de vista en pantalla angosta —
      se reemplaza por un chip trigger que abre una hoja con las mismas 6 opciones */
   var tSel = TYPES.filter(function(t){ return t[0]===bovType; })[0][1];
-  h += '<button type="button" class="tabp plain" id="bovTypeChip" data-bovtypeopen="1" aria-haspopup="menu" aria-controls="bovTypeMenu" aria-expanded="false">Tipo: '+tSel+'<span class="chev">▾</span></button>';
+  h += '<button type="button" class="tabp plain" id="bovTypeChip" data-bovtypeopen="1" aria-haspopup="menu" aria-controls="bovTypeMenu" aria-expanded="false">Tipo: '+tSel+'<span class="chev">'+CHEV_D+'</span></button>';
   if(bovPerson!=='all'||bovType!=='all') h+='<button type="button" class="clearf" data-clearf="1">Quitar filtros</button>';
   h+='<div id="bovResults"></div>';
   G1el.innerHTML=fx(h);
@@ -1415,7 +1491,7 @@ function renderFamMenu(){
   SLOTS.filter(function(k){ return !personaFuera(k); }).forEach(function(k){
     h+=opt(k,'<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>',PNAME[k]);
   });
-  h+='<div class="pop-div" role="separator"></div><button type="button" role="menuitem" class="pop-i pop-more" data-go="FAM"><span class="pop-nm">Administrar perfiles</span><span class="chev" aria-hidden="true">›</span></button>';
+  h+='<div class="pop-div" role="separator"></div><button type="button" role="menuitem" class="pop-i pop-more" data-go="FAM"><span class="pop-nm">Administrar perfiles</span><span class="chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
   var m=document.getElementById('famMenu'); m.innerHTML=h; paintAvatars(m);
 }
 function renderBovResults(){
@@ -1427,53 +1503,46 @@ function renderBovResults(){
     return okP && okT && okQ;
   });
   var h='', shown=0;
-  /* Fase 10 · Brief 19 (corrección): lo nuevo (d.nuevo) sale primero, como en las carpetas. Las consultas con algo nuevo suben juntas
-     (antes era solo 'ort' con bovFresh) y, adentro, lo nuevo va arriba. Sin búsqueda, "Lo último que guardaste" va sobre ellas */
+  /* Fase 10 · Brief 19 (corrección): lo nuevo (d.nuevo) sale primero y, adentro de su consulta, va arriba.
+     Sin búsqueda, "Lo último que guardaste" va sobre la primera tarjeta */
   var hayNuevo = !q && list.some(function(d){ return d.nuevo; });
-  var epNuevo = function(id){ return hayNuevo && list.some(function(d){ return d.ep===id && d.nuevo; }); };
-  var orden = EPIS.slice();
-  if(hayNuevo) orden.sort(function(a,b){ return epNuevo(b.id)-epNuevo(a.id); });
   list.sort(function(a,b){ return (!!b.nuevo)-(!!a.nuevo); });
-  /* Fase 10 · Rediseño · Brief 11: una tarjeta por persona (con su tinte arriba) y, adentro, cada consulta como plegable (lienzo 49, opción D).
-     Se agrupa por la persona de cada documento (no la de la consulta: "Sin consulta asociada" no tiene persona). El orden de las
-     personas sale del de las consultas, así que la del recién guardado va primero */
-  var pers=[];
-  orden.forEach(function(ep){ list.forEach(function(d){ var p=fx(d.p)||''; if(d.ep===ep.id && pers.indexOf(p)<0) pers.push(p); }); });
-  if(hayNuevo) pers.sort(function(a,b){ /* Fase 10 · Brief 19 (corrección): quien tiene algo nuevo va primero */
-    var n=function(p){ return list.some(function(d){ return d.nuevo && (fx(d.p)||'')===p; }); }; return n(b)-n(a); });
-  pers.forEach(function(p){
+  /* Fase 10 · Brief 35 · Bóveda, lista de consultas: sale el bloque por persona. Una tarjeta .epi-card por consulta, igual a
+     la de «Lo que encontré», ordenada por fecha (epiOrden). Se agrupa por la persona de cada documento: «Sin consulta asociada» sale una por persona */
+  var grupos=[];
+  epiOrden().forEach(function(ep){
+    var pers=[];
+    list.forEach(function(d){ var p=fx(d.p)||''; if(d.ep===ep.id && pers.indexOf(p)<0) pers.push(p); });
+    pers.forEach(function(p){
+      var docs=list.filter(function(d){ return d.ep===ep.id && (fx(d.p)||'')===p; });
+      grupos.push({ep:ep, p:p, docs:docs, fresh: hayNuevo && docs.some(function(d){ return d.nuevo; })});
+    });
+  });
+  if(hayNuevo) grupos.sort(function(a,b){ return b.fresh-a.fresh; }); /* sort estable: entre las frescas y entre las demás se queda el orden por fecha */
+  grupos.forEach(function(g, i){
+    var ep=Object.assign({}, g.ep), p=g.p, docs=g.docs; ep.p=p;
+    shown+=docs.length;
+    if(g.fresh && i===0) h+='<div class="fresh-h"><span class="fdot"></span><span>Lo último que guardaste · hace un momento</span></div>';
     var pv = PCOL[p] ? '--pc:'+PCOL[p]+';' : '';
     if(TINTVAR[p]) pv += '--tinte:var(--'+TINTVAR[p]+'-t);';
-    var ph='';
-    orden.forEach(function(ep){
-      var docs=list.filter(function(d){ return d.ep===ep.id && (fx(d.p)||'')===p; });
-      if(!docs.length) return;
-      shown+=docs.length;
-      var esFresh = hayNuevo && docs.some(function(d){ return d.nuevo; }); /* Fase 10 · Brief 19 (corrección) */
-      if(esFresh && !ph && !h) h+='<div class="fresh-h"><span class="fdot"></span><span>Lo último que guardaste · hace un momento</span></div>';
-      /* Fase Móvil · grupos de "Todos los documentos" colapsados por defecto (igual patrón data-rev/data-revb que renderConf); el recién guardado arranca abierto */
-      var key = 'bov-'+ep.id+'-'+p;
-      ph+='<div class="epi hilo'+(ep.id==='na'?' epi-loose':'')+(esFresh?' fresh':'')+'">'+
-         '<button type="button" class="epi-h" data-rev="'+key+'" aria-expanded="'+(esFresh?'true':'false')+'">'+
-         '<span class="epi-t"><b>'+ep.t+'</b><small>'+(ep.d||ep.s)+'</small></span>'+
-         epiColaHTML(docs, true)+'</button><div class="epi-b" data-revb="'+key+'" style="display:'+(esFresh?'block':'none')+';"><div class="epi-linea">'; /* Fase 10 · Brief 05 */
-      /* Fase 6: todo documento abre su ficha primero (de ahí se puede saltar al trámite con "Abrir ese trámite").
-         El atajo directo al hilo quedaba antes por delante y le ganaba al visor — ya no (ver docRowHTML). */
-      docs.forEach(function(d){ ph+=docRowHTML(d, false, true); });
-      ph+='</div></div></div>';
-    });
-    if(!ph) return;
-    h+='<div class="bov-pers"'+(pv?' style="'+pv+'"':'')+'>'+
-       (p ? '<div class="bov-pers-h"><span class="av" data-p="'+p+'" style="background:'+PCOL[p]+'">'+p+'</span><span class="bov-pers-n">'+(p==='SO'?'Tú':PNAME[p])+'</span></div>' : '')+
-       ph+'</div>';
+    /* Fase Móvil · patrón data-rev/data-revb de renderConf. Fase 10 · Brief 34c: todas arrancan cerradas, también la recién guardada */
+    var key = 'bov-'+ep.id+'-'+p;
+    h+='<div class="epi epi-card'+(ep.id==='na'?' epi-loose':'')+'"'+(pv?' style="'+pv+'"':'')+'>'+
+       '<button type="button" class="epi-h" data-rev="'+key+'" aria-expanded="false">'+
+       (p ? '<span class="av" data-p="'+p+'" style="background:'+PCOL[p]+'">'+p+'</span>' : '')+
+       epiHeaderHTML(ep, epiPendHTML(docs), true)+
+       epiColaHTML(docs, ep.dcorta)+'</button><div class="epi-b" data-revb="'+key+'" style="display:none;"><div class="epi-linea">'; /* Fase 10 · Brief 34c: al abrir manda el display de la hoja de estilos */
+    /* Fase 6: todo documento abre su ficha primero (de ahí se puede saltar al trámite con "Abrir ese trámite") */
+    docs.forEach(function(d){ h+=docRowHTML(d, false, true); });
+    h+='</div></div></div>';
   });
   if(!shown){
     h += q /* Fase 8 · Yifrah: vacío de "Todos" sugiere quitar el filtro de categoría (el botón ya está visible arriba) */
-      ? '<p style="font-size:15px;color:var(--muted);text-align:center;padding:30px 20px;line-height:1.6;">Nada con «'+fx(bovQuery)+'». Prueba con otra palabra.</p>'
-      : '<p style="font-size:15px;color:var(--muted);text-align:center;padding:30px 20px;line-height:1.6;">No hay documentos con esos filtros. Prueba con otra categoría.</p>';
+      ? '<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">Nada con «'+fx(bovQuery)+'». Prueba con otra palabra.</p>'
+      : '<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">No hay documentos con esos filtros. Prueba con otra categoría.</p>';
   }
   box.innerHTML=fx(h); paintAvatars(box);
-  var label = 'Todos los documentos · '+(bovPerson==='all' ? 'Todos' : PNAME[bovPerson]); /* Fase 10 · Rediseño · Brief 11 */
+  var label = bovPerson==='all' ? 'Todos los documentos' : 'Documentos de '+PNAME[bovPerson]; /* Fase 10 · Rediseño · Brief 11 · Brief 41: sin repetir */
   G1el.setAttribute('data-sub', label);
   if(cur==='G1') tSub.textContent=fx(label);
 }
@@ -1482,28 +1551,25 @@ function renderBovResults(){
 function renderConf(){
   var box=document.getElementById('confList'); if(!box) return;
   /* Fase 10 · Brief 16: en la propia historia la búsqueda trae la orden de ejemplo (reemplaza el vacío del Brief 15) */
-  var fuente=DOCS; if(esPropia()){ var pp=proPend||proPreparar(); if(pp) fuente=DOCS.concat([pp]); }
+  var fuente = fabMailActive ? DOCS.concat(DOCS_BANDEJA) : DOCS; /* Fase 10 · Brief 45: desde la app, también lo que sigue en el correo */
+  if(esPropia()){ var pp=proPend||proPreparar(); if(pp) fuente=fuente.concat([pp]); }
   var h='';
-  EPIS.forEach(function(epi){
+  epiOrden().forEach(function(epi){ /* Fase 10 · Brief 35: mismo orden por fecha que la Bóveda */
     if(epi.id==='na') return;
     var docs=fuente.filter(function(d){ return d.ep===epi.id; });
     if(!docs.length) return;
     var ep=Object.assign({}, epi); ep.p=fx(ep.p);
     var key='conf-'+ep.id;
-    h+='<div class="epi">'+
-       '<button type="button" class="epi-h" data-rev="'+key+'" aria-expanded="false" style="border-left-color:'+PCOL[ep.p]+'">'+
+    /* Fase 10 · Brief 34 · Consulta unificada: tarjeta con el tono de la persona (sin franja); contador dentro de la cola, sin punto de pendiente */
+    var pv=(PCOL[ep.p] ? '--pc:'+PCOL[ep.p]+';' : '')+(TINTVAR[ep.p] ? '--tinte:var(--'+TINTVAR[ep.p]+'-t);' : ''); /* Fase 10 · Brief 46: --pc como en la Bóveda */
+    h+='<div class="epi epi-card"'+(pv?' style="'+pv+'"':'')+'>'+
+       '<button type="button" class="epi-h" data-rev="'+key+'" aria-expanded="false">'+
        '<span class="av" data-p="'+ep.p+'" style="background:'+PCOL[ep.p]+'">'+ep.p+'</span>'+
        epiHeaderHTML(ep)+
-       '<span class="epi-n">'+docs.length+'</span>'+epiColaHTML(docs)+'</button>'+ /* Fase 10 · Brief 05 */
-       '<div class="epi-b" data-revb="'+key+'" style="display:none;">';
-    docs.forEach(function(d){
-      var sub;
-      if(docPill(d) || d.dyn){ sub=d.s; }
-      else{ sub = tipoDoc(d)+(d.pag ? ' · '+d.pag+' página'+(d.pag===1?'':'s') : ''); } /* Fase 10 · Brief 05 */
-      h+='<div class="epi-d">'+docIcon()+
-         '<span class="card-main"><span class="doc-t">'+d.t+'</span><span class="doc-s">'+sub+'</span></span></div>';
-    });
-    h+='</div></div>';
+       epiColaHTML(docs, ep.dcorta)+'</button>'+ /* Fase 10 · Brief 05 · Brief 34 · Brief 44b: con la fecha */
+       '<div class="epi-b" data-revb="'+key+'" style="display:none;"><div class="epi-linea">';
+    docs.forEach(function(d){ h+=docRowHTML(d, false, true, true); }); /* Fase 10 · Brief 46: la misma fila de la Bóveda, sin tocar (sin ícono ni subtítulo) */
+    h+='</div></div></div>';
   });
   box.innerHTML=fx(h);
   paintAvatars(box);
@@ -1514,14 +1580,14 @@ function renderCurso(){
   var enc = CARDS.filter(function(c){return ((c.st==='encurso' && !FASE_ATN[c.fase]) || c.st==='esperando') && personaVisible(c) && (bovPerson==='all' || fx(c.av)===bovPerson);}); /* Fase 10 · Brief 03 */
   var h='';
   if(!enc.length){
-    h='<p style="font-size:15px;color:var(--muted);text-align:center;padding:30px 20px;line-height:1.6;">'+
+    h='<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">'+
       (bovPerson==='all' ? 'No hay nada esperando a nadie más ahora mismo.' : 'Nada pendiente de '+PNAME[bovPerson]+'.')+'</p>';
   }
   enc.forEach(function(c){
-    var av2=fx(c.av), col2=PCOL[av2]||'var(--border)';
+    var av2=fx(c.av), col2=PCOL[av2]||'var(--r-borde)';
     h += '<button type="button" class="card" data-thread="'+c.k+'" style="background:'+col2+'">'+
       '<span class="card-in"><span class="av" data-p="'+av2+'" style="background:'+col2+'">'+av2+'</span>'+
-      '<span class="card-main"><span class="card-title" style="font-size:16px;">'+c.t+'</span><span class="card-sub">'+c.sub+'</span></span>'+
+      '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+c.t+'</span><span class="card-sub">'+c.sub+'</span></span>'+
       '<span class="pill '+c.pc+'">'+c.pill+'</span></span></button>';
   });
   H1.innerHTML=fx(h); paintAvatars(H1);
@@ -1566,7 +1632,7 @@ var CITA={ ped:{tipo:'A', de:'el control de {p1}', cierre:'el control de {p1}'},
   cir:{tipo:'A', de:'la {t2x} de {p2}', cierre:'la {t2x} de {p2}', guarda:'ort', p:'{wt2}', ords:'Órdenes de la {t2x}', pasos:true},
   ctl:{tipo:'A', de:'tu control', cierre:'tu control', formula:true} };
 /* Fase 10 · Brief 02: el trámite es de la dueña de la cuenta ({qmed} = "Tú") */
-var PASOS_OK='<div class="stepper"><div class="sd done">✓</div><div class="sl done"></div><div class="sd done">✓</div><div class="sl done"></div><div class="sd done">✓</div><div class="sl done"></div><div class="sd done">✓</div></div>';
+var PASOS_OK='<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div></div>';
 /* la autorización (D) transformada en A llega a "Resuelto" en su stepper */
 var PASOS_FIN=PASOS_OK+'<div class="step-lbl"><span>Orden</span><span>Autorización</span><span>Cita</span><span class="on">Resuelto</span></div>';
 function esTuyo(k){ return fx(THREADS[k].p)==='Tú'; }
@@ -1659,7 +1725,7 @@ function renderCalendario(){
     var c=byDay[d];
     if(c){
       /* Fase 10 · Rediseño · Brief 09: punto y borde del calendario con el color de la persona (PCOL), ya no la variante oscura */
-      var col=PCOL[fx(c.av)]||c.c||'var(--border)';
+      var col=PCOL[fx(c.av)]||c.c||'var(--r-borde)';
       /* Fase 10 · Brief 06: tocar el día filtra la lista a las citas de ese día (antes abría el detalle directo) */
       /* Fase 10 · Rediseño · Brief 11: el color de la persona va en --pc; el CSS pinta borde y punto (el día elegido pierde el borde) */
       gridH += '<button type="button" class="cal-d cita'+(d===calDaySel?' sel-d':'')+'" data-calday="'+d+'" aria-pressed="'+(d===calDaySel)+'" style="--pc:'+col+'">'+d+'<span class="cdot"></span></button>'; /* Fase 10 · Brief 14 (corrección): sin ✓; el día conserva borde y punto */
@@ -1678,38 +1744,38 @@ function renderCalendario(){
   if(calDaySel!==null){ citas=citas.filter(function(c){ return calDay(c.when)===calDaySel; }); showEntrega=false; }
   var listH = calDaySel!==null ? '<button type="button" class="link-u cal-all" data-calday="all">Ver todas las citas</button>' : '';
   if(!citas.length && !showEntrega){
-    listH+='<p style="font-size:15px;color:var(--muted);text-align:center;padding:30px 20px;line-height:1.6;">'+
+    listH+='<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">'+
       /* Fase 8 · Reauditoría Yifrah: vacío sin filtro suma una acción sugerida, como el resto de los vacíos de la app */
       (calDaySel!==null ? 'No hay citas ese día.' : bovPerson==='all' ? 'Todavía no tienes citas agendadas. Cuando agendes una desde un trámite, aparece aquí.' : PNAME[bovPerson]+' no tiene citas en estas semanas.')+'</p>';
   } else {
     citas.forEach(function(c){
       var parts=c.when.split(' · '), dparts=parts[0].split(' ');
       var dowFull=DOWFULL[dparts[0]]||dparts[0];
-      var av=fx(c.av), col=PCOL[av]||c.c||'var(--border)';
+      var av=fx(c.av), col=PCOL[av]||c.c||'var(--r-borde)';
       /* Fase 10 · Brief 14 (corrección): la cita toma el estilo de las filas de Inicio (lienzo 47): sin franja, tinte de la persona (--tinte, como todoRowHTML) y pill "Resuelto" en vez del ✓ */
       var tinte = TINTVAR[av] ? ' style="--tinte:var(--'+TINTVAR[av]+'-t)"' : '';
-      listH += '<p style="font-size:15px;font-weight:700;color:var(--text-black);margin:8px 0 0;">'+dowFull+' '+dparts[1]+' de septiembre</p>'+
+      listH += '<p style="font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);margin:var(--esp-s) 0 0;">'+dowFull+' '+dparts[1]+' de septiembre</p>'+
         '<button type="button" class="card cal-appt" data-go="F2" data-thread-key="'+c.k+'">'+
           '<span class="appt-in"'+tinte+'>'+
             '<span class="av" data-p="'+av+'" style="background:'+col+'">'+av+'</span>'+
-            '<span class="card-main"><span class="card-title" style="font-size:16px;">'+c.t+'</span><span class="card-sub">'+parts[1]+' · '+(c.sede||'')+'</span></span>'+
+            '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+c.t+'</span><span class="card-sub">'+parts[1]+' · '+(c.sede||'')+'</span></span>'+
             (c.st==='resuelto' ? '<span class="pill completo">Resuelto</span>' : '')+
-            '<span class="chev">›</span>'+
+            '<span class="chev">'+CARD_CHEV+'</span>'+
           '</span>'+
         '</button>';
     });
     /* Hallazgo #6 · la entrega vive solo en la lista (no en la grilla, que sigue fija a septiembre). Fase 10 · Brief 14 (corrección 2): mismo .appt-in que las citas, con su píldora */
     if(showEntrega){
-      var mav=fx(mc.av), mcol=PCOL[mav]||mc.c||'var(--border)';
+      var mav=fx(mc.av), mcol=PCOL[mav]||mc.c||'var(--r-borde)';
       /* Fase 10 · Brief 14 (corrección 2): la entrega toma el mismo estilo que las citas (.cal-appt + .appt-in con --tinte), sin franja */
       var mtinte = TINTVAR[mav] ? ' style="--tinte:var(--'+TINTVAR[mav]+'-t)"' : '';
-      listH += '<p style="font-size:15px;font-weight:700;color:var(--text-black);margin:8px 0 0;">'+mc.entrega.dia+' de '+mc.entrega.mesTexto+'</p>'+
+      listH += '<p style="font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);margin:var(--esp-s) 0 0;">'+mc.entrega.dia+' de '+mc.entrega.mesTexto+'</p>'+
         '<button type="button" class="card cal-appt" data-go="F2" data-thread-key="med">'+
           '<span class="appt-in"'+mtinte+'>'+
             '<span class="av" data-p="'+mav+'" style="background:'+mcol+'">'+mav+'</span>'+
-            '<span class="card-main"><span class="card-title" style="font-size:16px;">'+mc.t+'</span><span class="card-sub">Disponible en {far1} y {far2}</span></span>'+
+            '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+mc.t+'</span><span class="card-sub">Disponible en {far1} y {far2}</span></span>'+
             '<span class="pill '+mc.pc+'">Entrega</span>'+
-            '<span class="chev">›</span>'+
+            '<span class="chev">'+CARD_CHEV+'</span>'+
           '</span>'+
         '</button>';
     }
@@ -1743,7 +1809,7 @@ function nocitaHTML(okFam){
       : c.k==='med' ? 'Entrega disponible hasta el '+f+' · aún sin fecha'
       : f ? 'Vence la orden · aún sin cita' : 'Aún sin cita';
     h+='<div class="nocita-r"><span class="nocita-f">'+fecha+'</span>'+
-      '<span class="av" data-p="'+av+'" style="background:'+(PCOL[av]||'var(--border)')+'">'+av+'</span>'+
+      '<span class="av" data-p="'+av+'" style="background:'+(PCOL[av]||'var(--r-borde)')+'">'+av+'</span>'+
       '<span class="card-main"><span class="todo-t">'+c.t+'</span><span class="todo-s">'+det+'</span></span>'+
       '<button type="button" class="nocita-btn" data-thread="'+c.k+'" data-from="cal">'+(c.k==='med'?'Planear':'Agendar')+'</button></div>';
   });
@@ -1753,7 +1819,7 @@ function renderCalDetail(){
   var c=card(calSelKey);
   if(!c || ['encurso','resuelto','esperando'].indexOf(c.st)<0 || (!c.when && !c.entrega)){ calSelKey='ped'; c=card('ped'); } /* Fase 10 · Brief 01 */
   var k=calSelKey, F2el=document.getElementById('F2');
-  var av=fx(c.av), col=PCOL[av]||c.c||'var(--border)';
+  var av=fx(c.av), col=PCOL[av]||c.c||'var(--r-borde)';
   var body;
   /* Hallazgo #6 · la entrega no tiene hora ni doc/sede (med.reclamar no los setea) — cuerpo propio, sin la bifurcación por hora que sí usan las citas */
   if(c.entrega){
@@ -1807,7 +1873,7 @@ var THREADS = {
   lip:{title:'{lab}',p:'{p2}', sub:'{p2} · orden del 19 ago',        av:'{wlab}', msgs:[], started:false},
   ctl:{title:'Control para renovar {t3n}', p:'{qmed}', sub:'{qmed} · para renovar la fórmula', av:'{wt3}', msgs:[], started:false}, /* Fase 10 · Brief 02 */
   sig:{title:'{tsig}', p:'{p1}', sub:'{p1} · desde el {sigd}', av:'{wt1}', msgs:[], started:false}, /* Fase 10 · Brief 06 */
-  gen:{title:'Taremi',             p:'',      sub:'Tu asistente · responde al instante', /* Fase 10 · Brief 06 */            av:'T',  c:'var(--turquesa)', msgs:[], started:false}
+  gen:{title:'Taremi',             p:'',      sub:'Tu asistente · responde al instante', /* Fase 10 · Brief 06 */            av:'T',  c:'var(--r-seleccion-fuerte)', msgs:[], started:false}
 };
 var THREADS0 = JSON.parse(JSON.stringify(THREADS));
 
@@ -1822,7 +1888,7 @@ function slotHTML(fr,when,doc,sede){
   return '<button type="button" class="slot" data-slot="'+when+'" data-doc="'+doc+'" data-sede="'+sede+'">'+
     '<span class="slot-main"><span class="slot-when">'+when+'</span>'+
     '<span class="slot-who">'+doc+' · '+sede+'</span></span>'+
-    '<span class="slot-radio" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l4 4 8-9"/></svg></span></button>';
+    '<span class="slot-radio" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l4 4 8-9"/></svg></span></button>';
 }
 /* 3 sugeridos: los más cercanos, repartidos entre mañana y tarde */
 /* Fase 6 · el mes entra en el día ("Lun 21 sep"), no en la hora — sin mes, "Lun 21" asume septiembre
@@ -1966,7 +2032,7 @@ var PROB_H={
   ninguna:function(k){ probNinguna(k,[]); },
   noir:function(k){ probNinguna(k,[citaCancelar(k)]); },
   nonecesito:function(k){ play(k,[{who:'t', wgt:probConfirmaCierre(k)}]); },
-  nollegan:function(k){ play(k,[{who:'t', think:1, text:'Cada laboratorio tiene su tiempo, y a veces los resultados quedan listos pero no llegan al correo. Si en dos semanas no han llegado, te aviso y te digo cómo pedirlos.'},
+  nollegan:function(k){ play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'Cada laboratorio tiene su tiempo, y a veces los resultados quedan listos pero no llegan al correo. Si en dos semanas no han llegado, te aviso y te digo cómo pedirlos.'},
     {who:'t', wgt:simChip('cita.resultados','Simular: llegaron los resultados')}]); },
   farmacia:function(k){ play(k,[{who:'t', think:1, comp:{t:'Dejé constancia de que hoy no había', s:'{eps} tiene 48 horas para llevártelo a casa.', time:'Hoy · 9:41 a.m.'}},
     {who:'t', wgt:simChip('med.domicilio','Simular: llegó a domicilio')}]); },
@@ -2037,7 +2103,7 @@ function msgEl0(m0){
       '<span class="comp-time">'+(m.comp.time||'Hoy · 9:41 a.m.')+'</span>'+
       (m.comp.ev?'<button type="button" class="comp-ev" '+(m.comp.go?'data-go="'+m.comp.go+'"':'')+(m.comp.doc?' data-docview="'+m.comp.doc+'"':'')+'>'+
         (m.comp.icon||'<svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>')+
-        m.comp.ev+'<span class="chev">›</span></button>':'')+
+        m.comp.ev+'<span class="chev">'+CARD_CHEV+'</span></button>':'')+
       '</span></div>';
     return d;
   }
@@ -2046,7 +2112,7 @@ function msgEl0(m0){
     var edBtn = m.ed ? '<button type="button" class="ed" data-editid="'+m.ed+'">Editar</button>' : '';
     if(m.voice){
       var bars=''; for(var i=0;i<22;i++){ bars+='<i style="height:'+(4+((i*7)%15))+'px"></i>'; }
-      d.innerHTML='<div class="bub s"><div class="voice-w"><span class="voice-play"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span><span class="voice-bar">'+bars+'</span><span class="voice-time">'+m.voice.t+'</span></div>'+(m.voice.tx ? '<span class="voice-tr">“'+m.voice.tx+'”</span>' : '')+''+edBtn+'</div>';
+      d.innerHTML='<div class="bub s"><div class="voice-w"><span class="voice-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span><span class="voice-bar">'+bars+'</span><span class="voice-time">'+m.voice.t+'</span></div>'+(m.voice.tx ? '<span class="voice-tr">“'+m.voice.tx+'”</span>' : '')+''+edBtn+'</div>';
     } else { d.innerHTML='<div class="bub s">'+m.text+edBtn+'</div>'; }
     return d;
   }
@@ -2120,10 +2186,12 @@ function play(key, list, fin){
     if(m.who==='t' && m.think){
       var ty=makeTyping(); p.ty=ty;
       if(cur==='TH' && curThread===key){ TH.appendChild(ty); down(); }
-      T(function(){ ty.remove(); p.ty=null; p.i++; commit(key,m); T(step,260); }, m.think===2?1500:1000);
+      /* Fase 10 · Brief 42: "escribiendo" solo donde hay procesamiento, y no más de 1 s (think:1 = 600 ms, think:2 = 1000 ms) */
+      T(function(){ ty.remove(); p.ty=null; p.i++; commit(key,m); T(step,200); }, m.think===2?1000:600);
     } else {
-      var wait = m.delay || ((m.who==='t') ? 280 : 0);   // amortiguador corto, no animación
-      T(function(){ p.i++; commit(key,m); T(step, m.who==='s'?200:240); }, wait);
+      /* Fase 10 · Brief 42: una respuesta ya lista tarda 0,36 s en total (200 antes + 160 después); los delay explícitos no cambian */
+      var wait = m.delay || ((m.who==='t') ? 200 : 0);   // amortiguador corto, no animación
+      T(function(){ p.i++; commit(key,m); T(step, 160); }, wait);
     }
   }
   step();
@@ -2186,18 +2254,18 @@ function openThread(key, navKey){
   hiloTitle.textContent=fx(th.title);
   hiloSub.innerHTML=fx(th.sub);
   updateConfirmBadge(key);
-  var tav=fx(th.av), tcol = key==='gen' ? 'var(--turquesa)' : (PCOL[tav]||'var(--border)');
+  var tav=fx(th.av), tcol = key==='gen' ? 'var(--r-seleccion-fuerte)' : (PCOL[tav]||'var(--r-borde)');
   /* Fase 10 · Rediseño · Brief 13 (corrección): las iniciales salen de INIT (y el ícono de PICON), no de la clave del slot:
      en Martha y Laura la clave (MT, SF) no coincide con las iniciales (RO, AM). "T" del hilo general no está en INIT y queda igual */
   hiloAv.classList.remove('av-ic');
   hiloAv.textContent=INIT[tav]||tav;
   hiloAv.style.background=tcol;
   hiloAv.setAttribute('data-p', tav);
-  if(PICON[tav]){ hiloAv.textContent=PICON[tav]; hiloAv.classList.add('av-ic'); hiloAv.style.setProperty('--ic-ring', PCOL[tav]||'var(--border)'); }
+  if(PICON[tav]){ hiloAv.textContent=PICON[tav]; hiloAv.classList.add('av-ic'); hiloAv.style.setProperty('--ic-ring', PCOL[tav]||'var(--r-borde)'); }
   /* Fase 10 · Rediseño · Brief 09: iniciales oscuras sin sombra en todos los hilos (la hoja de estilos ya lo hace) */
   hiloAv.style.color = ''; hiloAv.style.textShadow = '';
   /* Fase 10 · Rediseño · Brief 10: sin franja lateral; la tarjeta toma el tinte de la persona (la general, agua) */
-  var tinte = key==='gen' ? 'var(--azul-tint)' : (TINTVAR[tav] ? 'var(--'+TINTVAR[tav]+'-t)' : '');
+  var tinte = key==='gen' ? 'var(--r-acento-suave)' : (TINTVAR[tav] ? 'var(--'+TINTVAR[tav]+'-t)' : '');
   if(tinte) hiloStack.style.setProperty('--tinte', tinte); else hiloStack.style.removeProperty('--tinte');
   if(tinte) TH.style.setProperty('--tinte', tinte); else TH.style.removeProperty('--tinte'); /* Fase 10 · Rediseño · Brief 11 (corrección): el horario elegido usa el mismo tinte */
   hdrHilo.classList.toggle('gen', key==='gen'); TH.classList.remove('gen-w'); /* Fase 10 · Brief 06 */
@@ -2250,12 +2318,10 @@ function K(){ return (cur==='TH' && curThread) ? curThread : 'ped'; }
    Fase 10 · Brief 01 · CIERRE DE CITAS (A y B) — todo vive en el hilo
    ============================================================ */
 /* Fase 10 · Rediseño · Brief 11: ícono de "Mostrar" (expandir, lienzo 52) */
-var SHOW_IC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>';
-var OK_IC='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
-var DOC_IC='<svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>';
+var SHOW_IC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>';
 var ordScanKey=null, citaGrab=null;
 /* Fase 10 · Rediseño · Brief 10: ícono de adelantar antes del texto de cada chip "Simular:" */
-var SIM_IC='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg>';
+var SIM_IC='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg>';
 function simChip(act, txt){ return '<div class="chipwrap"><button type="button" class="chip-o chip-sim" data-act="'+act+'">'+SIM_IC+txt+'</button></div>'; }
 function citaFase(k, fase, pill, pc, accion, hsub){
   var c=card(k);
@@ -2376,7 +2442,7 @@ function citaGrabar(){
   var k=curThread, c=card(k);
   if(cur!=='TH' || !CITA[k] || CITA[k].tipo!=='A' || !c || c.st!=='encurso' || c.fase!=='hoy') return false;
   if(citaGrab) return true;
-  citaGrab=k; micBtn.classList.add('rec'); chatInput.placeholder='Grabando…';
+  citaGrab=k; micUsado=true; /* Fase 10 · Brief 48 */ micBtn.classList.add('rec'); chatInput.placeholder='Grabando…';
   commit(k,{who:'t', wgt:'<div class="wgt-t">Estoy grabando</div><div class="wgt-d">Cuando termine la consulta, toca Terminar y te resumo las indicaciones.</div>'+
     '<button type="button" class="btn-p" data-act="cita.grabFin">Terminar</button>'});
   return true;
@@ -2476,7 +2542,7 @@ var ACT = {
     lock(el);
     var k=curThread||'cir';
     commit(k,{who:'s', text:'Corregir un documento'});
-    play(k,[{who:'t', think:1, text:'Claro. Puedes escanear el documento corregido con el botón de abajo, o decirme qué cambió y lo ajusto contigo.'}]);
+    play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'Claro. Puedes escanear el documento corregido con el botón de abajo, o decirme qué cambió y lo ajusto contigo.'}]);
   },
   'ped.agendar': function(el){
     if(el) lock(el);
@@ -2513,7 +2579,7 @@ var ACT = {
   'cita.fin': function(el){
     var k=K(), c=card(k); if(!c || c.st!=='encurso' || c.fase!=='hoy') return;
     citaGrabStop();
-    citaFase(k,'porconfirmar','Por confirmar','pendiente','¿Cómo te fue?','por confirmar');
+    citaFase(k,'porconfirmar','Por confirmar','pendiente','¿Cómo te fue?','¿cómo te fue?'); /* Fase 10 · Brief 39: el hilo pregunta, no dice «por confirmar» */
     commit(k,{sep:'Después de la cita'});
     var A=CITA[k].tipo==='A';
     play(k,[{who:'t', text:'¿Cómo te fue en '+CITA[k].de+'?'},
@@ -2735,7 +2801,7 @@ var ACT = {
     if(netBlocked()){ netErr('cir','cir.confirmar','{eps}'); return; }
     /* aquí SÍ hay procesamiento real: se conserva la animación */
     play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Radicado ante {eps} ✓</div>'+
-      '<div class="stepper"><div class="sd done">✓</div><div class="sl done"></div><div class="sd now">2</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
+      '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd now">2</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
       '<div class="step-lbl"><span>Orden</span><span class="on">Autorización</span><span>Cita</span><span>Resuelto</span></div>'+
       '<div class="wgt-d">Estoy esperando la respuesta de {eps}. Tienen <b>5 días hábiles</b>. Yo te aviso, no tienes que llamar a verificar.</div>'+
       '<div class="log"><div class="log-r"><div class="log-d"></div><p><b>Radiqué la solicitud con la orden médica y la historia clínica del 19 de agosto</b>Hoy, 9:38 a.m.</p></div>'+
@@ -2777,10 +2843,10 @@ var ACT = {
     /* Fase Móvil · sin lock(el): mismo criterio que cir.simEstancado */
     commit('cir',{sep:'4 días después'});
     play('cir',[{who:'t', raw:'<div class="crit"><div class="crit-h">'+WARN+'AUTORIZACIÓN NEGADA</div><div class="crit-b">'+
-      '<div class="stepper"><div class="sd done">✓</div><div class="sl done"></div><div class="sd fail">✕</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
+      '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd fail">'+X_IC+'</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
       '<div class="step-lbl"><span>Orden</span><span class="on">Autorización</span><span>Cita</span><span>Resuelto</span></div>'+
-      '<p>{eps} negó la autorización. <b>Dicen</b> que el procedimiento se ordenó por fuera de la red y que no incluyeron la justificación médica en la solicitud.</p>'+'<p style="background:var(--verde-pastel);border-radius:14px;padding:12px 14px;font-size:14px;">Esa justificación ya estaba en la historia clínica del 19 de agosto que guardamos. <b>No era algo que te faltara subir a ti.</b></p>'+
-      '<p style="font-size:13.5px;color:var(--muted);">Esto no es el final del trámite. Tienes derecho a que reconsideren la decisión — de 2 a 5 días hábiles desde la notificación, según el caso.</p>'+
+      '<p>{eps} negó la autorización. <b>Dicen</b> que el procedimiento se ordenó por fuera de la red y que no incluyeron la justificación médica en la solicitud.</p>'+'<p style="background:var(--r-exito-suave);border-radius:var(--radio-m);padding:var(--esp-m) var(--esp-m);font-size:var(--fs-secundario);">Esa justificación ya estaba en la historia clínica del 19 de agosto que guardamos. <b>No era algo que te faltara subir a ti.</b></p>'+
+      '<p style="font-size:var(--fs-secundario);color:var(--r-texto-2);">Esto no es el final del trámite. Tienes derecho a que reconsideren la decisión — de 2 a 5 días hábiles desde la notificación, según el caso.</p>'+
       '<button type="button" class="btn-p" data-act="cir.revisarApelacion">Pedir que reconsideren</button>'+
       '<button type="button" class="btn-s" data-act="cir.porque">Ver la negación completa</button></div></div>'}]);
     THREADS.cir.sub='{p2} · <em>negada</em>'; refreshHilo('cir');
@@ -2799,7 +2865,7 @@ var ACT = {
          y clearTimers() lo publica de una vez. El flujo D no cambia. */
       {sep:'3 días después', delay:1400},
       {who:'t', wgt:'<div class="wgt-t">¡Llegó la autorización!</div>'+
-        '<div class="stepper"><div class="sd done">✓</div><div class="sl done"></div><div class="sd done">✓</div><div class="sl done"></div><div class="sd now">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
+        '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd now">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
         '<div class="step-lbl"><span>Orden</span><span>Autorización</span><span class="on">Cita</span><span>Resuelto</span></div>'+
         '<div class="wgt-d">Fueron 8 días y una queja, pero quedó. Ahora sí podemos agendar la {t2x} de {p2}.</div>'+
         '<button type="button" class="btn-p" data-act="ped.agendar">Agendar la {t2x}</button>'+
@@ -2936,7 +3002,7 @@ function medControl(txt){
       {who:'t', wgt:'<button type="button" class="btn-s" data-thread="ctl">Abrir el control</button>'}]);
     return;
   }
-  play('med',[{who:'t', think:1, wgt:'<div class="wgt-t">Creé el trámite del control ✓</div>'+
+  play('med',[{who:'t', /* Fase 10 · Brief 42: sin think */ wgt:'<div class="wgt-t">Creé el trámite del control ✓</div>'+
     '<div class="wgt-d">Está en Inicio como <b>Control para renovar {t3n}</b>. Ahí te ayudo a agendar la cita. Las entregas de esta fórmula siguen como van.</div>'+
     '<button type="button" class="btn-s" data-thread="ctl">Abrir el control</button>'}]);
   setCard('ctl',{st:'accionable'}, 'Control para renovar {t3n} llegó a Inicio');
@@ -2994,7 +3060,7 @@ function setOffline(v){ offline=v; document.getElementById('offbar').style.displ
 function netBlocked(){ if(failOnce){ failOnce=false; return true; } return offline; }
 /* 1 · error de acción en el chat: se queda en el mismo hilo, con salida clara */
 function netErr(k, retryAct, quien){
-  play(k,[{who:'t', think:1, wgtCls:'err', wgt:'<div class="wgt-t"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>No pude conectar con '+quien+'</div>'+
+  play(k,[{who:'t', think:1, wgtCls:'err', wgt:'<div class="wgt-t"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>No pude conectar con '+quien+'</div>'+
     '<div class="wgt-d">No se perdió nada: la solicitud quedó armada tal como la revisaste. Puedes intentarlo otra vez o dejarla lista para después.</div>'+
     '<button type="button" class="btn-p" data-act="'+retryAct+'">Reintentar</button>'+
     '<button type="button" class="btn-s" data-act="net.later">Guardar para después</button>'}]);
@@ -3013,7 +3079,7 @@ function voiceNote(){
      r:cap1(llevarFrase())+'. La orden está en la Bóveda y te la muestro ese día; lo demás llévalo en físico.'},
     {k:'ped', t:'0:06', tx:'¿La orden todavía sirve o ya se venció?', r:'Sirve hasta el 10 de octubre. Quedan 22 días.'}];
   var v = list.length ? list[vi % list.length] : null; vi++;
-  micBtn.classList.add('rec');
+  micBtn.classList.add('rec'); micUsado=true; /* Fase 10 · Brief 48: el permiso de micrófono en Configuración */
   chatInput.placeholder='Escuchando…';
   T(function(){
     micBtn.classList.remove('rec');
@@ -3037,7 +3103,7 @@ function noMatchWgt(k){
     (esPropia() && !genVisible(card('ped')) ? '' : '<button type="button" class="chip-o" data-act="nm.agendar">Agendar una cita</button>')+ /* Fase 10 · Brief 15: nombra el control de {p1} */
     '<button type="button" class="chip-o" data-act="nm.docs">Ver mis documentos</button>'+
     '<button type="button" class="chip-o" data-act="nm.humano">Hablar con una persona</button>'+
-    '</div><div class="wgt-d" style="font-size:13.5px;">O escríbemelo de otra forma. Entre más concreto, mejor te ayudo.</div>';
+    '</div><div class="wgt-d" style="font-size:var(--fs-secundario);">O escríbemelo de otra forma. Entre más concreto, mejor te ayudo.</div>';
 }
 /* Fase 10 · Brief 06b: nombre del trámite en el botón "Abrir …" */
 var GO_NOM={ped:'{t1l}', cir:'{t2x}', med:'{t3n}'};
@@ -3054,7 +3120,7 @@ function textReply(txt){
   }
   if(cur==='TH' && CITA[ck] && CITA[ck].tipo==='A' && cc && cc.st==='encurso' && cc.fase==='manana'){
     commit(ck,{who:'s', text:txt, ed:'e'+(++EDN)});
-    play(ck,[{who:'t', think:1, text:'La anoté en tus preguntas para la cita.'}]);
+    play(ck,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'La anoté en tus preguntas para la cita.'}]);
     return;
   }
   /* Fase 10 · Ajuste: con horarios abiertos en el hilo, "mejor otro día" hace lo mismo que "No me sirve ninguno" */
@@ -3158,6 +3224,9 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !probPa
   function dockH(){ appEl.style.setProperty('--dock-h', dk.offsetHeight+'px'); }
   if(dk && appEl){ dockH(); if(window.ResizeObserver) new ResizeObserver(dockH).observe(dk); }
 })();
+/* Fase 10 · Brief 46b: igual para el pie del onboarding. --ob-pie = alto real de .ob-bottom ("Saltar" no sale en todos los pasos); con el onboarding oculto (0) se queda el último valor */
+function obPieH(){ var ob=document.getElementById('ob'), pie=ob && ob.querySelector('.ob-bottom'); if(pie && pie.offsetHeight) ob.style.setProperty('--ob-pie', pie.offsetHeight+'px'); }
+(function(){ var pie=document.querySelector('#ob .ob-bottom'); if(pie){ obPieH(); if(window.ResizeObserver) new ResizeObserver(obPieH).observe(pie); } })();
 document.getElementById('editCancel').addEventListener('click', cancelEdit);
 micBtn.addEventListener('click', function(){
   var v=chatInput.value.trim();
@@ -3210,7 +3279,7 @@ function scanThumb(i){
   else{ el.setAttribute('role','img'); el.setAttribute('aria-label','Foto '+(i+1)+(warn?', falta una hoja':', se lee bien')); }
   /* Fase 10 · Brief 14 (captura): papel blanco de 58×76 con la marca en círculo y el nombre corto debajo (lienzo 59) */
   if(warn) el.classList.add('warn');
-  el.innerHTML='<span class="t-hoja" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="t-mk '+(warn?'warn':'ok')+'">'+(warn?'!':'✓')+'</span></span>'+
+  el.innerHTML='<span class="t-hoja" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="t-mk '+(warn?'warn':'ok')+'">'+(warn?ALERT_IC:OK_IC)+'</span></span>'+
     '<span class="t-nm" aria-hidden="true">'+fx(s.c||('Hoja '+(i+1)))+'</span>';
   return el;
 }
@@ -3234,6 +3303,7 @@ function resetCam(){ shots=0; scanShots=[]; hoja2Mode=false; /* Fase 10 · Brief
   document.getElementById('camDone').setAttribute('disabled',''); }
 function shutterTap(){
   if(shots>=8 || (hoja2Mode && shots>=1)) return; /* Fase 10 · Brief 08f: desde #FIN solo falta una hoja */
+  camUsada=true; /* Fase 10 · Brief 48: el permiso de cámara en Configuración */
   var d=hoja2Mode ? SCAN[2] : SCAN[shots]; /* Fase 10 · Brief 08 */
   scanShots.push({blur:!!(d&&d.blur), c:d&&d.c}); /* Fase 10 · Brief 14 (captura): c = nombre corto de la miniatura */
   shots++;
@@ -3268,11 +3338,12 @@ function masFotosTap(){
   scanSay(pend.length?'warn':'', 'Toma la foto de lo que falta. Las demás siguen aquí.');
 }
 function guardarTap(){
+  if(obHecho){ obScanActive=false; obMailActive=false; } /* Fase 10 · Brief 45b: con el onboarding terminado, el guardado siempre es el de la app */
   /* Fase 10 · Brief 01: la captura se abrió desde "Escanear las órdenes" de ¿Cómo te fue? — cierra el control y crea el trámite */
   if(ordScanKey){ var ok=ordScanKey; ordScanKey=null; citaOrdenesGuardadas(ok); return; }
   /* Fase 10 · Brief 08c: la historia clínica queda con 1 de 2 hojas y su pendiente si falta la hoja 2 */
   var hcInc = detView.has[0] && !detView.hoja2;
-  var hcDoc = DOCS.filter(function(d){ return d.ep==='ort' && d.ty==='soporte' && /^Historia clínica/.test(d.t); })[0];
+  var hcDoc = scanDoc(function(d){ return d.ep==='ort' && d.ty==='soporte' && /^Historia clínica/.test(d.t); }); /* Fase 10 · Brief 47: también si su persona no está en la familia */
   if(hcDoc && detView.has[0] && !obMailActive && !fabMailActive){
     hcDoc.s = hcInc ? '19 de agosto · 1 de 2 hojas' : '19 de agosto · 2 hojas';
     if(hcInc) hcDoc.pill=['Falta una hoja','pendiente']; else delete hcDoc.pill;
@@ -3284,14 +3355,14 @@ function guardarTap(){
   var ordMissing = detView.has[1] && detView.borrosa && !(pin && pin.value.trim());
   var ordDoc=null, fDoc=null;
   if(!obMailActive && !fabMailActive){
-    ordDoc = DOCS.filter(function(d){ return d.ep==='ort' && d.ty==='orden' && d.th==='cir'; })[0];
+    ordDoc = scanDoc(function(d){ return d.ep==='ort' && d.ty==='orden' && d.th==='cir'; }); /* Fase 10 · Brief 47 */
     /* Fase 10 · Brief 08f (ajuste): con la foto nítida, el procedimiento es lo que se leyó ({t2x}) y reemplaza lo escrito a mano */
     if(ordDoc && detView.has[1]){
       if(ordMissing){ ordDoc.pill=FALTA_PROC.slice(); delete ordDoc.proc; }
       else { ordDoc.proc = detView.borrosa ? pin.value.trim() : '{t2x}'; if(ordDoc.pill && ordDoc.pill[0]===FALTA_PROC[0]) delete ordDoc.pill; }
     }
     if(detView.has[2]){
-      fDoc = DOCS.filter(function(d){ return d.fscan; })[0];
+      fDoc = scanDoc(function(d){ return d.fscan; }); /* Fase 10 · Brief 47 */
       if(!fDoc){ fDoc={ep:'ort', t:'Fórmula médica, 19 de agosto', s:'19 de agosto', p:'{wort}', ty:'orden', cat:'med', pag:1, fscan:true}; DOCS.push(fDoc); }
       if(medMissing){ fDoc.pill=FALTA_MED.slice(); delete fDoc.med; } else { delete fDoc.pill; fDoc.med=mi ? mi.value.trim() : ''; }
     }
@@ -3299,26 +3370,61 @@ function guardarTap(){
   }
   /* Fase 6 · "Perfil lipídico" solo se revela al escanear/subir — conectar correo no debe gastar la única palanca para probar ese flujo en la demo */
   /* Fase 8 · Brief 6.1: conectar correo desde el FAB tampoco revela {lab}, sea o no onboarding */
+  var lipDoc = scanDoc(function(d){ return d.ep==='ort' && d.ty==='orden' && d.th==='lip'; });
+  /* Fase 10 · Brief 47: lo escaneado de quien no está en la familia queda en DOCS_PEND (no se pierde); SCAN_IDS = quién aparece en lo escaneado */
   if(!obMailActive && !fabMailActive){
-    if(detView.has[3]) setCard('lip',{st:'accionable'}); /* Fase 10 · Brief 08c: solo si se tomó la foto de la orden de {labl} */
+    var escan=[detView.has[0] && hcDoc, detView.has[1] && ordDoc, detView.has[2] && fDoc, detView.has[3] && lipDoc].filter(Boolean);
+    var slots=function(ds){ var r=[]; ds.forEach(function(d){ var k=detSlot(fx(d.p)); if(r.indexOf(k)<0) r.push(k); }); return r; };
+    if(obScanActive){
+      SCAN_IDS = document.getElementById('obMail').getAttribute('data-done') ? null : slots(escan).concat((SCAN_IDS||[]).filter(function(k){ return slots(escan).indexOf(k)<0; }));
+    } else if(!esPropia()){
+      var aPend=escan.filter(function(d){ var k=fx(d.p); return personaNoAgregada(k) && !(detDe(k)||{}).fuera; });
+      escan.forEach(function(d){
+        if(aPend.indexOf(d)<0 && personaFuera(fx(d.p))) return; /* "No es de mi familia": como hoy */
+        DOCS_BANDEJA=DOCS_BANDEJA.filter(function(x){ return x!==d; });
+        if(aPend.indexOf(d)>=0){ DOCS=DOCS.filter(function(x){ return x!==d; }); if(DOCS_PEND.indexOf(d)<0) DOCS_PEND.push(d); }
+        else { DOCS_PEND=DOCS_PEND.filter(function(x){ return x!==d; }); if(DOCS.indexOf(d)<0) DOCS.push(d); }
+      });
+      if(aPend.length){ scanPend=true; SCAN_IDS=slots(DOCS_PEND); } /* Fase 10 · Brief 47: todo lo pendiente cuenta para la detección del escaneo */
+    }
+    FIN_ULT={hcInc:hcInc, ordMissing:ordMissing, medMissing:medMissing, ordDoc:ordDoc, fDoc:fDoc};
+  }
+  if(!obMailActive && !fabMailActive){
+    var lipC0=card('lip');
+    if(detView.has[3] && lipC0 && (obScanActive || personaVisible(lipC0))) setCard('lip',{st:'accionable'}); /* Fase 10 · Brief 08c: solo si se tomó la foto de la orden de {labl}. Brief 47: y en la app, solo si su persona es visible */
     bovFresh=true; /* Fase 10 · corrección Bóveda */
     /* Fase 10 · Brief 19: lo que se fotografió queda marcado como nuevo (has = [historia, orden {t2x}, fórmula, orden {labl}]) */
-    bovMarcarNuevos([detView.has[0] && hcDoc, detView.has[1] && ordDoc, detView.has[2] && fDoc,
-      detView.has[3] && DOCS.filter(function(d){ return d.ep==='ort' && d.ty==='orden' && d.th==='lip'; })[0]]);
+    bovMarcarNuevos([detView.has[0] && hcDoc, detView.has[1] && ordDoc, detView.has[2] && fDoc, detView.has[3] && lipDoc]
+      .filter(function(d){ return d && DOCS.indexOf(d)>=0; })); /* Fase 10 · Brief 47: lo que quedó en DOCS_PEND no está en la Bóveda */
     appVacia=false; /* Fase 8 · Coherencia: escanear/subir apaga el estado vacío, con o sin onboarding activo */
     renderInicio(); renderCurso();
+    if(scanPend){ renderBoveda(); show('A1'); docPendAbrir(); return; } /* Fase 10 · Brief 47: "¿de quién es?" antes de FIN */
   }
   /* Fase 8 · Brief 6.1: correo desde el FAB, fuera del onboarding — vuelve a Inicio con un toast sin "Deshacer" */
   if(fabMailActive){
     fabMailActive=false;
+    mailConnected=true; mailRevisado=Date.now(); /* Fase 10 · Brief 45: el correo queda conectado solo al guardar */ /* Fase 10 · Brief 48: mailRevisado */
     if(esPropia()){ proGuardar(); pendingNote='Guardé todo lo que encontré en tu correo ✓'; renderInicio(); show('A1'); return; } /* Fase 10 · Brief 16: la orden de ejemplo y el control */
+    /* Fase 10 · Brief 45: lo de la familia confirmada entra a la Bóveda; lo de quien no se ha confirmado pasa a DOCS_PEND */
+    var traidos=[];
+    DOCS_BANDEJA.forEach(function(d){
+      var k=fx(d.p);
+      if(detCarneFuera(d) || (detDe(k)||{}).fuera) return;
+      if(personaFuera(k)) DOCS_PEND.push(d);
+      else if(!DOCS.some(function(x){ return docMismo(x,d); })) traidos.push(d);
+    });
+    DOCS_BANDEJA=[]; DOCS=DOCS.concat(traidos);
+    SCAN_IDS=null; /* Fase 10 · Brief 47: lo pendiente ya no viene solo de un escaneo */
     // revela ped/cir/med solo si siguen ocultas — no pisar un estado más avanzado
     // si el panel ya las movió a trabado/encurso en algún momento de la demo
-    ['ped','cir','med'].forEach(function(k){ var c=card(k); if(c && c.st==='oculto') c.st='accionable'; });
+    /* Fase 10 · Brief 45: y solo si su persona es visible, como revela() en obFinish() */
+    ['ped','cir','med'].forEach(function(k){ var c=card(k); if(c && c.st==='oculto' && personaVisible(c)) c.st='accionable'; });
     appVacia=false;
     bovMarcarNuevos(DOCS.slice()); /* Fase 10 · Brief 19: lo que trajo el correo queda como nuevo */
-    pendingNote='Guardé todo lo que encontré en tu correo ✓';
     renderInicio(); renderCurso();
+    if(DOCS_PEND.length){ fabPend=true; show('A1'); docPendAbrir(); return; } /* Fase 10 · Brief 45: directo al paso 5 reabierto (obReabre='A1') */
+    pendingNote='Guardé todo lo que encontré en tu correo ✓';
+    renderInicio();
     show('A1');
     return;
   }
@@ -3330,7 +3436,7 @@ function guardarTap(){
      ya usa obShow(3)) y esto quedó desactualizado, armando un bucle: familia → importar → guardar →
      familia de nuevo, sin poder salir. Fase 10 · Rediseño · Brief 13: "traer documentos" es el paso 4 */
   if(obScanActive || obMailActive){
-    if(obMailActive) proGuardar(); /* Fase 10 · Brief 16 */
+    if(obMailActive){ proGuardar(); mailConnected=true; mailRevisado=Date.now(); /* Fase 10 · Brief 48 */ SCAN_IDS=null; } /* Fase 10 · Brief 47: SCAN_IDS */ /* Fase 10 · Brief 16 · Brief 45: el correo queda conectado solo al guardar */
     if(obMailActive && !esPropia()) bovMarcarNuevos(DOCS.slice()); /* Fase 10 · Brief 19: lo que trajo el correo queda como nuevo */
     markObDone();
     obScanActive=false;
@@ -3340,6 +3446,12 @@ function guardarTap(){
     obShow(4);
     return;
   }
+  finArmar();
+}
+/* Fase 10 · Brief 47: el armado de FIN sale de guardarTap() para mostrarlo también después de "¿de quién es?" (docPendFin) */
+var FIN_ULT={};
+function finArmar(){
+  var hcInc=FIN_ULT.hcInc, ordMissing=FIN_ULT.ordMissing, medMissing=FIN_ULT.medMissing, ordDoc=FIN_ULT.ordDoc, fDoc=FIN_ULT.fDoc;
   /* Fase 10 · Brief 08c: FIN se arma según lo que se escaneó y lo que quedó guardado (sin conteos) */
   var guard=[];
   if(detView.has[0]) guard.push('Historia clínica');
@@ -3402,7 +3514,7 @@ function detDesdeCam(){
   var sub=document.getElementById('detSub0'); if(sub) sub.textContent = fx('{p2} · ')+(detView.hoja2?'2 hojas':'1 de 2 hojas');
   var pr=document.getElementById('procRow'), pi=document.getElementById('procInput'); if(pi) pi.value = detView.borrosa ? '' : fx('{t2x}'); /* Fase 10 · Brief 08f (ajuste): nítida = lo leído */
   if(pr) pr.hidden=!detView.borrosa;
-  var b1=document.querySelector('[data-revb="1"]'); if(b1) b1.style.display = detView.borrosa ? 'block' : 'none';
+  var b1=document.querySelector('[data-revb="1"]'); if(b1) b1.style.display = detView.borrosa ? '' : 'none'; /* Fase 10 · Brief 29 */
   detCheckReady();
 }
 function detChipSet(id, ok, txt){
@@ -3422,7 +3534,7 @@ function setPtag(i, code){
   t.innerHTML='<span class="av" data-p="'+code+'" style="background:'+pr[1]+'">'+code+'</span>'+pr[0];
   if(i===3){
     var row=document.getElementById('pacRow'); if(row) row.classList.remove('warn');
-    var ic=document.getElementById('pacIcon'); if(ic){ ic.textContent='✓'; ic.style.color='var(--verde)'; }
+    var ic=document.getElementById('pacIcon'); if(ic){ ic.innerHTML=OK_IC; ic.className='ex-mk'; } /* Fase 10 · Brief 28: check SVG por clase, sin estilo en línea */
     var sub=document.getElementById('card2Sub'); if(sub) sub.textContent=pr[0]+' · medicamentos';
     detCheckReady();
   }
@@ -3433,7 +3545,7 @@ function detCheckReady(){
   var medDone = !!(mi && mi.value.trim());
   var mr=document.getElementById('medRow'), mic=document.getElementById('medIcon'), mw=document.getElementById('medWarnMsg');
   if(mr) mr.classList.toggle('warn', !medDone);
-  if(mic){ mic.textContent = medDone ? '✓' : '⚠'; mic.style.color = medDone ? 'var(--verde)' : 'var(--amarillo)'; }
+  if(mic){ mic.innerHTML = medDone ? OK_IC : ALERT_IC; /* Fase 10 · Brief 28 */ mic.className = 'ex-mk'+(medDone?'':' warn'); } /* Fase 10 · Brief 25: marca de alerta por clase */
   if(mw) mw.style.display = medDone ? 'flex' : 'none';
   var chip=document.getElementById('card2Chip');
   if(chip){
@@ -3446,7 +3558,7 @@ function detCheckReady(){
   detChipSet('detChip1', procDone, 'Revisa');
   var prw=document.getElementById('procRow'), pic=document.getElementById('procIcon');
   if(prw) prw.classList.toggle('warn', !procDone);
-  if(pic){ pic.textContent = procDone ? '✓' : '⚠'; pic.style.color = procDone ? 'var(--verde)' : 'var(--amarillo)'; }
+  if(pic){ pic.innerHTML = procDone ? OK_IC : ALERT_IC; /* Fase 10 · Brief 28 */ pic.className = 'ex-mk'+(procDone?'':' warn'); }
   /* Fase 6 · #22: ya no se deshabilita — si algo queda dudoso, igual se pueden guardar los documentos ya confirmados aparte */
   var btn=document.getElementById('btnGuardar');
   if(btn){
@@ -3467,7 +3579,12 @@ function show(id){
   if(ordScanKey && ['CAM','GAL','PROC','DET','CONF','FIN','NOTIF'].indexOf(id)<0) ordScanKey=null; /* Fase 10 · Rediseño · Brief 12 (corrección): mirar los avisos no suelta la cita */
   /* Fase 6 · si cancelan un escaneo o una lectura de correo abiertos desde el onboarding, no los deja caer en la app ya poblada */
   /* Fase Móvil · mismo bug que guardarTap(): volvía a obShow(2) (elegir familia) en vez de obShow(3) ("Déjame el trabajo pesado", el paso del que salió el escaneo/correo) */
-  if((obScanActive || obMailActive) && id==='A1'){ obScanActive=false; obMailActive=false; ob.classList.remove('hidden'); obShow(4); return; } /* Fase 10 · Rediseño · Brief 13: paso 4 */
+  /* Fase 10 · Brief 45b: cualquier pantalla principal, no solo A1 (goBackMain() va a lastMain, que tras "Cambiar de historia" podía ser G1/F1/H1),
+     y solo si el onboarding no ha terminado; si ya terminó, la bandera se apaga y sigue el camino de la app */
+  if((obScanActive || obMailActive) && ['A1','H1','H2','F1','G1'].indexOf(id)>=0){
+    obScanActive=false; obMailActive=false;
+    if(!obHecho){ ob.classList.remove('hidden'); obShow(4); return; } /* Fase 10 · Rediseño · Brief 13: paso 4 */
+  }
   var s=byId[id]; if(!s) return;
   clearTimers();
   marcarVisto(); /* Fase 10 · Brief 06 */
@@ -3482,7 +3599,10 @@ function show(id){
   if(id==='F2'){ renderCalDetail(); }
   if(id==='G1'){ renderBoveda(); }
   if(id==='I3'){ renderI3(); }
+  if(id==='I1'){ famFormInit(); renderFamForm(); } /* Fase 10 · Brief 30: cada entrada empieza de cero */
+  if(id!=='FAM'){ var ftw=document.querySelector('#famScreen > .toast'); if(ftw) ftw.remove(); } /* Fase 10 · Brief 30b: el toast de Familia no sobrevive a salir de #FAM */
   if(id==='NOTIF'){ renderNotif(); } /* Fase 10 · Rediseño · Brief 12 */
+  if(id==='CONFIG'){ renderConfig(true); } /* Fase 10 · Brief 48c: al entrar, todo cerrado */ /* Fase 10 · Brief 48 */
   scrTitle.classList.toggle('st-30', id==='NOTIF');
   paintNotifDot();
   if(id==='PEG'){ if(!pegKeep) pegReset(); pegKeep=false; renderPeg(); } /* Fase 10 · Rediseño · Brief 12 (corrección): al volver de los avisos conserva lo pegado */ /* Fase 10 · Brief 03: siempre entra desde "Agregar documento", empieza vacía */
@@ -3509,7 +3629,7 @@ function show(id){
 
   var isHilo = s.getAttribute('data-hdr')==='hilo';
   /* Fase 6 · durante escaneo/subida/correo disparados desde el onboarding, el header superior tampoco tiene sentido: no hay familia armada ni menú/ayuda utilizables a medio onboarding */
-  var hideHdrOb = (obScanActive || obMailActive) && ['CAM','GAL','PROC','CONF','DET','FIN'].indexOf(id)>=0;
+  var hideHdrOb = !obHecho && (obScanActive || obMailActive) && [ /* Fase 10 · Brief 45b */'CAM','GAL','PROC','CONF','DET','FIN'].indexOf(id)>=0;
   /* Fase 10 · Brief 05 (punto 5): el encabezado global se queda también en el hilo; #hdrHilo es la segunda fila.
      En el hilo, #famChip se oculta con .en-hilo (no con display, que lo maneja updateChip()) */
   hdrGlobal.style.display = hideHdrOb?'none':'flex';
@@ -3546,7 +3666,8 @@ function show(id){
 
   /* Fase 6 · el flujo de traer documentos (onboarding o FAB) no muestra la barra de navegación inferior */
   /* Fase 10 · Rediseño · Brief 12 (corrección): si los avisos se abrieron a mitad de la captura, tampoco hay barra (no se sale sin el aviso de salir sin guardar) */
-  nav.style.display = (['CAM','GAL','PROC','DET','CONF','FIN'].indexOf(id)>=0 || (id==='NOTIF' && notifFrom && ['CAM','GAL','PROC','DET','CONF','FIN'].indexOf(notifFrom.id)>=0)) ? 'none' : 'flex';
+  /* Fase 10 · Brief 30c: «Agregar familiar» (I1) tampoco muestra la barra inferior; Familia e I3 la conservan */
+  nav.style.display = (['CAM','GAL','PROC','DET','CONF','FIN','I1'].indexOf(id)>=0 || (id==='NOTIF' && notifFrom && ['CAM','GAL','PROC','DET','CONF','FIN'].indexOf(notifFrom.id)>=0)) ? 'none' : 'flex';
 
   var navKey=s.getAttribute('data-nav')||'none';
   [].forEach.call(nav.querySelectorAll('.nav-item'), function(n){
@@ -3574,13 +3695,13 @@ function fdToggle(trig){ if(fdTrig) fdClose(); else fdOpen(trig); }
 function fdOpen(trig){
   fdTrig=trig;
   var ar=document.getElementById('app').getBoundingClientRect(), r=trig.getBoundingClientRect();
-  var esFab = trig===fab, CIRC=48;
+  var esFab = trig===fab, CIRC=48, M=MARCO; /* Fase 10 · Brief 44: medidas de pantalla ÷ MARCO = medidas dentro del marco */
   fdList.classList.toggle('izq', !esFab);
-  fdList.style.bottom=(ar.bottom-r.top+14)+'px';
-  if(esFab){ fdList.style.right=(ar.right-r.right+(r.width-CIRC)/2)+'px'; fdList.style.left=''; }
-  else { fdList.style.left=(r.left-ar.left+(r.width-CIRC)/2)+'px'; fdList.style.right=''; }
+  fdList.style.bottom=((ar.bottom-r.top)/M+14)+'px';
+  if(esFab){ fdList.style.right=((ar.right-r.right+(r.width-CIRC*M)/2)/M)+'px'; fdList.style.left=''; }
+  else { fdList.style.left=((r.left-ar.left+(r.width-CIRC*M)/2)/M)+'px'; fdList.style.right=''; }
   fdX.hidden=esFab;
-  if(!esFab){ fdX.style.left=(r.left-ar.left)+'px'; fdX.style.top=(r.top-ar.top)+'px'; fdX.style.width=r.width+'px'; fdX.style.height=r.height+'px'; }
+  if(!esFab){ fdX.style.left=((r.left-ar.left)/M)+'px'; fdX.style.top=((r.top-ar.top)/M)+'px'; fdX.style.width=(r.width/M)+'px'; fdX.style.height=(r.height/M)+'px'; }
   /* Fase 10 · Rediseño · Brief 13 (corrección 5): con el correo ya conectado no se ofrece conectarlo otra vez (el reinicio apaga mailConnected) */
   var fdMail=fdList.querySelector('[data-tap="fabmail"]'); if(fdMail) fdMail.hidden=mailConnected;
   /* Fase 10 · Brief 15: en la propia historia, Escanear, Subir y Pegar van atenuados (sirve al FAB y al "+").
@@ -3613,7 +3734,7 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowUp'||e.key==='ArrowDown'){ e.preventDefault(); var n=i<0?0:(i+(e.key==='ArrowUp'?1:-1)+its.length)%its.length; its[n].focus(); }
   else if(e.key==='Tab'){ e.preventDefault(); var m=i<0?0:(i+(e.shiftKey?-1:1)+its.length)%its.length; its[m].focus(); }
 });
-function closeSheets(){ fdClose(true); /* Fase 10 · Rediseño · Brief 11: el FAB desplegado reemplaza la hoja de Agregar */ ['scrimMM','scrimWho','scrimDocs','scrimDoc','scrimExit','scrimIcon','scrimOtra' /* Fase 10 · Brief 18 */].forEach(function(k){ var e=document.getElementById(k); if(e) e.style.display='none'; });
+function closeSheets(){ fdClose(true); /* Fase 10 · Rediseño · Brief 11: el FAB desplegado reemplaza la hoja de Agregar */ ['scrimMM','scrimWho','scrimDocs','scrimDoc','scrimExit','scrimIcon','scrimOtra' /* Fase 10 · Brief 18 */, 'faRelSheet', 'scrimFamDocs' /* Fase 10 · Brief 30 */, 'scrimMailOff' /* Fase 10 · Brief 48 */].forEach(function(k){ var e=document.getElementById(k); if(e) e.style.display='none'; });
   sideClose(true); popClose(true); /* Fase 10 · Rediseño · Brief 12: barra lateral y menús pegados al botón ya no son hojas */ }
 
 /* ============================================================
@@ -3649,10 +3770,10 @@ function popOpen(btn, menu){
   popClose(true);
   var box=menu.offsetParent || menu.parentElement;
   menu.hidden=false;
-  var br=btn.getBoundingClientRect(), cr=box.getBoundingClientRect();
-  var right=Math.max(16, cr.right-br.right);
-  if(cr.width-right-menu.offsetWidth<16) right=Math.max(16, cr.width-16-menu.offsetWidth);
-  menu.style.top=(br.bottom-cr.top+6)+'px';
+  var br=btn.getBoundingClientRect(), cr=box.getBoundingClientRect(), M=MARCO; /* Fase 10 · Brief 44: ÷ MARCO */
+  var right=Math.max(16, (cr.right-br.right)/M);
+  if(cr.width/M-right-menu.offsetWidth<16) right=Math.max(16, cr.width/M-16-menu.offsetWidth);
+  menu.style.top=((br.bottom-cr.top)/M+6)+'px';
   menu.style.right=right+'px';
   popCur=menu; popBtn=btn;
   btn.setAttribute('aria-expanded','true');
@@ -3773,8 +3894,14 @@ document.addEventListener('click', function(e){
 
   /* Fase Móvil · Punto 1b: "Reiniciar el prototipo" en Configuración, reemplaza el reset del panel externo */
   if(e.target.closest('#cfgReset')){ resetDemo(); return; }
+  /* Fase 10 · Brief 48: el correo en Configuración */
+  if(e.target.closest('[data-cfgrevisar]')){ mailRevisado=Date.now(); cfgToast='Revisé tu bandeja. No hay nada nuevo.'; renderConfig(); return; }
+  if(e.target.closest('[data-cfgoff]')){ document.getElementById('scrimMailOff').style.display='flex'; return; }
+  if(e.target.closest('[data-mailoff]')){ closeSheets(); mailConnected=false; mailRevisado=null; cfgToast='Desconecté tu correo.'; renderConfig(); renderBoveda(); return; }
   /* Fase 10 · Brief 18: "Ver otra historia" (#scrimOtra) y "Cambiar de historia" (menú lateral) */
   if(e.target.closest('[data-otrahist]')){ verHistorias(); return; }
+  var temaBtn=e.target.closest('#cfgBody [data-tema]'); /* Fase 10 · Brief 49 */
+  if(temaBtn){ aplicarTema(temaBtn.getAttribute('data-tema')); renderConfig(); return; }
 
   /* Fase 10 · Brief 08e: "Ver el recorrido otra vez" desde Ayuda, empieza en el paso 1 sobre Inicio */
   if(e.target.closest('[data-tourreplay]')){ show('A1'); tourOpen(0); return; }
@@ -3798,7 +3925,7 @@ document.addEventListener('click', function(e){
       pendingToast=null;
       var k=curThread||'cir';
       commit(k,{who:'s', text:'Espera, necesito cambiar algo de lo que radicaste'});
-      play(k,[{who:'t', think:1, wgt:'<div class="wgt-t">Ya está radicada ante {eps}, así que no puedo deshacerla yo solo.</div>'+
+      play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ wgt:'<div class="wgt-t">Ya está radicada ante {eps}, así que no puedo deshacerla yo solo.</div>'+
         '<div class="wgt-d">Pero sí puedo pedir que la retiren o corregir lo que haga falta. ¿Qué necesitas?</div>'+
         '<button type="button" class="btn-s" data-act="undo.retirar">Pedir que la retiren</button>'+
         '<button type="button" class="btn-s" data-act="undo.corregir">Corregir un documento</button>'}]);
@@ -3809,7 +3936,7 @@ document.addEventListener('click', function(e){
     pendingToast=null; pendingToastKey=null;
     openThread(k, 'inicio');
     commit(k,{who:'s', text:'Espera, necesito cambiar algo de esto'});
-    play(k,[{who:'t', think:1, text:'Esto ya salió de la app, así que no puedo deshacerlo yo solo. Cuéntame qué necesitas y vemos qué se puede hacer desde aquí.'}]);
+    play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'Esto ya salió de la app, así que no puedo deshacerlo yo solo. Cuéntame qué necesitas y vemos qué se puede hacer desde aquí.'}]);
     return;
   }
 
@@ -3895,7 +4022,8 @@ document.addEventListener('click', function(e){
     else if(w==='cancelob') attemptExitOb();
     else if(w==='closeconftip'){ document.getElementById('confTip').style.display='none'; }
     /* Fase 8 · Brief 6.1: correo desde el FAB, fuera del onboarding */
-    else if(w==='fabmail'){ closeSheets(); fabMailActive=true; mailConnected=true; show('PROC'); }
+    else if(w==='fabmail'){ closeSheets(); fabMailActive=true; show('PROC'); } /* Fase 10 · Brief 45: mailConnected se enciende al guardar, no al buscar */
+    else if(w==='docpend') docPendAbrir(); /* Fase 10 · Brief 40 */
     return;
   }
 
@@ -3903,8 +4031,8 @@ document.addEventListener('click', function(e){
   var rv=e.target.closest('[data-rev]');
   if(rv){
     var b=document.querySelector('[data-revb="'+rv.getAttribute('data-rev')+'"]');
-    if(b) b.style.display = (b.style.display==='none') ? 'block' : 'none';
-    if(b && rv.hasAttribute('aria-expanded')) rv.setAttribute('aria-expanded', b.style.display==='block' ? 'true' : 'false'); /* Fase 10 · Brief 05: gira la flecha */
+    if(b) b.style.display = (b.style.display==='none') ? '' : 'none'; /* Fase 10 · Brief 29: al abrir manda el display de la hoja de estilos (el flex con gap de .epi-b) */
+    if(b && rv.hasAttribute('aria-expanded')) rv.setAttribute('aria-expanded', b.style.display!=='none' ? 'true' : 'false'); /* Fase 10 · Brief 05: gira la flecha */
     return;
   }
 
@@ -3945,7 +4073,7 @@ document.addEventListener('click', function(e){
   if(g2){ i3Key=g2.getAttribute('data-go2'); i3Editing=false; i3Edit=null; i3EditOrig=null; closeSheets(); show('I3'); return; }
 
   /* Fase 6 · editar/eliminar perfil (I3) */
-  if(e.target.closest('#i3RelSheet .m3-other')) return;
+  if(e.target.closest('#i3RelSheet .relpick')) return; /* Fase 10 · Brief 43: el campo del autocompletar */
   if(e.target.id==='i3RelSheet'){ document.getElementById('i3RelSheet').style.display='none'; renderI3(); return; }
   if(e.target.closest('[data-i3edit]')){ i3EnterEdit(i3Key); return; }
   if(e.target.closest('[data-i3cancel]')){ i3Editing=false; i3Edit=null; i3EditOrig=null; renderI3(); return; }
@@ -3955,9 +4083,9 @@ document.addEventListener('click', function(e){
   var ir=e.target.closest('[data-i3rel]');
   if(ir){
     var irv=ir.getAttribute('data-i3rel');
-    i3Edit.rel=irv;
-    if(irv!=='Otro'){ i3Edit.otro=''; document.getElementById('i3RelSheet').style.display='none'; renderI3(); }
-    else renderI3RelSheet();
+    i3Edit.rel=irv; i3Edit.otro=''; /* Fase 10 · Brief 43: sale "Otro"; la relación guarda el texto final */
+    document.getElementById('i3RelSheet').style.display='none'; renderI3();
+    var t1=document.querySelector('[data-i3relopen]'); if(t1) t1.focus();
     return;
   }
   var isv=e.target.closest('[data-i3save]');
@@ -4048,9 +4176,7 @@ document.getElementById('I3').addEventListener('focusout', function(e){
     renderI3();
   }
 });
-document.getElementById('i3RelSheet').addEventListener('input', function(e){
-  if(e.target.id==='i3fOtro' && i3Edit) i3Edit.otro=e.target.value;
-});
+/* Fase 10 · Brief 43: sale el campo #i3fOtro (lo escrito se elige con «Usar «…»») */
 
 document.getElementById('hiloBack').addEventListener('click', function(){ show(lastMain); });
 topBack.addEventListener('click', function(){
@@ -4123,6 +4249,12 @@ function renderPegRes(){
       return '<button type="button" class="who'+(on?' on':'')+'" data-pegwho="'+k+'" aria-pressed="'+(on?'true':'false')+'"'+(peg.fin==='ped'?' disabled':'')+'>'+
         '<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+(k==='SO'?'Tú':PNAME[k])+'</button>';
     }).join('');
+    /* Fase 10 · Brief 47b: las candidatas de la pista que no están en la familia también se eligen (abren "¿de quién es?") */
+    quien+=(V.pegCand||[]).filter(function(k){ return SLOTS.indexOf(k)>=0 && personaNoAgregada(k) && !(detDe(k)||{}).fuera; }).map(function(k){
+      return '<button type="button" class="who" data-pegfuera="'+k+'"'+(peg.fin==='ped'?' disabled':'')+'>'+
+        '<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+
+        '<span class="who-txt">'+PNAME[k]+'<span class="who-sub">No está en tu familia</span></span></button>';
+    }).join('');
     h='<div class="wgt"><div class="wgt-t">Esto entendí</div><div class="exlist">'+
       fila('Qué es','{t1}')+fila('Cuándo',PEG_CITA.when)+fila('Con quién',PEG_CITA.doc)+fila('Dónde',PEG_CITA.sede)+para+'</div>'+
       (peg.who ? '' : '<p class="wgt-d">{pistaPeg}</p>')+
@@ -4134,7 +4266,7 @@ function renderPegRes(){
          '<button type="button" class="btn-p" data-peg="unir">Agregar la cita a ese trámite</button></div>';
     } else if(peg.fin==='bov'){
       h+='<div class="row">'+tAv()+'<div class="bub t">Guardé la cita en la Bóveda. No encontré un trámite pendiente para '+pegNombre(peg.who)+'.</div></div>'+
-         '<button type="button" class="btn-s" data-go="G1">Ver en la Bóveda</button>';
+         '<button type="button" class="btn-s" data-go="G1" data-bovcat="all">Ver en la Bóveda</button>'; /* Fase 10 · Brief 47b: abre "Todos" con la cita primero */
     }
   }
   box.innerHTML=fx(fx(h)); /* {pistaPeg} trae {p1}/{p2} adentro */
@@ -4156,7 +4288,9 @@ function pegGuardaDoc(ep){
       rel:'La trajiste pegando un mensaje de {eps}. Dice que hay que llegar 20 minutos antes.'};
     DOCS.push(peg.doc);
   }
+  if(DOCS.indexOf(peg.doc)<0) DOCS.push(peg.doc); /* Fase 10 · Brief 47b: vuelve de "¿de quién es?" */
   peg.doc.p=peg.who; peg.doc.ep=ep; if(ep==='ctr') peg.doc.th='ped'; else delete peg.doc.th;
+  if(ep==='na'){ bovMarcarNuevos([peg.doc]); bovFresh=true; renderBoveda(); } /* Fase 10 · Brief 47b: "Lo último que guardaste" */
   appVacia=false;
 }
 /* Fase 10 · Brief 03b: si el hilo ya se había abierto, sus widgets de agendar ("Agendar cita", horarios, "No me sirve ninguno")
@@ -4165,6 +4299,23 @@ function pegBloqueaAgendar(k){
   /* copia, no m.lk=true: los mensajes pueden ser los mismos objetos de INTRO y el reinicio los reusa */
   THREADS[k].msgs.forEach(function(m,i,a){ if(m.wgt && /data-act="ped\.(agendar|confirmar|mas|dia)"/.test(m.wgt)) a[i]=Object.assign({},m,{lk:true}); });
   if(cur==='TH' && curThread===k) [].forEach.call(TH.querySelectorAll('[data-act^="ped.agendar"],[data-act="ped.confirmar"],[data-act="ped.mas"],[data-act="ped.dia"]'), lock);
+}
+/* elegir persona es la confirmación: si no hay trámite pendiente, la cita va solo a la Bóveda (Fase 10 · Brief 47b: sale del manejador para reusarla al volver de "¿de quién es?") */
+function pegElegir(k){
+  peg.who=k;
+  if(pegVaAPed()){ pegQuitaDoc(); peg.fin=null; }
+  else { pegGuardaDoc('na'); peg.fin='bov'; }
+  renderPegRes();
+}
+/* Fase 10 · Brief 47b: candidata que no está en la familia → la cita queda pendiente a su nombre y se abre "¿de quién es?" solo con ella.
+   pegPendPrev = el SCAN_IDS que había antes (si quedaba algo pendiente de un escaneo) */
+var pegPend=false, pegPendPrev=null;
+function pegFuera(k){
+  pegQuitaDoc(); peg.fin=null; peg.who=k;
+  peg.doc={ep:'na', t:'Cita de {t1l}', s:PEG_CITA.when+' · '+PEG_CITA.sede, p:k, ty:'mensaje', pill:['Cita','espera'],
+    rel:'La trajiste pegando un mensaje de {eps}. Dice que hay que llegar 20 minutos antes.'};
+  DOCS_PEND.push(peg.doc); pegPend=true; pegPendPrev=SCAN_IDS; SCAN_IDS=[detSlot(k)];
+  docPendAbrir();
 }
 function pegQuitaDoc(){ if(peg.doc){ var i=DOCS.indexOf(peg.doc); if(i>=0) DOCS.splice(i,1); peg.doc=null; } }
 /* en #PEG y no en #pegBox: applyProfile() reescribe el contenido de las pantallas y #pegBox se reemplaza */
@@ -4177,13 +4328,11 @@ document.getElementById('PEG').addEventListener('input', function(e){
 });
 document.getElementById('PEG').addEventListener('click', function(e){
   var b=e.target.closest('[data-peg]'), w=e.target.closest('[data-pegwho]');
+  var wf=e.target.closest('[data-pegfuera]');
+  if(wf){ if(peg.fin!=='ped') pegFuera(wf.getAttribute('data-pegfuera')); return; } /* Fase 10 · Brief 47b */
   if(w){
     if(peg.fin==='ped') return;
-    peg.who=w.getAttribute('data-pegwho');
-    /* elegir persona es la confirmación: si no hay trámite pendiente, la cita va solo a la Bóveda */
-    if(pegVaAPed()){ pegQuitaDoc(); peg.fin=null; }
-    else { pegGuardaDoc('na'); peg.fin='bov'; }
-    renderPegRes();
+    pegElegir(w.getAttribute('data-pegwho'));
     return;
   }
   if(!b) return;
@@ -4218,8 +4367,14 @@ document.getElementById('PEG').addEventListener('click', function(e){
 var obStep=0, OBN=8, ob=document.getElementById('ob');
 /* Fase 6 · escaneo/subida/correo disparados desde el onboarding: *Active marca el flujo en curso, obScanDone si ya se guardó algo real */
 var obScanActive=false, obScanSource=null, obScanDone=false, obMailActive=false;
+/* Fase 10 · Brief 45b: obHecho = el onboarding ya terminó (obFinish o docPendFin). Desde ahí ninguna captura de la app reabre #ob;
+   solo "Organizar los documentos", "Cambiar de historia" y "Reiniciar el prototipo" (resetDemo la apaga) */
+var obHecho=false;
 /* Fase 6 · Brief 2: sin sincronización real, solo que el correo conectado no se sienta como un paso olvidado */
 var mailConnected=false;
+/* Fase 10 · Brief 48: mailRevisado = hora en que se guardó lo del correo o del último "Revisar ahora";
+   camUsada y micUsado = si ya se usaron (permisos en Configuración); cfgToast = aviso de una sola vez */
+var mailRevisado=null, camUsada=false, micUsado=false, cfgToast=null;
 /* Fase 8 · Brief 6.1: correo conectado desde el FAB, fuera del onboarding */
 var fabMailActive=false;
 /* Fase 10 · Rediseño · Brief 13: la cuenta. cuentaMail = correo con que se creó (lo usa el menú), cuentaGoogle = si fue con Google.
@@ -4227,7 +4382,7 @@ var fabMailActive=false;
    obBandeja = la pantalla "¿Busco también en tu bandeja?" está abierta dentro del paso 4 */
 var cuentaMail=null, cuentaGoogle=false, cuentaVista='ini', cuentaCode=false, obMailDraft='', obBandeja=false;
 var OB_CODE='482913';
-function obBar(){ var h=''; for(var i=0;i<OBN;i++) h+='<i class="'+(i<=obStep?'done':'')+'"></i>'; document.getElementById('obBar').innerHTML=h; }
+function obBar(){ var h=''; for(var i=0;i<OBN;i++) h+='<i class="'+(i<=obStep?'done':'')+'"></i>'; var b=document.getElementById('obBar'); b.innerHTML=h; b.classList.toggle('reabre', !!obReabre); } /* Fase 10 · Brief 46: reabierto desde la app, sin barra */
 function obShow(n){
   /* Fase 10 · Brief 03: la detección solo existe si se conectó el correo o se escaneó algo; si no, se salta en los dos sentidos (Brief 13: paso 5) */
   if(n===5 && !detAplica()) n = obStep>5 ? 4 : 6;
@@ -4244,6 +4399,10 @@ function obShow(n){
   /* Fase 10 · Rediseño · Brief 13: sin "Saltar" antes de tener cuenta (0, 1 y 2) ni en "Listo" (Brief 13b: "Ya está", paso 7) */
   sk.style.display = (n<=2 || n===OBN-1 || (n===3 && esPropia())) ? 'none' : 'block'; /* Fase 10 · Brief 15: en la propia historia, "Saltar" no sale en el paso 3 (sin nombre ni EPS no hay con qué entrar) */
   sk.textContent = 'Saltar la configuración';
+  /* Fase 10 · Brief 40: reabierto desde la app no hay configuración que saltar. En el 5 es "Ahora no" (cierra sin cambiar nada); en el 6 ya se confirmó */
+  if(obReabre && n===5) sk.textContent='Ahora no';
+  if(obReabre && n===6) sk.style.display='none';
+  if(obReabre && n===OBN-1) nb.textContent='Listo'; /* Fase 10 · Brief 40 (ajuste): ya se está en la app */
   /* la historia avanza al tocar una tarjeta, no con "Continuar" */
   nb.style.display = (n===1) ? 'none' : '';
   nb.removeAttribute('disabled');
@@ -4258,17 +4417,17 @@ function obShow(n){
     var st5=document.querySelector('.ob-step[data-step="5"]'); if(st5) st5.scrollTop=0;
     var t5=document.getElementById('obDetTitle'); if(t5) t5.focus({preventScroll:true}); }
   else if(n===6){ renderObFamSum(); }
-  obBar();
+  obBar(); obPieH(); /* Fase 10 · Brief 46b */
 }
 /* Fase 10 · Rediseño · Brief 13: tarjetas de la historia (lienzo 67). Avatar de la dueña, nombre, intro y la pila de su familia en sus colores (de PROFILES) */
-var OB_PLUS='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'; /* Fase 10 · Brief 15: el "+" de .ob-add-ic, compartido con la cuarta historia */
+var OB_PLUS='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'; /* Fase 10 · Brief 15: el "+" de .ob-add-ic, compartido con la cuarta historia */
 function renderObFamChoice(){
   var box=document.getElementById('obFamChoice'); if(!box) return;
   /* Fase 10 · Brief 16b: "Tu propia historia" va primera, para que se vea sin hacer scroll */
   var h=!DEMO_PROPIA ? '' : '<button type="button" class="ob-opt ob-story" data-obfam="propia">'+ /* Fase 10 · Cuarto camino: con DEMO_PROPIA=false no sale */
      '<span class="ob-add-ic" aria-hidden="true">'+OB_PLUS+'</span>'+
      '<span class="ob-story-t"><strong>Tu propia historia</strong><span class="ob-opt-desc">'+PROFILES.propia.intro+'</span></span>'+
-     '<span class="chev" aria-hidden="true">›</span></button>';
+     '<span class="chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
   ['sonia','martha','laura'].forEach(function(k){
     var p=PROFILES[k], v=p.v;
     var pile=['SF','MT','MA'].filter(function(s){ return p.hide.indexOf(s)<0; }).map(function(s){
@@ -4277,13 +4436,14 @@ function renderObFamChoice(){
     h+='<button type="button" class="ob-opt ob-story" data-obfam="'+k+'">'+
        '<span class="av" style="background:'+p.col.SO+'">'+v.iu+'</span>'+
        '<span class="ob-story-t"><strong>'+v.u+'</strong><span class="ob-opt-desc">'+p.intro+'</span><span class="ob-pile">'+pile+'</span></span>'+
-       '<span class="chev" aria-hidden="true">›</span></button>';
+       '<span class="chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
   });
   /* Fase 10 · Brief 15: la tarjeta de la propia historia va sin pila de avatares, con el "+" de .ob-add-ic (Brief 16b: arriba) */
   box.innerHTML=h;
 }
 /* Fase 10 · Rediseño · Brief 13: las tres vistas de la cuenta. "Continuar" solo aparece con el correo escrito o con el código lleno */
-function obCuentaView(){
+function obCuentaView(){ obCuentaPinta(); obPieH(); } /* Fase 10 · Brief 46b: cada vista de la cuenta muestra u oculta "Continuar"; el pie se vuelve a medir */
+function obCuentaPinta(){
   [].forEach.call(document.querySelectorAll('[data-cview]'), function(v){ v.hidden = v.getAttribute('data-cview')!==cuentaVista; });
   var nb=document.getElementById('obNext');
   if(cuentaVista==='ini'){ nb.style.display='none'; return; }
@@ -4342,30 +4502,110 @@ function obFinish(){
      Fase 10 · Rediseño · Brief 13b: solo desde el paso 3 (desde otro paso ya se aplicó al salir de él); si no, pisaba el nivel
      que "Organizar los documentos" escribió en r1/r2/r3 */
   if(obStep===3) obFamApply();
+  if(obReabre){ docPendFin(); return; } /* Fase 10 · Brief 40: reabierto desde Inicio o la Bóveda */
+  obHecho=true; obScanActive=false; obMailActive=false; /* Fase 10 · Brief 45b: ninguna bandera del onboarding sigue encendida en la app */
   /* Fase 6 · H-onboarding: saltar todo sin traer un documento real sí tiene consecuencia en el primer Inicio y en la primera Bóveda */
   var mailDone = !!document.getElementById('obMail').getAttribute('data-done');
   /* Fase 8 · Coherencia: appVacia persiste (no se apaga aquí) hasta que guardarTap() guarde algo real */
   appVacia = esPropia() ? !DOCS.length : (!mailDone && !obScanDone); /* Fase 10 · Brief 16: en la propia historia, vacía mientras no se guarde la orden */
   /* Brief 4 · ped/cir arrancan ocultas en CARDS0; se revelan solo si el onboarding trajo datos reales (#1, #2, #5) */
   /* Fase 10 · Brief 03: y solo si su persona quedó en "Le cuido siempre" (personaVisible); ya no se revelan en silencio */
-  var revela=function(k){ var c=card(k); if(personaVisible(c)) c.st='accionable'; };
+  var revela=function(k){ var c=card(k); if(c.st==='oculto' && personaVisible(c)) c.st='accionable'; }; /* Fase 10 · Brief 40: solo lo oculto (en el primer onboarding ped/cir/med/ter siempre lo están) */
   if(esPropia()){} /* Fase 10 · Brief 16: proGuardar() ya reveló el control; cir, med y ter no existen aquí */
   else if(mailDone){ revela('ped'); revela('cir'); revela('med'); revela('ter'); } /* Fase 10 · Brief 06: ter existe desde el inicio (en Inicio no sale por en30) */
   else if(obScanDone){ revela('cir'); }
   /* Fase 10 · Brief 03: "No es de mi familia" saca sus documentos de la Bóveda (el reinicio los devuelve desde DOCS0) */
-  /* Fase 10 · Rediseño · Brief 13c: corre siempre, no solo con detOk: sin documentos, lo de quien no se agregó tampoco llega después desde el FAB */
-  DOCS=DOCS.filter(function(d){ return !personaFuera(fx(d.p)) && !detCarneFuera(d); });
+  /* Fase 10 · Rediseño · Brief 13c: corre siempre, no solo con detOk
+     Fase 10 · Brief 45: se revierte "sin documentos, lo de quien no se agregó tampoco llega después desde el FAB": queda en DOCS_BANDEJA */
+  /* Fase 10 · Brief 40: si se trajeron documentos y se saltó la detección, lo de quien solo no se agregó queda aparte (DOCS_PEND), no se borra */
+  var guarda = !esPropia() && !detOk && (mailDone || obScanDone);
+  DOCS=DOCS.filter(function(d){
+    var k=fx(d.p);
+    if(!personaFuera(k) && !detCarneFuera(d)) return true;
+    if(personaNoAgregada(k) && !(detDe(k)||{}).fuera && !detCarneFuera(d)) ((guarda && (!SCAN_IDS || SCAN_IDS.indexOf(detSlot(k))>=0)) ? DOCS_PEND : DOCS_BANDEJA).push(d); /* Fase 10 · Brief 45. Brief 47: si solo se escaneó, lo de quien no salió en lo escaneado sigue en la bandeja */
+    return false;
+  });
+  if(!DOCS_PEND.length) SCAN_IDS=null; /* Fase 10 · Brief 47 */
   paintChips(); /* Fase 10 · Rediseño · Brief 13c (corrección): los chips del chat siguen a la familia final */
   buildFamLists();
   ob.classList.add('hidden');
   show('A1');
   /* Fase 6 · el tour de orientación en el primer Inicio ya explica el modelo mental — este overlay quedaría duplicado justo detrás */
 }
+/* ============================================================
+   Fase 10 · Brief 40 · DOCUMENTOS SIN ORGANIZAR
+   DOCS_PEND = documentos que trajo el onboarding de personas que no se agregaron, cuando se saltó la detección.
+   No están en DOCS: ni Bóveda, ni Inicio, ni avisos, ni Calendario. "Organizar los documentos" reabre el paso 5;
+   obReabre = la pantalla de origen ('A1' o 'G1'); obReabreSnap = la detección como estaba, para "Atrás" y "Ahora no" */
+var DOCS_PEND=[], obReabre=null, obReabreSnap=null;
+/* Fase 10 · Brief 45: DOCS_BANDEJA = documentos que siguen "en el correo": el onboarding terminó sin traer documentos y su persona no se
+   agregó. No están en DOCS ni en DOCS_PEND y no generan tarjeta. "Lo que encontré" desde la app los muestra; al guardar, lo de la familia
+   confirmada entra a la Bóveda y lo demás pasa a DOCS_PEND. fabPend = el paso 5 se abrió desde ese guardado (para el aviso de vuelta) */
+var DOCS_BANDEJA=[], fabPend=false;
+/* Fase 10 · Brief 47: SCAN_IDS = personas que aparecen en lo escaneado o subido cuando lo pendiente viene solo de un escaneo (null si
+   entró el correo); la detección muestra solo a ellas. scanPend = el paso 5 se abrió desde el guardado de un escaneo en la app (para FIN o el aviso) */
+var SCAN_IDS=null, scanPend=false;
+/* busca un documento escaneado en la Bóveda o, si su persona no está en la familia, en la bandeja o en lo pendiente */
+function scanDoc(f){ return DOCS.filter(f)[0] || DOCS_BANDEJA.filter(f)[0] || DOCS_PEND.filter(f)[0]; }
+function docPendHTML(){
+  if(!DOCS_PEND.length || bovPerson!=='all') return '';
+  return '<div class="empty sin-org"><h4>Documentos sin organizar</h4>'+
+    '<p>Traje documentos que todavía no sé de quién son. Dime de quién es cada uno y te armo sus trámites.</p>'+
+    '<button type="button" class="btn-p" data-tap="docpend">Organizar los documentos</button></div>';
+}
+function docPendAbrir(){
+  if(!DOCS_PEND.length) return;
+  obReabre = cur==='G1' ? 'G1' : cur==='PEG' ? 'PEG' : 'A1'; /* Fase 10 · Brief 47b: también desde "Pegar texto" */
+  obReabreSnap={det:JSON.parse(JSON.stringify(DETECT)), detOk:detOk, detDupe:detDupe, r:[V.r1, V.r2, V.r3]};
+  obStep=5; /* sin pasar por obFamApply() de otro paso */
+  ob.classList.remove('hidden');
+  obShow(5);
+}
+/* "Atrás" o "Ahora no" desde el paso 5 reabierto: todo como estaba, la tarjeta sigue */
+function docPendCerrar(){
+  var sn=obReabreSnap;
+  DETECT=sn.det; detOk=sn.detOk; detDupe=sn.detDupe; V.r1=sn.r[0]; V.r2=sn.r[1]; V.r3=sn.r[2];
+  refrescarPersonas();
+  var to=obReabre; obReabre=null; obReabreSnap=null;
+  if(detMenuId){ detMenuId=null; renderRelSheet(); }
+  ob.classList.add('hidden');
+  if(fabPend){ fabPend=false; pendingNote='Guardé lo de tu familia. Lo demás te espera en «Documentos sin organizar».'; renderInicio(); } /* Fase 10 · Brief 45 */
+  if(scanPend){ scanPend=false; pendingNote='Lo guardo cuando me digas de quién es. Te espera en «Documentos sin organizar».'; renderInicio(); } /* Fase 10 · Brief 47 */
+  if(pegPend){ pegPend=false; DOCS_PEND=DOCS_PEND.filter(function(d){ return d!==peg.doc; }); SCAN_IDS=pegPendPrev; pegPendPrev=null; peg.doc=null; peg.who=null; peg.fin=null; renderPegRes(); } /* Fase 10 · Brief 47b: "Ahora no" no guarda nada */
+  show(to);
+}
+/* "Entrar a Taremi" (o "Saltar" en el paso 7): lo confirmado entra como en el onboarding, sin tocar appVacia ni el recorrido */
+function docPendFin(){
+  obHecho=true; obScanActive=false; obMailActive=false; /* Fase 10 · Brief 45b */
+  var revela=function(k){ var c=card(k); if(c.st==='oculto' && personaVisible(c)) c.st='accionable'; };
+  var mailDone = !!document.getElementById('obMail').getAttribute('data-done');
+  if(mailDone || mailConnected){ revela('ped'); revela('cir'); revela('med'); revela('ter'); } /* Fase 10 · Brief 45: también si el correo se conectó desde la app */
+  else if(obScanDone){ revela('cir'); }
+  var pegK=null;
+  if(pegPend){ pegPend=false; pegK=peg.doc.p; DOCS_PEND=DOCS_PEND.filter(function(d){ return d!==peg.doc; }); } /* Fase 10 · Brief 47b: la cita no entra como pendiente: la decide pegElegir() al volver */
+  var nuevos=DOCS_PEND.filter(function(d){ return !personaFuera(fx(d.p)) && !detCarneFuera(d) && !DOCS.some(function(x){ return docMismo(x,d); }); });
+  /* Fase 10 · Brief 47: si lo pendiente viene de un escaneo, se revela el trámite de cada orden que entró; lo de quien no salió en la detección sigue pendiente */
+  var resto = SCAN_IDS ? DOCS_PEND.filter(function(d){ return nuevos.indexOf(d)<0 && SCAN_IDS.indexOf(detSlot(fx(d.p)))<0; }) : [];
+  if(SCAN_IDS) nuevos.forEach(function(d){ if(d.ty==='orden' && d.th && card(d.th)) revela(d.th); });
+  DOCS=DOCS.concat(nuevos); DOCS_PEND=resto;
+  if(pegK!==null){ SCAN_IDS=pegPendPrev; pegPendPrev=null; } /* Fase 10 · Brief 47b: lo pendiente de antes sigue con su origen */
+  if(!DOCS_PEND.length) SCAN_IDS=null;
+  if(nuevos.length){ bovMarcarNuevos(nuevos); bovFresh=true; }
+  paintChips(); buildFamLists();
+  var to=obReabre; obReabre=null; obReabreSnap=null;
+  ob.classList.add('hidden');
+  renderBoveda(); renderCalendario(); renderNotif();
+  if(fabPend){ fabPend=false; pendingNote='Guardé todo lo que encontré en tu correo ✓'; } /* Fase 10 · Brief 45 */
+  renderInicio(); renderCurso();
+  if(scanPend){ scanPend=false; finArmar(); return; } /* Fase 10 · Brief 47: después de "¿de quién es?", FIN con lo que se creó */
+  show(to);
+  if(pegK!==null){ if(personaFuera(pegK)){ peg.doc=null; peg.who=null; renderPegRes(); } else pegElegir(pegK); } /* Fase 10 · Brief 47b: con "No es de mi familia", la cita queda sin persona */
+}
 /* Fase 10 · Rediseño · Brief 13: "Sí, busca en mi bandeja" hace lo que hacían #obMailAllow / #obMailGoogle */
 function obBandejaSi(){
   obBandeja=false;
   ob.classList.add('hidden');
-  obMailActive=true; mailConnected=true;
+  obMailActive=true; /* Fase 10 · Brief 45: mailConnected se enciende al guardar en "Lo que encontré", no aquí */
   show('PROC');
 }
 document.getElementById('obNext').addEventListener('click', function(){
@@ -4387,12 +4627,14 @@ document.getElementById('obBack').addEventListener('click', function(){
   /* Fase 10 · Rediseño · Brief 13: dentro de la cuenta, atrás recorre sus vistas; desde la bandeja vuelve a "traer documentos" */
   if(obStep===2 && cuentaVista!=='ini'){ cuentaVista = cuentaVista==='code' ? 'mail' : 'ini'; cuentaCode=false; obCuentaView(); return; }
   if(obStep===4 && obBandeja){ obBandeja=false; obShow(4); return; }
+  if(obReabre && obStep===5){ docPendCerrar(); return; } /* Fase 10 · Brief 40: no se va al paso 4 */
   if(obStep===3){ cuentaVista='ini'; cuentaCode=false; }
   if(obStep>0) obShow(obStep-1);
 });
 /* Fase 10 · Rediseño · Brief 13: "Saltar" entra a Inicio con la historia elegida; en la bandeja es "Ahora no" y vuelve al paso 4 sin traer nada */
 document.getElementById('obSkip').addEventListener('click', function(){
   if(obStep===4 && obBandeja){ obBandeja=false; obShow(4); return; }
+  if(obReabre && obStep===5){ docPendCerrar(); return; } /* Fase 10 · Brief 40: "Ahora no" */
   obFinish();
 });
 
@@ -4406,12 +4648,10 @@ document.getElementById('obSkip').addEventListener('click', function(){
 var DETECT={}, detOk=false, detDupe=null; /* Fase 10 · Rediseño · Brief 13b: sale detResumen (el resumen es el paso 6) */
 /* SP solo aparece en Sonia si "No, es otra persona"; CR es el nombre de relleno para mostrar la exclusión */
 var DET_EXTRA={SP:{nm:'Sofia G.', /* Fase 10 · Brief 19 (corrección): respaldo; detExtraNm() lo calcula */ ev:'Carné de vacunación'}, CR:{nm:'Carlos Rincón', ev:'Llegó en un correo reenviado'}};
-/* RELS sin "Otro" (aquí no hay campo para escribirlo) + los parentescos de {p3} en Martha y Laura — ver Handoff */
-/* Fase 10 · Brief 03c: con "Otro" al final y su campo de texto, como en el onboarding (hoja #obRelSheet) */
-function detRels(){ return RELS.filter(function(r){ return r!=='Otro'; }).concat(['Hermana','Hermano','Pareja','Otro']); }
+/* Fase 10 · Brief 43: sale detRels(); la lista es REL_TODAS. Un valor viejo "Otro" con su texto sigue mostrándose */
 function detRelLabel(d){ return d.rel==='Otro' ? (d.otro||'Otro') : d.rel; }
 var detMenuId=null; /* Fase 10 · Brief 03c: persona cuya relación se está eligiendo en #obRelSheet */
-function detAplica(){ return !esPropia() && (!!document.getElementById('obMail').getAttribute('data-done') || obScanDone); } /* Fase 10 · Brief 15: en la propia historia el paso 5 se salta siempre */
+function detAplica(){ return !esPropia() && (!!document.getElementById('obMail').getAttribute('data-done') || obScanDone || (!!obReabre && DOCS_PEND.length>0)); } /* Fase 10 · Brief 15: en la propia historia el paso 5 se salta siempre. Fase 10 · Brief 45c: y sí aplica en el paso reabierto con documentos sin organizar */
 function detHayDupe(){ return PROF==='sonia'; }
 /* Fase 10 · Brief 03c: las personas de la historia ya se conocen: llegan resueltas con los datos de PROFILES (r1/r2/r3) */
 /* Fase 10 · Rediseño · Brief 13c: "ya en tu familia" = persona de la historia que se agregó en el paso 3; las demás de la historia
@@ -4454,6 +4694,8 @@ function detIds(){
   var ids=SLOTS.filter(function(k){ return k!=='SO'; });
   if(detHayDupe()) ids.push('SP'); /* Fase 10 · Brief 03c: «Sofia P.» es siempre una tarjeta nueva en Sonia */
   ids.push('CR');
+  /* Fase 10 · Brief 47: si lo pendiente viene de un escaneo o una subida, solo quien aparece en lo escaneado (sin «Sofia P.» ni las del correo) */
+  if(SCAN_IDS && (scanPend || obReabre || obScanDone)) ids=ids.filter(function(id){ return SCAN_IDS.indexOf(id)>=0; });
   ids.forEach(function(id){
     if(DETECT[id] && (!detHist(id) || DETECT[id].known===detKnown(id))) return; /* Brief 13c: si cambió lo agregado, la tarjeta se rehace */
     if(detHist(id)){
@@ -4494,7 +4736,7 @@ function detCarneFuera(d){ return detHayDupe() && detDupe==='otra' && d.ty==='ce
 function detEvid(id){
   if(DET_EXTRA[id]) return 'Así aparece: '+detExtraNm(id)+' · '+DET_EXTRA[id].ev; /* Fase 10 · Brief 19 (corrección) */
   var tipos=[];
-  DOCS.forEach(function(d){
+  DOCS.concat(DOCS_PEND).forEach(function(d){ /* Fase 10 · Brief 47: lo pendiente también es evidencia (si no, decía "Aparece en un correo") */
     if(detSlot(fx(d.p))!==id) return;
     if(id==='SF' && detHayDupe() && detDupe==='otra' && d.ty==='certificado') return;
     var t = d.ty==='certificado' ? fx(d.t) : TYNAME[d.ty];
@@ -4519,7 +4761,7 @@ function detChip(attr, val, txt, on){
 /* Fase 10 · Rediseño · Brief 13b: "¿Quién es quién?" con el diseño del lienzo 56. Cada tarjeta va abierta: encabezado (avatar,
    nombre y evidencia), "Relación" y "¿Qué tanto le ayudas?" con dos tarjetas elegibles (mismo patrón que el horario, .slot).
    El resumen que antes vivía aquí (detResumen) es ahora el paso 6, "Así quedó tu familia" (renderObFamSum) */
-var SLOT_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l4 4 8-9"/></svg>';
+var SLOT_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l4 4 8-9"/></svg>';
 function detTinte(id){ return DET_EXTRA[id] ? 'var(--extra-t)' : 'var(--'+OB_VAR[id]+'-t)'; }
 function renderDet(){
   var box=document.getElementById('obDet'); if(!box) return;
@@ -4551,7 +4793,7 @@ function detRelHTML(id){
   }
   if(d.rel) return '<div class="det-rel"><span class="who det-opt on">'+detRelLabel(d)+'</span>'+
     '<button type="button" class="ob-link det-link" data-detmenu="'+id+'">Cambiar</button></div>';
-  return '<div class="sel-wrap"><button type="button" class="box" data-detmenu="'+id+'"><span>Elige la relación</span><span class="chev">▾</span></button></div>';
+  return '<div class="field"><div class="sel-wrap"><button type="button" class="box" data-detmenu="'+id+'"><span>Elige la relación</span><span class="chev">'+CHEV_D+'</span></button></div></div>'; /* Fase 10 · Brief 43: dentro de .field, la misma caja de 56 px del paso 3 */
 }
 function detNivCard(id, v, t, dsc, on, attr){ /* Fase 10 · Brief 18: on/attr opcionales, para el paso 3 de la propia historia */
   if(on===undefined) on=DETECT[id].nivel===v;
@@ -4616,7 +4858,58 @@ document.getElementById('obDet').addEventListener('click', function(e){
   renderDet();
 });
 /* ---- Familia: tarjetas colapsables, sin preselección (H11, H14) ---- */
-var RELS=['Hija','Hijo','Mamá','Papá','Esposo','Esposa','Abuela','Abuelo','Otro'];
+/* Fase 10 · Brief 43: parentesco con autocompletar. REL_TODAS reemplaza a RELS y a detRels(): una sola lista, sin "Otro"
+   (lo que no está se usa tal como se escribió). relPickerHTML() dibuja el contenido de #obRelSheet, #faRelSheet e #i3RelSheet */
+var REL_TODAS=['Hija','Hijo','Mamá','Papá','Pareja','Esposa','Esposo','Hermana','Hermano','Abuela','Abuelo','Nieta','Nieto','Tía','Tío','Sobrina','Sobrino','Prima','Primo','Suegra','Suegro','Cuñada','Cuñado','Nuera','Yerno','Bisabuela','Bisabuelo','Madrastra','Padrastro','Hijastra','Hijastro','Madrina','Padrino'];
+var REL_FREC=['Hija','Hijo','Mamá','Papá','Pareja'];
+var REL_EQUIV={madre:['Mamá'], padre:['Papá'], novia:['Pareja'], novio:['Pareja'], esposa:['Pareja'], esposo:['Pareja']}; /* suman, no reemplazan */
+function relNorm(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim(); }
+function relLimpio(s){ s=(s||'').trim().slice(0,30).trim(); return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+function relEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+/* filas: [valor, texto, marcada]. Vacío → la relación actual (si no es frecuente) y las frecuentes; con texto → filtra, máx. 6 filas */
+function relFilas(q, cur){
+  var n=relNorm(q), out=[];
+  if(!n){
+    if(cur && REL_FREC.indexOf(cur)<0) out.push([cur, cur, true]);
+    REL_FREC.forEach(function(r){ out.push([r, r, r===cur]); });
+    return out;
+  }
+  var emp=[], con=[], eq=[];
+  REL_TODAS.forEach(function(r){ var x=relNorm(r).indexOf(n); if(x===0) emp.push(r); else if(x>0) con.push(r); });
+  if(n.length>=3) Object.keys(REL_EQUIV).forEach(function(k){ if(k.indexOf(n)===0) eq=eq.concat(REL_EQUIV[k]); });
+  var vistos={};
+  emp.concat(eq, con).forEach(function(r){ if(!vistos[r]){ vistos[r]=1; out.push([r, r, false]); } });
+  var usar=relLimpio(q), exacta=REL_TODAS.some(function(r){ return relNorm(r)===n; });
+  if(usar && !exacta){ out=out.slice(0,5); out.push([usar, 'Usar «'+usar+'»', false]); }
+  return out.slice(0,6);
+}
+/* tpl: los atributos de cada fila, con {v} en lugar del valor (p. ej. 'data-i3rel="{v}"'); pre: prefijo de los id de la hoja */
+function relFilasHTML(q, cur, tpl, pre){
+  return relFilas(q, cur).map(function(f, i){
+    return '<button type="button" class="m3i'+(f[2]?' sel':'')+'" role="option" id="'+pre+'RelOpt'+i+'" aria-selected="'+f[2]+'" '+tpl.replace('{v}', relEsc(f[0]))+'>'+relEsc(f[1])+'</button>';
+  }).join('');
+}
+function relAnuncio(n){ return n===1 ? '1 sugerencia' : n+' sugerencias'; }
+function relPickerHTML(valor, tpl, pre){
+  var cur=valor||'', n=relFilas('', cur).length;
+  return '<div class="field relpick"><label for="'+pre+'RelIn">Relación</label>'+
+    '<input type="text" id="'+pre+'RelIn" class="relpick-in" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="'+pre+'RelLb"'+
+    ' maxlength="30" autocomplete="off" placeholder="Escribe, por ejemplo, tía" data-cur="'+relEsc(cur)+'" data-tpl="'+relEsc(tpl)+'" data-pre="'+pre+'"></div>'+
+    '<div role="listbox" id="'+pre+'RelLb" aria-label="Relación">'+relFilasHTML('', cur, tpl, pre)+'</div>'+
+    '<p class="sr-only" aria-live="polite" id="'+pre+'RelLive">'+relAnuncio(n)+'</p>';
+}
+/* al escribir solo se repinta la lista (el campo no pierde el foco); Enter elige la primera fila. Escape lo cierra initA11yDialogs() */
+document.addEventListener('input', function(e){
+  var t=e.target; if(!t.classList || !t.classList.contains('relpick-in')) return;
+  var pre=t.getAttribute('data-pre'), cur=t.getAttribute('data-cur');
+  document.getElementById(pre+'RelLb').innerHTML=relFilasHTML(t.value, cur, t.getAttribute('data-tpl'), pre);
+  document.getElementById(pre+'RelLive').textContent=relAnuncio(relFilas(t.value, cur).length);
+});
+document.addEventListener('keydown', function(e){
+  var t=e.target; if(e.key!=='Enter' || !t.classList || !t.classList.contains('relpick-in')) return;
+  e.preventDefault();
+  var f=document.querySelector('#'+t.getAttribute('data-pre')+'RelLb [role="option"]'); if(f) f.click();
+});
 var obPeople=[]; /* Fase 10 · Rediseño · Brief 13: se llena desde la historia en obFamInit() */
 var obMenuIx=-1;
 /* Fase 6 · fecha de nacimiento con formato forzado dd/mm/aaaa */
@@ -4690,14 +4983,16 @@ function obFamInit(){
   var ep=V.eps||'', enLista=OB_EPS.indexOf(ep)>=0;
   /* Fase 10 · Brief 19 (corrección 4): "Nombre completo" llega prellenado con el del punto 7 (en la propia historia, lo de siempre) */
   obPeople=[{k:'SO', me:true, nm:(esPropia() ? fx('{u} {ape}') : nombreCompleto('SO')).trim(), nac:OB_NAC.SO||'', nacErr:'', eps:enLista ? ep : (ep ? 'Otra' : ''), epsOtro:enLista ? '' : ep}];
-  ['SF','MT','MA'].filter(function(k){ return SLOTS.indexOf(k)>=0; }).forEach(function(k){
-    var r=(V['r'+OB_N[k]]||'').split(' · ');
-    obPeople.push({k:k, me:false, nm:esPropia() ? V['p'+OB_N[k]] : nombreCompleto(k), rel:r[0], /* Fase 10 · Brief 19 (corrección 4) */ otro:'', resto:r.slice(1).join(' · '),
-      nac:(k==='MT' ? V.nac2raw : OB_NAC[k])||'', nacErr:'',
-      approx:!!OB_APROX[k], edadAprox:OB_APROX[k]||'', nivel:''}); /* Fase 10 · Brief 18: edad aproximada y nivel (sin preselección) */
-  });
+  ['SF','MT','MA'].filter(function(k){ return SLOTS.indexOf(k)>=0; }).forEach(function(k){ obPeople.push(obPersonaDe(k)); }); /* Fase 10 · Brief 30: sale a obPersonaDe() */
   obMenuIx=-1; obEpsMenu=false;
   obAgregados=[]; /* Fase 10 · Rediseño · Brief 13c: el paso 3 arranca solo contigo; las demás se agregan con "Agregar a quien cuidas" */
+}
+/* Fase 10 · Brief 30: la tarjeta de una persona de la historia, prellenada; la usan el paso 3 (obFamInit) y «Agregar familiar» (#I1) */
+function obPersonaDe(k){
+  var r=(V['r'+OB_N[k]]||'').split(' · ');
+  return {k:k, me:false, nm:esPropia() ? (V['p'+OB_N[k]]||'') : nombreCompleto(k), rel:r[0]||'', /* Fase 10 · Brief 19 (corrección 4) */ otro:'', resto:r.slice(1).join(' · '),
+    nac:(k==='MT' ? V.nac2raw : OB_NAC[k])||'', nacErr:'',
+    approx:!!OB_APROX[k], edadAprox:OB_APROX[k]||'', nivel:''}; /* Fase 10 · Brief 18: edad aproximada y nivel (sin preselección) */
 }
 /* Fase 10 · Rediseño · Brief 13c: tarjetas visibles del paso 3 (tú + las agregadas) y la siguiente persona de la historia por agregar */
 function obEnFam(p){ return p.me || obAgregados.indexOf(p.k)>=0; }
@@ -4710,18 +5005,16 @@ function obIni(p){
   return nm.split(/\s+/)[0]===o['p'+OB_N[p.k]] ? o['i'+OB_N[p.k]] : obInitials(nm); /* Fase 10 · Brief 19 (corrección 4): el campo trae el nombre completo */
 }
 /* Fase 10 · Rediseño · Brief 13b: la fecha es opcional, pero si se escribe tiene que ser válida */
-var OB_ERR_IC='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>';
+var OB_ERR_IC='<svg width=\"16\" height=\"16\" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=\"2\" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>';
 function obNacOk(p){
   if(p.approx){ var a=(p.edadAprox||'').trim(); return !a || edadAproxValida(a).ok; } /* Fase 10 · Brief 18: la edad aproximada también es opcional */
   var v=(p.nac||'').trim(); return !v || fechaValida(v).ok;
 }
 /* Fase 10 · Brief 15: sin EPS no se continúa. Brief 18: en la propia historia, tampoco sin el nivel de cada persona agregada */
 function obReady(){ return obPeople.filter(obEnFam).every(function(p){ return p.nm.trim() && obNacOk(p) && (p.me ? !!obEpsDe(p) : (p.rel && (p.rel!=='Otro'||p.otro.trim()) && (!esPropia() || !!p.nivel))); }); }
-function obFamApply(){
-  if(!obPeople.length || !obPeople[0].k || !obReady()) return;
-  var cambio=false, set=function(key,val){ if(V[key]!==val){ V[key]=val; cambio=true; } };
-  var martha=PROFILES[PROF].hide.indexOf('SF')>=0; /* en Martha {p1} y {p2} son Rosa */
-  obPeople.filter(obEnFam).forEach(function(p){ /* Fase 10 · Rediseño · Brief 13c: solo tú y las agregadas */
+/* Fase 10 · Brief 30: lo que una tarjeta escribe en V, OB_NAC, OB_APROX y OB_NIVEL (sale de obFamApply(); la comparte #I1).
+   conNivel: el nivel elegido manda (nivelDe) y la relación lo lleva cuando no hay edad, como en detConfirmar() */
+function obPersonaEscribe(p, conNivel, set){
     var nm=p.nm.trim().replace(/\s+/g,' '), ini=obIni(p);
     /* Fase 10 · Rediseño · Brief 13b: la fecha llega al perfil (i3DateRow). {p2} usa la de la historia; las demás, OB_NAC */
     var nac=p.approx ? '' : (p.nac||'').trim(); /* Fase 10 · Brief 18: con edad aproximada, la fecha no cuenta */
@@ -4729,58 +5022,69 @@ function obFamApply(){
     else if(nac) OB_NAC[p.k]=nac; else delete OB_NAC[p.k];
     var ap=(p.approx && (p.edadAprox||'').trim()) ? p.edadAprox.trim() : '';
     if(!p.me){ if(ap) OB_APROX[p.k]=ap; else delete OB_APROX[p.k]; }
-    if(!p.me && esPropia()) OB_NIVEL[p.k]=p.nivel||'siempre'; /* Fase 10 · Brief 18: nivelDe() lo lee en la propia historia */
+    if(!p.me && conNivel) OB_NIVEL[p.k]=p.nivel||'siempre'; /* Fase 10 · Brief 18: nivelDe() lo lee */
     /* Fase 10 · Brief 19 (corrección 4): la primera palabra es el nombre que usa la app; el resto, los apellidos, que van al nombre
        completo ({fu}/{fN}: perfil, detección, visor, "Paciente:") y a la comparación de apellidos. {ape} = el primer apellido */
     var w=nm.split(' '), nom=w[0];
     if(p.me){ set('u', nom); set('ape', apellidosDe(nm)[0]||''); set('fu', nm); set('iu', ini); obEpsApply(obEpsDe(p), set); return; } /* Fase 10 · Brief 15: V.eps */
-    var n=OB_N[p.k], r=relEdad(p.k, obRelLabel(p), esPropia() ? detNivelTxt(p.nivel) : (esEdad(p.resto) ? '' : p.resto)); /* Fase 10 · Rediseño · Brief 13b (corrección): edad desde la fecha. Brief 18: sin edad, el nivel */
+    var n=OB_N[p.k], r=relEdad(p.k, obRelLabel(p), conNivel ? detNivelTxt(p.nivel) : (esEdad(p.resto) ? '' : p.resto)); /* Fase 10 · Rediseño · Brief 13b (corrección): edad desde la fecha. Brief 18: sin edad, el nivel */
     set('p'+n, nom); set('f'+n, nm); set('i'+n, ini); set('r'+n, r); /* Fase 10 · Brief 19 (corrección 4) */
-    if(p.k==='MT' && martha){ set('p1', nom); set('f1', nm); set('i1', ini); set('r1', r); }
-  });
+    if(p.k==='MT' && PROFILES[PROF].hide.indexOf('SF')>=0){ set('p1', nom); set('f1', nm); set('i1', ini); set('r1', r); } /* en Martha {p1} y {p2} son Rosa */
+}
+function obFamApply(){
+  if(!obPeople.length || !obPeople[0].k || !obReady()) return;
+  var cambio=false, set=function(key,val){ if(V[key]!==val){ V[key]=val; cambio=true; } };
+  obPeople.filter(obEnFam).forEach(function(p){ obPersonaEscribe(p, esPropia(), set); }); /* Fase 10 · Rediseño · Brief 13c: solo tú y las agregadas. Brief 30: sale a obPersonaEscribe() */
   obPeople.forEach(function(p){ if(!p.me && !obEnFam(p)){ delete OB_APROX[p.k]; delete OB_NIVEL[p.k]; } }); /* Fase 10 · Brief 18: quien se quitó no deja edad ni nivel */
   if(cambio){ repaintStatic(); refrescarPersonas(); }
+}
+/* Fase 10 · Brief 30: la tarjeta de persona del paso 3, compartida con «Agregar familiar» (#I1). i = índice en obPeople, o 'f' en #I1.
+   o.pre = prefijo de los id de los campos; o.nivel = sale «¿Qué tanto le ayudas?»; o.quitar = sale «Quitar» */
+function obCardHTML(p, i, o){
+  var h='';
+  var vr=OB_VAR[p.k];
+  h+='<div class="pcard ob-pc" style="--pc-t:var(--'+vr+'-t);--tinte:var(--'+vr+'-t)">'+ /* Fase 10 · Brief 18: --tinte para .slot.det-niv */
+     '<div class="pcard-h"><span class="av" style="background:var(--'+vr+')">'+obIni(p)+'</span>'+
+     '<span class="card-main"><span class="pcard-nm">'+(p.nm.trim()||(p.me?'Tú':'Sin nombre'))+'</span>'+
+     '<span class="pcard-rel">'+(p.me ? 'Tu perfil' : obRelLabel(p))+'</span></span></div>'+
+     '<div class="pcard-b">'+
+     '<div class="field"><label for="'+o.pre+'Nm'+i+'">Nombre completo</label><input class="ob-inp" type="text" id="'+o.pre+'Nm'+i+'" data-obf="nm" data-obi="'+i+'" placeholder="Nombre completo" value="'+p.nm.replace(/"/g,'&quot;')+'"></div>';
+  if(p.me && cuentaGoogle && !esPropia()) h+='<p class="ob-gnote"><span class="ob-g" aria-hidden="true">G</span>Lo tomé de tu cuenta de Google. Cámbialo si prefieres otro.</p>'; /* Fase 10 · Brief 15: en la propia historia tu tarjeta llega vacía, así que no hay nada que "tomé" */
+  /* Fase 10 · Rediseño · Brief 13b: fecha de nacimiento (opcional; se valida al salir del campo) */
+  /* Fase 10 · Brief 18: "No sé la fecha exacta" (solo en las agregadas; tu fecha es opcional) cambia a "Edad aproximada", como en el perfil */
+  var ayuda = p.me ? '' : '<p class="helper">Me ayuda a saber qué controles y exámenes le tocan según la edad.</p>';
+  if(p.approx && !p.me){
+    h+='<div class="field"><label for="'+o.pre+'Nac'+i+'">Edad aproximada</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" id="'+o.pre+'Nac'+i+'" data-obf="edadAprox" data-obi="'+i+'" placeholder="Años" maxlength="3" value="'+(p.edadAprox||'')+'">'+
+       '<p class="err-msg"'+(p.nacErr?'':' hidden')+'>'+OB_ERR_IC+'<span>'+(p.nacErr||'')+'</span></p>'+ayuda+
+       '<button type="button" class="ob-link" data-obaprox="'+i+'">Sí sé la fecha exacta</button></div>';
+  } else {
+    h+='<div class="field"><label for="'+o.pre+'Nac'+i+'">Fecha de nacimiento</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" id="'+o.pre+'Nac'+i+'" data-obf="nac" data-obi="'+i+'" placeholder="dd / mm / aaaa" maxlength="10" value="'+(p.nac||'')+'">'+
+       '<p class="err-msg"'+(p.nacErr?'':' hidden')+'>'+OB_ERR_IC+'<span>'+(p.nacErr||'')+'</span></p>'+ayuda+
+       (p.me ? '' : '<button type="button" class="ob-link" data-obaprox="'+i+'">No sé la fecha exacta</button>')+'</div>';
+  }
+  /* Fase 10 · Brief 15: "Tu EPS", obligatoria, en las cuatro historias. Abre #obRelSheet en modo EPS */
+  if(p.me){ var eL=obEpsDe(p) || (p.eps==='Otra' ? 'Otra' : '');
+    h+='<div class="field"><label>Tu EPS</label><div class="sel-wrap">'+
+       '<button type="button" class="box'+(eL?' filled':'')+'" data-obeps="1"><span>'+(eL||'Elige tu EPS')+'</span><span class="chev">'+CHEV_D+'</span></button></div></div>'; }
+  if(!p.me){
+    h+='<div class="field"><label>Relación</label><div class="sel-wrap">'+
+       '<button type="button" class="box'+(p.rel?' filled':'')+'" data-obmenu="'+i+'" style="width:100%;">'+
+       '<span>'+(obRelLabel(p)||'Elige la relación')+'</span><span class="chev">'+CHEV_D+'</span></button></div></div>'; /* Fase 10 · Brief 30: sin relación, «Elige la relación» */ /* Fase 10 · Rediseño · Brief 13b: sin obNivelHTML() */
+    /* Fase 10 · Brief 18: en la propia historia, el nivel va aquí (no hay detección), con las tarjetas de la detección y sin preselección */
+    if(o.nivel) h+='<div><p class="det-q">¿Qué tanto le ayudas?</p><div class="det-niv-l">'+
+       detNivCard(i, 'siempre', 'Le cuido siempre', 'Te aviso de sus citas, órdenes y medicamentos.', p.nivel==='siempre', 'data-obniv')+
+       detNivCard(i, 'aveces', 'A veces le ayudo', 'Guardo sus documentos para cuando los necesites.', p.nivel==='aveces', 'data-obniv')+'</div></div>';
+    if(o.quitar) h+='<button type="button" class="ob-link ob-quitar" data-obquitar="'+p.k+'">Quitar</button>'; /* Fase 10 · Rediseño · Brief 13c */
+  }
+  h+='</div></div>';
+  return h;
 }
 function renderObFam(){
   var box=document.getElementById('obFam'); if(!box) return;
   var h='';
   obPeople.forEach(function(p,i){
     if(!obEnFam(p)) return; /* Fase 10 · Rediseño · Brief 13c: quien no se agregó no tiene tarjeta */
-    var vr=OB_VAR[p.k];
-    h+='<div class="pcard ob-pc" style="--pc-t:var(--'+vr+'-t);--tinte:var(--'+vr+'-t)">'+ /* Fase 10 · Brief 18: --tinte para .slot.det-niv */
-       '<div class="pcard-h"><span class="av" style="background:var(--'+vr+')">'+obIni(p)+'</span>'+
-       '<span class="card-main"><span class="pcard-nm">'+(p.nm.trim()||(p.me?'Tú':'Sin nombre'))+'</span>'+
-       '<span class="pcard-rel">'+(p.me ? 'Tu perfil' : obRelLabel(p))+'</span></span></div>'+
-       '<div class="pcard-b">'+
-       '<div class="field"><label for="obNm'+i+'">Nombre completo</label><input class="ob-inp" type="text" id="obNm'+i+'" data-obf="nm" data-obi="'+i+'" placeholder="Nombre completo" value="'+p.nm.replace(/"/g,'&quot;')+'"></div>';
-    if(p.me && cuentaGoogle && !esPropia()) h+='<p class="ob-gnote"><span class="ob-g" aria-hidden="true">G</span>Lo tomé de tu cuenta de Google. Cámbialo si prefieres otro.</p>'; /* Fase 10 · Brief 15: en la propia historia tu tarjeta llega vacía, así que no hay nada que "tomé" */
-    /* Fase 10 · Rediseño · Brief 13b: fecha de nacimiento (opcional; se valida al salir del campo) */
-    /* Fase 10 · Brief 18: "No sé la fecha exacta" (solo en las agregadas; tu fecha es opcional) cambia a "Edad aproximada", como en el perfil */
-    var ayuda = p.me ? '' : '<p class="helper">Me ayuda a saber qué controles y exámenes le tocan según la edad.</p>';
-    if(p.approx && !p.me){
-      h+='<div class="field"><label for="obNac'+i+'">Edad aproximada</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" id="obNac'+i+'" data-obf="edadAprox" data-obi="'+i+'" placeholder="Años" maxlength="3" value="'+(p.edadAprox||'')+'">'+
-         '<p class="err-msg"'+(p.nacErr?'':' hidden')+'>'+OB_ERR_IC+'<span>'+(p.nacErr||'')+'</span></p>'+ayuda+
-         '<button type="button" class="ob-link" data-obaprox="'+i+'">Sí sé la fecha exacta</button></div>';
-    } else {
-      h+='<div class="field"><label for="obNac'+i+'">Fecha de nacimiento</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" id="obNac'+i+'" data-obf="nac" data-obi="'+i+'" placeholder="dd / mm / aaaa" maxlength="10" value="'+(p.nac||'')+'">'+
-         '<p class="err-msg"'+(p.nacErr?'':' hidden')+'>'+OB_ERR_IC+'<span>'+(p.nacErr||'')+'</span></p>'+ayuda+
-         (p.me ? '' : '<button type="button" class="ob-link" data-obaprox="'+i+'">No sé la fecha exacta</button>')+'</div>';
-    }
-    /* Fase 10 · Brief 15: "Tu EPS", obligatoria, en las cuatro historias. Abre #obRelSheet en modo EPS */
-    if(p.me){ var eL=obEpsDe(p) || (p.eps==='Otra' ? 'Otra' : '');
-      h+='<div class="field"><label>Tu EPS</label><div class="sel-wrap">'+
-         '<button type="button" class="box'+(eL?' filled':'')+'" data-obeps="1"><span>'+(eL||'Elige tu EPS')+'</span><span class="chev">▾</span></button></div></div>'; }
-    if(!p.me){
-      h+='<div class="field"><label>Relación</label><div class="sel-wrap">'+
-         '<button type="button" class="box filled" data-obmenu="'+i+'" style="width:100%;">'+
-         '<span>'+obRelLabel(p)+'</span><span class="chev">▾</span></button></div></div>'; /* Fase 10 · Rediseño · Brief 13b: sin obNivelHTML() */
-      /* Fase 10 · Brief 18: en la propia historia, el nivel va aquí (no hay detección), con las tarjetas de la detección y sin preselección */
-      if(esPropia()) h+='<div><p class="det-q">¿Qué tanto le ayudas?</p><div class="det-niv-l">'+
-         detNivCard(i, 'siempre', 'Le cuido siempre', 'Te aviso de sus citas, órdenes y medicamentos.', p.nivel==='siempre', 'data-obniv')+
-         detNivCard(i, 'aveces', 'A veces le ayudo', 'Guardo sus documentos para cuando los necesites.', p.nivel==='aveces', 'data-obniv')+'</div></div>';
-      h+='<button type="button" class="ob-link ob-quitar" data-obquitar="'+p.k+'">Quitar</button>'; /* Fase 10 · Rediseño · Brief 13c */
-    }
-    h+='</div></div>';
+    h+=obCardHTML(p, i, {pre:'ob', nivel:esPropia(), quitar:true}); /* Fase 10 · Brief 30 */
   });
   /* Fase 10 · Rediseño · Brief 13c (lienzo 66): cada toque agrega a la siguiente persona de la historia; sin nadie más, desaparece */
   if(obSiguiente()) h+='<button type="button" class="ob-add" data-obadd="1"><span class="ob-add-ic" aria-hidden="true">'+OB_PLUS+'</span>Agregar a quien cuidas</button>';
@@ -4793,16 +5097,15 @@ function renderObFam(){
 /* Fase 6 · menú de Parentesco a pantalla completa (misma hoja que el resto del prototipo) */
 function renderRelSheet(){
   var sheet=document.getElementById('obRelSheet'); if(!sheet) return;
+  var rt=document.getElementById('obRelTitle');
   /* Fase 10 · Brief 03c: la misma hoja sirve a la detección (paso 4) con la lista de detRels() */
   if(detMenuId && DETECT[detMenuId]){
-    var dd=DETECT[detMenuId], hd='';
-    detRels().forEach(function(r){ hd+='<button type="button" class="m3i'+(dd.rel===r?' sel':'')+'" data-detrelpick="'+r+'">'+r+'</button>'; });
-    if(dd.rel==='Otro') hd+='<div class="m3-other"><input type="text" data-detotro="1" placeholder="¿Qué es de ti?" value="'+(dd.otro||'').replace(/"/g,'&quot;')+'"></div>';
-    document.getElementById('obRelList').innerHTML=hd;
+    var dd=DETECT[detMenuId];
+    if(rt) rt.textContent='¿Qué es de ti?'; /* Fase 10 · Brief 43 */
+    document.getElementById('obRelList').innerHTML=relPickerHTML(dd.rel ? detRelLabel(dd) : '', 'data-detrelpick="{v}"', 'ob');
     sheet.style.display='flex';
     return;
   }
-  var rt=document.getElementById('obRelTitle');
   /* Fase 10 · Brief 15: la misma hoja, con las EPS */
   if(obEpsMenu && obPeople[0]){
     var me=obPeople[0], he='';
@@ -4813,15 +5116,43 @@ function renderRelSheet(){
     sheet.style.display='flex';
     return;
   }
-  if(rt) rt.textContent='Relación';
+  if(rt) rt.textContent='¿Qué es de ti?'; /* Fase 10 · Brief 43 */
   if(obMenuIx<0 || !obPeople[obMenuIx]){ sheet.style.display='none'; return; }
-  var p=obPeople[obMenuIx], h='';
-  detRels().forEach(function(r){ h+='<button type="button" class="m3i'+(p.rel===r?' sel':'')+'" data-obrel="'+r+'" data-obi="'+obMenuIx+'">'+r+'</button>'; }); /* Fase 10 · Rediseño · Brief 13: la lista de detRels() trae Hermano y Pareja de las historias */
-  if(p.rel==='Otro') h+='<div class="m3-other"><input type="text" data-obf="otro" data-obi="'+obMenuIx+'" placeholder="¿Qué es de ti?" value="'+p.otro.replace(/"/g,'&quot;')+'"></div>';
-  document.getElementById('obRelList').innerHTML=h;
+  document.getElementById('obRelList').innerHTML=obRelListHTML(obPeople[obMenuIx], obMenuIx); /* Fase 10 · Brief 30: la comparte #faRelSheet */
   sheet.style.display='flex';
 }
+function obRelListHTML(p, i){ /* Fase 10 · Brief 43: el autocompletar (pre 'ob' o 'fa') */
+  return relPickerHTML(p.rel ? obRelLabel(p) : '', 'data-obrel="{v}" data-obi="'+i+'"', i==='f' ? 'fa' : 'ob');
+}
 
+/* Fase 10 · Brief 30: lo que comparten la tarjeta del paso 3 (en #ob) y la de «Agregar familiar» (#I1, data-obi="f").
+   obP() da la persona y obCardRepaint() repinta la pantalla a la que pertenece; la hoja de relación es #obRelSheet o #faRelSheet */
+function obP(i){ return i==='f' ? famForm : obPeople[+i]; }
+function obCardRepaint(i){ if(i==='f') renderFamForm(); else renderObFam(); }
+function obCardBox(i){ return document.getElementById(i==='f' ? 'I1' : 'obFam'); }
+function obCardClick(e){
+  var mb=e.target.closest('[data-obmenu]');
+  if(mb){ var i2=mb.getAttribute('data-obmenu');
+    if(i2==='f'){ famMenu=!famMenu; renderFamForm(); return true; }
+    i2=+i2; obMenuIx = (obMenuIx===i2? -1 : i2); obEpsMenu=false; renderObFam(); return true; }
+  var rb=e.target.closest('[data-obrel]');
+  if(rb){
+    var i3=rb.getAttribute('data-obi'), r=rb.getAttribute('data-obrel'), pr=obP(i3);
+    pr.rel=r; pr.otro=''; /* Fase 10 · Brief 43: sale "Otro" */
+    if(i3==='f') famMenu=false; else obMenuIx=-1;
+    obCardRepaint(i3);
+    var mf=document.querySelector((i3==='f' ? '#I1 ' : '#obFam ')+'[data-obmenu="'+i3+'"]'); if(mf) mf.focus();
+    return true;
+  }
+  /* Fase 10 · Brief 18: nivel de cuidado y "No sé la fecha exacta" del paso 3 */
+  var nvb=e.target.closest('[data-obniv]');
+  if(nvb){ var nq=nvb.getAttribute('data-obniv').split('|'); obP(nq[0]).nivel=nq[1]; obCardRepaint(nq[0]);
+    var nf=obCardBox(nq[0]).querySelector('[data-obniv="'+nq[0]+'|'+nq[1]+'"]'); if(nf) nf.focus(); return true; }
+  var apb=e.target.closest('[data-obaprox]');
+  if(apb){ var ai=apb.getAttribute('data-obaprox'), pa=obP(ai); pa.approx=!pa.approx; pa.nacErr=''; obCardRepaint(ai);
+    var fi=document.getElementById((ai==='f'?'fa':'ob')+'Nac'+ai); if(fi) fi.focus(); return true; }
+  return false;
+}
 ob.addEventListener('click', function(e){
   if(e.target.closest('[data-obnext]')){ if(obStep<OBN-1) obShow(obStep+1); else obFinish(); return; }
   /* Fase Móvil · Punto 1a: tarjeta de familia es la acción misma — aplica el perfil y avanza directo.
@@ -4852,8 +5183,7 @@ ob.addEventListener('click', function(e){
     var ab=document.querySelector('[data-obadd]'); if(ab) ab.focus();
     return;
   }
-  var mb=e.target.closest('[data-obmenu]');
-  if(mb){ var i2=+mb.getAttribute('data-obmenu'); obMenuIx = (obMenuIx===i2? -1 : i2); obEpsMenu=false; renderObFam(); return; }
+  if(obCardClick(e)) return; /* Fase 10 · Brief 30: relación, nivel y "No sé la fecha exacta" los comparte #I1 */
   /* Fase 10 · Brief 15: "Tu EPS" */
   if(e.target.closest('[data-obeps]')){ obEpsMenu=!obEpsMenu; obMenuIx=-1; renderObFam(); return; }
   var epb=e.target.closest('[data-obepspick]');
@@ -4866,29 +5196,16 @@ ob.addEventListener('click', function(e){
     else { var eb0=document.querySelector('[data-obeps]'); if(eb0) eb0.focus(); }
     return;
   }
-  /* Fase 10 · Brief 03c: relación elegida desde la detección; "Otro" deja la hoja abierta para escribir */
+  /* Fase 10 · Brief 03c: relación elegida desde la detección. Brief 43: sin "Otro"; guarda el texto final y cierra */
   var drb=e.target.closest('[data-detrelpick]');
   if(drb && detMenuId){
-    var dm=DETECT[detMenuId], dr=drb.getAttribute('data-detrelpick');
-    dm.rel=dr;
-    if(dr!=='Otro'){ dm.otro=''; detMenuId=null; }
-    renderDet(); return;
+    var did=detMenuId, dm=DETECT[did];
+    dm.rel=drb.getAttribute('data-detrelpick'); dm.otro=''; detMenuId=null;
+    renderDet();
+    var dt=document.querySelector('[data-detmenu="'+did+'"]'); if(dt) dt.focus();
+    return;
   }
-  var rb=e.target.closest('[data-obrel]');
-  if(rb){
-    var i3=+rb.getAttribute('data-obi'), r=rb.getAttribute('data-obrel');
-    obPeople[i3].rel=r;
-    if(r!=='Otro'){ obPeople[i3].otro=''; obMenuIx=-1; }
-    renderObFam(); return;
-  }
-  if(e.target.closest('.m3-other')) return;
-  /* Fase 10 · Brief 18: nivel de cuidado y "No sé la fecha exacta" del paso 3 */
-  var nvb=e.target.closest('[data-obniv]');
-  if(nvb){ var nq=nvb.getAttribute('data-obniv').split('|'); obPeople[+nq[0]].nivel=nq[1]; renderObFam();
-    var nf=document.querySelector('[data-obniv="'+nq[0]+'|'+nq[1]+'"]'); if(nf) nf.focus(); return; }
-  var apb=e.target.closest('[data-obaprox]');
-  if(apb){ var ai=apb.getAttribute('data-obaprox'), pa=obPeople[+ai]; pa.approx=!pa.approx; pa.nacErr=''; renderObFam();
-    var fi=document.getElementById('obNac'+ai); if(fi) fi.focus(); return; }
+  if(e.target.closest('.m3-other, .relpick')) return; /* Fase 10 · Brief 43 */
   var scanBtn=e.target.closest('[data-obscan]');
   if(scanBtn){
     if(scanBtn.classList.contains('soon')){ otraOpen(); return; } /* Fase 10 · Brief 18: "En otras historias" */
@@ -4928,15 +5245,12 @@ ob.addEventListener('input', function(e){
     e.target.classList.toggle('err', !!(v.trim() && !mok));
     return;
   }
-  /* Fase 10 · Brief 03c: "Otro" de la detección; se actualiza el estado sin repintar la hoja (no pierde el foco) */
-  if(e.target.getAttribute('data-detotro') && detMenuId){
-    DETECT[detMenuId].otro=e.target.value;
-    var nbd=document.getElementById('obNext');
-    if(detListo()) nbd.removeAttribute('disabled'); else nbd.setAttribute('disabled','');
-    return;
-  }
+  /* Fase 10 · Brief 43: sale el campo "Otro" de la detección (data-detotro) */
+  obCardInput(e); /* Fase 10 · Brief 30: lo comparte #I1 */
+});
+function obCardInput(e){
   var f=e.target.getAttribute('data-obf'); if(!f) return;
-  var i=+e.target.getAttribute('data-obi');
+  var i=e.target.getAttribute('data-obi'), p=obP(i); if(!p) return;
   var val=e.target.value;
   if(f==='nac'){
     val=fechaFormat(val);
@@ -4952,19 +5266,24 @@ ob.addEventListener('input', function(e){
     var box2=e.target.closest('.field'), em2=box2&&box2.querySelector('.err-msg');
     if(em2) em2.style.display='none';
   }
-  obPeople[i][f]=val;
-  var btn=document.getElementById('obNext');
-  if(btn && obStep===3) btn.toggleAttribute('disabled', !obReady()); /* Fase 10 · Rediseño · Brief 13: paso 3 */
-  var hd=document.querySelectorAll('#obFam .pcard')[i];
+  p[f]=val;
+  var hd;
+  if(i==='f'){ famListo(); hd=document.querySelector('#I1 .pcard'); } /* Fase 10 · Brief 30 */
+  else {
+    var btn=document.getElementById('obNext');
+    if(btn && obStep===3) btn.toggleAttribute('disabled', !obReady()); /* Fase 10 · Rediseño · Brief 13: paso 3 */
+    hd=document.querySelectorAll('#obFam .pcard')[obPeople.filter(obEnFam).indexOf(p)]; /* Fase 10 · Brief 30: por su lugar entre las visibles (antes, por índice en obPeople) */
+  }
   if(hd){ var nm=hd.querySelector('.pcard-nm'), av=hd.querySelector('.av');
-    if(nm) nm.textContent = obPeople[i].nm.trim() || (obPeople[i].me?'Tú':'Sin nombre');
-    if(av) av.textContent = obIni(obPeople[i]); }
-});
+    if(nm) nm.textContent = p.nm.trim() || (p.me?'Tú':'Sin nombre');
+    if(av) av.textContent = obIni(p); }
+}
 /* Fase 6 · el error de fecha se valida al salir del campo, no en cada tecla */
-ob.addEventListener('focusout', function(e){
+ob.addEventListener('focusout', obCardFocusout); /* Fase 10 · Brief 30: lo comparte #I1 */
+function obCardFocusout(e){
   var fo=e.target.getAttribute && e.target.getAttribute('data-obf');
   if(fo!=='nac' && fo!=='edadAprox') return;
-  var i=+e.target.getAttribute('data-obi'), p=obPeople[i]; if(!p) return;
+  var i=e.target.getAttribute('data-obi'), p=obP(i); if(!p) return;
   if(fo==='nac'){
     var v=(p.nac||'').trim();
     if(!v){ p.nacErr=''; }
@@ -4980,7 +5299,101 @@ ob.addEventListener('focusout', function(e){
   e.target.classList.toggle('err', !!p.nacErr);
   var em=e.target.closest('.field') && e.target.closest('.field').querySelector('.err-msg');
   if(em){ em.hidden=!p.nacErr; em.style.display=''; em.querySelector('span').textContent=p.nacErr; }
+  if(i==='f') famListo(); /* Fase 10 · Brief 30 */
+}
+/* ============================================================
+   Fase 10 · Brief 30 · AGREGAR FAMILIAR (#I1)
+   Agrega la siguiente persona de la historia que no está en la familia, con la tarjeta del paso 3 (obCardHTML) y sus
+   manejadores (obCardClick/Input/Focusout, con data-obi="f"). famForm vive solo mientras se está en #I1: cada entrada
+   empieza de cero. Si el correo ya estaba conectado, ofrece guardar lo que Taremi vio de esa persona y dejó fuera (#scrimFamDocs)
+   ============================================================ */
+var famForm=null, famMenu=false, famToast=null, famOferta=null;
+function famSiguiente(){ var l=['SF','MT','MA'].filter(function(k){ return SLOTS.indexOf(k)>=0 && personaFuera(k); }); return l[0]||null; }
+function famReady(){ var p=famForm; return !!p && !!p.nm.trim() && obNacOk(p) && !!p.rel && (p.rel!=='Otro' || !!p.otro.trim()) && !!p.nivel; }
+function famListo(){ var b=document.getElementById('faAdd'); if(b) b.toggleAttribute('disabled', !famReady()); }
+function famFormInit(){ var k=famSiguiente(); famForm = k ? obPersonaDe(k) : null; famMenu=false; }
+function renderFamForm(){
+  var box=document.getElementById('faBody'); if(!box) return;
+  box.innerHTML = famForm ? obCardHTML(famForm, 'f', {pre:'fa', nivel:true, quitar:false}) : '';
+  famListo();
+  var sh=document.getElementById('faRelSheet'); if(!sh) return;
+  if(famMenu && famForm){ document.getElementById('faRelList').innerHTML=obRelListHTML(famForm, 'f'); sh.style.display='flex'; }
+  else sh.style.display='none';
+}
+function famCerrarHoja(){ famMenu=false; renderFamForm(); var t=document.querySelector('#I1 [data-obmenu="f"]'); if(t) t.focus(); }
+/* lo que Taremi vio en el correo de esa persona y obFinish() dejó fuera de DOCS (sin el carné que la detección excluyó) */
+function docMismo(a,b){ return a.ep===b.ep && a.t===b.t && a.ty===b.ty && a.s===b.s; }
+function famDocsFuera(k){
+  if(esPropia() || !mailConnected) return [];
+  var sl=detSlot(k);
+  return DOCS0.filter(function(d){ return detSlot(fx(d.p))===sl && !detCarneFuera(d) && !DOCS.some(function(x){ return docMismo(x,d); }); });
+}
+/* trámites de esa persona que se revelan con sus documentos, como en obFinish() con el correo */
+var FAM_TRAM=['ped','cir','med','ter'];
+function famTram(k){ var sl=detSlot(k); return FAM_TRAM.map(card).filter(function(c){ return c && detSlot(fx(c.av))===sl; }); }
+function famAgregar(){
+  if(!famReady()) return;
+  var p=famForm, k=p.k;
+  if(obAgregados.indexOf(k)<0) obAgregados.push(k);
+  if(DETECT[k]) DETECT[k].fuera=false; /* "No es de mi familia" se limpia */
+  var cambio=false, set=function(key,val){ if(V[key]!==val){ V[key]=val; cambio=true; } };
+  obPersonaEscribe(p, true, set); /* el nivel elegido manda (OB_NIVEL) y va en la relación, como en detConfirmar() */
+  var nom=V['p'+OB_N[k]], docs=famDocsFuera(k);
+  DOCS_PEND=DOCS_PEND.filter(function(d){ return detSlot(fx(d.p))!==detSlot(k); }); /* Fase 10 · Brief 40: ya no están sin organizar */
+  famForm=null; famMenu=false;
+  /* sin sus documentos guardados no tiene trámites: lo que el correo del FAB dejó en accionable vuelve a oculto */
+  if(docs.length) famTram(k).forEach(function(c){ if(c.st==='accionable') c.st='oculto'; });
+  else famToast='Agregué a '+nom+' a tu familia.';
+  if(cambio) repaintStatic();
+  refrescarPersonas(); paintChips(); renderBoveda(); renderCalendario(); renderNotif();
+  show('FAM');
+  if(docs.length){
+    famOferta={k:k, docs:docs};
+    document.getElementById('famDocsTitle').textContent='Encontré documentos de '+nom+' en tu correo';
+    document.getElementById('famDocsSub').textContent='Los vi cuando revisé tu bandeja. No los guardé porque '+nom+' todavía no estaba en tu familia.';
+    var fl=document.getElementById('famDocsList'), fp=fx(docs[0].p); /* Fase 10 · Brief 46: la fila de la Bóveda, sin tocar y sin línea (solo el punto) */
+    fl.style.setProperty('--pc', PCOL[fp]||'');
+    fl.innerHTML=fx(docs.map(function(d){ return docRowHTML(d, false, true, true); }).join(''));
+    document.getElementById('scrimFamDocs').style.display='flex';
+  }
+}
+function famDocsCerrar(){ famOferta=null; document.getElementById('scrimFamDocs').style.display='none'; buildFamLists(); }
+function famDocsNo(){ if(!famOferta) return; famToast='Agregué a '+V['p'+OB_N[famOferta.k]]+' a tu familia.'; famDocsCerrar(); }
+function famDocsSi(){
+  if(!famOferta) return;
+  var k=famOferta.k, nom=V['p'+OB_N[k]], add=[];
+  /* vuelven desde DOCS0 en su orden original: cada una antes del siguiente documento de DOCS0 que ya esté en DOCS */
+  famOferta.docs.forEach(function(d){
+    var c=JSON.parse(JSON.stringify(d)), at=-1, i0=DOCS0.indexOf(d);
+    for(var j=i0+1; j<DOCS0.length && at<0; j++){ for(var m=0; m<DOCS.length; m++) if(docMismo(DOCS[m], DOCS0[j])){ at=m; break; } }
+    if(at<0) DOCS.push(c); else DOCS.splice(at, 0, c);
+    add.push(c);
+  });
+  bovMarcarNuevos(add);
+  /* "Le cuido siempre": sus trámites, solo los que sigan ocultos. "A veces le ayudo": solo los documentos (v6) */
+  if(nivelDe(k)==='siempre') famTram(k).forEach(function(c){ if(c.st==='oculto' && personaVisible(c)) c.st='accionable'; });
+  appVacia=false;
+  famToast='Guardé '+add.length+' documentos de '+nom+' en la Bóveda.';
+  renderInicio(); renderCurso(); renderBoveda(); renderCalendario(); renderNotif();
+  famDocsCerrar();
+}
+document.getElementById('I1').addEventListener('click', function(e){
+  if(e.target.closest('#faAdd')){ famAgregar(); return; }
+  obCardClick(e);
 });
+document.getElementById('I1').addEventListener('input', obCardInput);
+document.getElementById('I1').addEventListener('focusout', obCardFocusout);
+document.getElementById('faRelSheet').addEventListener('click', function(e){
+  if(e.target.id==='faRelSheet'){ famCerrarHoja(); return; }
+  if(e.target.closest('.relpick')) return; /* Fase 10 · Brief 43 */
+  obCardClick(e);
+});
+document.getElementById('faRelSheet').addEventListener('input', obCardInput);
+document.getElementById('scrimFamDocs').addEventListener('click', function(e){
+  if(e.target.closest('[data-famdocs="si"]')){ famDocsSi(); return; }
+  if(e.target.closest('[data-famdocs="no"]') || e.target.id==='scrimFamDocs'){ e.stopPropagation(); famDocsNo(); }
+});
+
 /* Fase 6 · correo reusa el mismo mecanismo de pantallas que cámara/galería — una sola función marca cualquiera de los tres orígenes */
 function markObDone(){
   var cardId, txtId;
@@ -4989,11 +5402,11 @@ function markObDone(){
   var c=document.getElementById(cardId), t=document.getElementById(txtId);
   if(!c||!t) return;
   c.setAttribute('data-done','1');
-  c.style.borderColor='var(--verde)'; c.style.background='var(--verde-pastel)';
+  c.style.borderColor='var(--r-exito)'; c.style.background='var(--r-exito-suave)';
   var msg = obMailActive
     ? 'Guardé todo lo que encontré en tu bandeja ✓' /* Fase 10 · Rediseño · Brief 13 · Brief 16: en la propia historia también encuentra la orden */ /* Fase 10 · Rediseño · Brief 13 */
     : 'Guardé todo lo que escaneaste ✓';
-  t.innerHTML='<h5 style="color:var(--verde);">'+msg+'</h5>';
+  t.innerHTML='<h5 style="color:var(--r-exito);">'+msg+'</h5>';
 }
 renderObFamChoice();
 obShow(0);
@@ -5005,8 +5418,8 @@ obShow(0);
 function resetObCards(){
   var defs=[
     ['obMail','obMailTxt','<h5>Buscar en tu bandeja</h5><p>Busco órdenes, resultados y autorizaciones automáticamente.</p>'], /* Fase 10 · Rediseño · Brief 13 */
-    ['obScanCard','obScanTxt','<h5>Escanear una orden</h5><p>Le tomas la foto y yo extraigo los datos. Se guarda cifrada y no se comparte con nadie.</p>'],
-    ['obUploadCard','obUploadTxt','<h5>Subir un PDF</h5><p>Si el documento ya está en tu celular. Se guarda cifrado y no se comparte con nadie.</p>']
+    ['obScanCard','obScanTxt','<h5>Escanear una orden</h5><p>Le tomas la foto y yo extraigo los datos. No la comparto con nadie.</p>'], /* Fase 10 · Brief 39: sin «cifrada» */
+    ['obUploadCard','obUploadTxt','<h5>Subir un PDF</h5><p>Si el documento ya está en tu celular. No lo comparto con nadie.</p>']
   ];
   defs.forEach(function(d){
     var card=document.getElementById(d[0]), txt=document.getElementById(d[1]);
@@ -5035,7 +5448,7 @@ function resetDemo(){
   DOCS=JSON.parse(JSON.stringify(DOCS0)); ordScanKey=null; citaGrabStop();
   if(esPropia()) DOCS=[]; /* Fase 10 · Brief 15: la propia historia arranca (y reinicia) sin documentos ni consultas */
   setOffline(false); failOnce=false; loadFail=false; lastSlot=null;
-  obScanActive=false; obScanSource=null; obScanDone=false; obMailActive=false; mailConnected=false; appVacia=false; tourSeen=false; PICON={}; if(tourStep>=0){ tourClose(true); tourSeen=false; } A1_ULT={}; /* Fase 10 · Brief 08e */
+  obScanActive=false; obScanSource=null; obScanDone=false; obMailActive=false; mailConnected=false; mailRevisado=null; camUsada=false; micUsado=false; cfgToast=null; /* Fase 10 · Brief 48 */ appVacia=false; tourSeen=false; PICON={}; if(tourStep>=0){ tourClose(true); tourSeen=false; } A1_ULT={}; /* Fase 10 · Brief 08e */
   /* Fase 10 · Rediseño · Brief 13: un reinicio vuelve a la bienvenida sin cuenta y con la familia de la historia */
   cuentaMail=null; cuentaGoogle=false; cuentaVista='ini'; cuentaCode=false; obMailDraft=''; obBandeja=false; obPeople=[]; obMenuIx=-1; obAgregados=[]; /* Fase 10 · Rediseño · Brief 13c: el reinicio vuelve a "solo tú" */
   /* Fase 8 · Brief 6.1: reiniciar la bandera y el toast del correo desde el FAB */
@@ -5044,7 +5457,7 @@ function resetDemo(){
   /* Fase 8 · Reauditoría Yifrah: i3EditOrig es estado nuevo, también se reinicia aquí */
   PROFILE_EDITS={}; i3Editing=false; i3Edit=null; i3EditOrig=null;
   /* Fase 10 · Brief 03: la detección vuelve a empezar (DOCS ya se restauró desde DOCS0 arriba) y Pegar texto queda vacío */
-  DETECT={}; detOk=false; detDupe=null; OB_NAC=JSON.parse(JSON.stringify(PROFILES[PROF].nac||{})); /* Fase 10 · Rediseño · Brief 13b: OB_NAC (corrección 2: vuelve a las fechas de la historia) */ OB_APROX={}; OB_NIVEL={}; /* Fase 10 · Brief 18 */ detMenuId=null; /* Fase 10 · Brief 03c */ pegReset();
+  DETECT={}; detOk=false; detDupe=null; DOCS_PEND=[]; obReabre=null; obReabreSnap=null; /* Fase 10 · Brief 40 */ DOCS_BANDEJA=[]; fabPend=false; /* Fase 10 · Brief 45 */ SCAN_IDS=null; scanPend=false; FIN_ULT={}; /* Fase 10 · Brief 47 */ pegPend=false; pegPendPrev=null; /* Fase 10 · Brief 47b */ obHecho=false; lastMain='A1'; /* Fase 10 · Brief 45b: también para "Cambiar de historia" (verHistorias → resetDemo) */ OB_NAC=JSON.parse(JSON.stringify(PROFILES[PROF].nac||{})); /* Fase 10 · Rediseño · Brief 13b: OB_NAC (corrección 2: vuelve a las fechas de la historia) */ OB_APROX={}; OB_NIVEL={}; /* Fase 10 · Brief 18 */ detMenuId=null; /* Fase 10 · Brief 03c */ pegReset();
   /* Fase 8 · Estructura 1: deshace también lo que propagateI3Edit ya escribió en V, y refresca
      PNAME/INIT — sin esto "Reiniciar demo" dejaba nombres/parentescos/edades editados. buildFamLists()
      hace falta aparte: a diferencia de A1/H1/F1/G1/I3, show('FAM') no vuelve a pintar esa pantalla sola
@@ -5052,6 +5465,8 @@ function resetDemo(){
      cambio de perfil. */
   V=JSON.parse(JSON.stringify(PROFILES[PROF].v)); buildPeople(); buildFamLists();
   var rs=document.getElementById('i3RelSheet'); if(rs) rs.style.display='none';
+  famForm=null; famMenu=false; famToast=null; famOferta=null; /* Fase 10 · Brief 30 */
+  ['faRelSheet','scrimFamDocs'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
   var ct=document.getElementById('confTip'); if(ct) ct.style.display='flex';
   resetObCards();
   var ob17=document.querySelector('[data-flow="off"]'); if(ob17) ob17.textContent='17 · Sin conexión';
@@ -5159,6 +5574,8 @@ function initA11yDialogs(){
         /* Fase 10 · Brief 15: la hoja de la EPS */
         obEpsMenu=false; renderObFam();
         var t4=document.querySelector('[data-obeps]'); if(t4) t4.focus();
+      } else if(d.id==='faRelSheet'){ famCerrarHoja(); /* Fase 10 · Brief 30 */
+      } else if(d.id==='scrimFamDocs'){ famDocsNo(); /* Fase 10 · Brief 30: como «Ahora no» */
       } else if(d.id==='obRelSheet'){
         var oi=obMenuIx; obMenuIx=-1; renderObFam();
         var t2=document.querySelector('[data-obmenu="'+oi+'"]'); if(t2) t2.focus();
