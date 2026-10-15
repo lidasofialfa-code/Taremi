@@ -42,13 +42,13 @@
   --tm-halo-fin:rgba(255,255,255,0); /* Fase 10 · Brief 22: borde transparente del halo */
   --ob-halo:radial-gradient(circle, rgba(83,219,232,.30) 0%, rgba(182,156,255,.14) 42%, rgba(255,255,255,0) 70%); /* lienzo 57 */
   /* Fase 10 · Rediseño · Brief 09: colores de persona por rol, con iniciales oscuras. Son solo el respaldo:
-     la fuente única es PROFILES (col y tint) en app.js, que buildPeople() escribe aquí al cambiar de historia.
+     la fuente única es PROFILES (col y tint) en app.js, que buildPeople() escribe aquí al aplicar la historia.
      Se quitan los tonos oscuros del avatar con letras blancas. */
   --sonia:#B69CFF;  --sonia-t:#F7F4FF;  /* dueña (iu) · lavanda */
   --sofia:#FFB054;  --sofia-t:#FFF7EC;  /* persona 1 (i1) · mandarina */
   --mateo:#7DB8FF;  --mateo-t:#F1F7FF;  /* persona 2 (i2) · cielo */
-  --marta:#C9D2D5;  --marta-t:#F1F4F5;  /* a veces le ayudas (i3) · niebla */
-  --extra:#FF94B8;  --extra-t:#FFECF2;  /* persona extra del onboarding o del escaneo · rosa */
+  --marta:#FF94B8;  --marta-t:#FFECF2;  /* persona 3 (i3) · rosa · Fase 11 · Brief 01b */
+  --extra:#C9D2D5;  --extra-t:#F1F4F5;  /* persona extra del onboarding o del escaneo · niebla · Fase 11 · Brief 01b */
   /* identidad por destino del tour de orientación — no son colores de estado ni de familia */
   --cielo:#1D5FA3;
   --cielo-pastel:#DCEEFC;
@@ -59,12 +59,12 @@
   /* Fase 10 · Rediseño · Brief 09: cuerpo en Figtree, escala de texto y sombras sin borde */
   --font-body: 'Figtree', sans-serif;
   /* Fase 10 · Brief 26 · Tipografía: seis tamaños con su interlineado y dos pesos. Outfit solo en h1 y h2 */
-  /* Fase 10 · Brief 44 · Densidad: la escala baja un paso (antes 28/34, 22/28, 18/24, 16/24, 14/20); la etiqueta (12/16) es el piso */
-  --fs-h1:24px; --lh-h1:30px;
-  --fs-h2:20px; --lh-h2:26px;
-  --fs-h3:17px; --lh-h3:22px;
-  --fs-cuerpo:15px; --lh-cuerpo:22px;
-  --fs-secundario:13px; --lh-secundario:18px;
+  /* Fase 11 · Brief 04 (A): vuelve la escala de antes del Brief 44 de la fase 10; la etiqueta (12/16) es el piso */
+  --fs-h1:28px; --lh-h1:34px;
+  --fs-h2:22px; --lh-h2:28px;
+  --fs-h3:18px; --lh-h3:24px;
+  --fs-cuerpo:16px; --lh-cuerpo:24px;
+  --fs-secundario:14px; --lh-secundario:20px;
   --fs-etiqueta:12px; --lh-etiqueta:16px;
   --fw-regular:400; --fw-negrita:700;
   /* Fase 10 · Brief 27 · Medidas: cuatro radios, cinco espacios y cuatro avatares (con el tamaño de sus iniciales) */
@@ -87,6 +87,8 @@
   /* Superficie */
   --r-fondo:radial-gradient(90% 38% at 100% 0%, rgba(182,156,255,.28) 0%, rgba(182,156,255,0) 70%),linear-gradient(180deg,#BAF1F6 0%,#D6F6F9 20%,#FAFBFC 46%,#FAFBFC 100%); /* degradado de #app (sin cambio) */
   --r-fondo-plano:var(--fondo);              /* fondo liso: body, pies de hoja, casillas, ✓ marcado */
+  --r-fondo-chat:#EDF3F6;                    /* Fase 11 · Brief 04 (A): gris azulado detrás de los hilos y el chat (antes #F1F4F5, se leía cálido junto al turquesa); no es --extra-t */
+  --r-fondo-chat-halo:radial-gradient(90% 38% at 100% 0%, rgba(182,156,255,.28) 0%, rgba(182,156,255,0) 70%),linear-gradient(180deg,#BAF1F6 0px,#D6F6F9 80px,var(--r-fondo-chat) 150px,var(--r-fondo-chat) 100%); /* Fase 11 · Brief 04 (ajuste): el halo de Inicio arriba, para que la barra no quede sobre gris. Fase 11 · cierre: con la luz lavanda de --r-fondo delante; el turquesa termina a los 150 px (antes al 40 %), sobre el encabezado */
   --r-superficie:var(--blanco);              /* tarjetas, burbujas, hojas, menús, botones blancos, chips */
   --r-superficie-2:var(--tinta-suave);       /* grises internos: iconos, pasos, divisores, pill en espera */
   --r-vidrio:color-mix(in srgb,var(--blanco) 72%,transparent); /* sobre el degradado: mascota, chip "Simular:", velo del FAB */
@@ -134,7 +136,7 @@
   --r-sobre-claro:var(--tinta);     /* Fase 10 · Brief 49b · texto e íconos sobre un fondo claro fijo (turquesa vivo, ámbar vivo, persona, pestaña) */
   --r-sobre-persona:var(--r-sobre-claro);   /* iniciales de los avatares y texto sobre un color de persona */
   --r-sobre-tab:var(--r-sobre-claro);       /* ícono y etiqueta de la pestaña activa, sobre su degradado claro */
-  --r-marco-fondo:linear-gradient(180deg,var(--r-seleccion) 0%,var(--r-acento-suave) 100%); /* alrededor del marco en escritorio */
+  --r-marco-fondo:var(--blanco); /* alrededor del marco en escritorio. Fase 11 · marco: blanco plano (antes degradado turquesa); en oscuro sigue #0B1012 */
 }
 /* ─── Fase 10 · Brief 49 · MODO OSCURO ─────────────────────────────────────────────────────────
    Solo redefine roles (y las dos sombras y los tintes de persona). aplicarTema() pone data-tema="oscuro" en <html>.
@@ -145,6 +147,8 @@
   /* Superficie */
   --r-fondo:radial-gradient(80% 30% at 50% 0%, rgba(83,219,232,.14) 0%, rgba(83,219,232,0) 70%),#101618;
   --r-fondo-plano:#101618;
+  --r-fondo-chat:var(--r-fondo-plano); /* Fase 11 · Brief 04 (A): en oscuro los mensajes ya son más claros que el fondo */
+  --r-fondo-chat-halo:var(--r-fondo); /* Fase 11 · Brief 04 (ajuste): el mismo halo turquesa de oscuro, sobre #101618 */
   --r-superficie:#20292C;
   --r-superficie-2:#283235;
   --r-vidrio:color-mix(in srgb,#20292C 72%,transparent);
@@ -183,7 +187,7 @@
   --sh-flotante:0 12px 28px rgba(0,0,0,.40);
   --sh-fab:0 6px 18px rgba(0,0,0,.50);
   /* Persona extra (los otros tintes los escribe pintarTintes()) */
-  --extra-t:color-mix(in srgb,var(--extra) 18%,var(--r-superficie));
+  --extra-t:color-mix(in srgb,var(--extra) 14%,var(--r-superficie)); /* Fase 11 · Brief 01b: niebla, 14 % */
   /* Escritorio */
   --r-marco-fondo:#0B1012;
 }
@@ -213,6 +217,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 #app{width:100%;max-width:520px;margin:0 auto;height:100dvh;overflow:hidden;background:var(--r-fondo);display:flex;flex-direction:column;position:relative;overflow-x:hidden;} /* Fase 10 · Rediseño · Brief 09 fondo de la app */
 /* Fase 10 · Brief 42: #app es el contenedor de ancho; las reglas de pantallas angostas miran el marco, no la ventana */
 #app{container-type:inline-size;}
+#app:has(#TH.on){background:var(--r-fondo-chat-halo);} /* Fase 11 · Brief 04: hilos y chat general sobre gris azulado con el halo de Inicio arriba; los mensajes siguen en --r-superficie */
 /* Fase 10 · Brief 42 · vista de escritorio: un celular de 390 × 844 centrado, sobre el fondo de la marca */
 @media (min-width:768px){
   body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:var(--r-marco-fondo);} /* Fase 10 · Brief 49: token, en oscuro #0B1012 */
@@ -230,8 +235,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .icon-btn svg{width:24px;height:24px;}
 .badge{position:absolute;top:5px;right:6px;min-width:20px;height:20px;border-radius:var(--radio-completo);background:var(--r-critico);color:var(--r-sobre-accion);font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);display:flex;align-items:center;justify-content:center;padding:0 var(--esp-xs);border:var(--b-marcado) solid var(--r-seleccion);}
 /* Fase 8 · variante sin número para el badge de notificaciones: presente/ausente, nunca una cifra.
-   Fija su propio background: .badge ya pone --rojo, pero la clase genérica .dot (línea de arriba,
-   para los pasos del onboarding) tiene la misma especificidad y pinta --azul; sin esto gana esa. */
+   Fija su propio background, que .badge ya pone. Fase 11: la clase genérica .dot ya no existe. */
 .badge.dot{min-width:0;width:10px;height:10px;padding:0;background:var(--r-critico);}
 /* Fase 7 · Fundamentos: sombra tokenizada --sh-1 */
 .fam-top{height:46px;display:flex;align-items:center;gap:var(--esp-s);padding:0 var(--esp-m) 0 var(--esp-xs);border-radius:var(--radio-completo);background:var(--r-superficie);border:var(--b-fino) solid var(--r-contorno);min-width:0;overflow:hidden;}
@@ -375,8 +379,8 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .fd-it:nth-child(2){animation-delay:35ms;}
 .fd-it:nth-child(3){animation-delay:70ms;}
 .fd-it:nth-child(4){animation-delay:105ms;}
-.fd-lbl{min-height:40px;display:flex;align-items:center;padding:0 var(--esp-l);border-radius:var(--radio-completo);background:var(--r-superficie);font-size:var(--fs-cuerpo);font-weight:var(--fw-regular);white-space:nowrap;} /* Fase 10 · Brief 26: reposo en regular, elegido en negrita */
-.fd-c{width:48px;height:48px;border-radius:50%;background:var(--r-superficie);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--r-texto);}
+.fd-lbl{min-height:40px;display:flex;align-items:center;padding:0 var(--esp-l);border-radius:var(--radio-completo);background:var(--r-superficie);font-size:var(--fs-cuerpo);font-weight:var(--fw-regular);white-space:nowrap;box-shadow:var(--sh-flotante);} /* Fase 10 · Brief 26: reposo en regular, elegido en negrita. Fase 11 · cierre: flota con --sh-flotante */
+.fd-c{width:48px;height:48px;border-radius:50%;background:var(--r-superficie);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--r-texto);box-shadow:var(--sh-flotante);} /* Fase 11 · cierre: los secundarios en un círculo --r-superficie de 48, como la cámara (que sigue en tinta), y todos flotan */
 .fd-c svg{width:24px;height:24px;} /* Fase 10 · Brief 28 */
 .fd-it.pri .fd-lbl{font-weight:var(--fw-negrita);}
 .fd-it.pri .fd-c{background:var(--r-accion);color:var(--r-sobre-accion);}
@@ -433,7 +437,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .bub{max-width:80%;padding:var(--esp-m) var(--esp-l);font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);border-radius:var(--radio-l);}
 /* Fase 7 · Fundamentos: sombra tokenizada --sh-1 para burbujas y widgets */
 .bub.t{background:var(--r-superficie);color:var(--r-texto);border-bottom-left-radius:6px;border:var(--b-fino) solid var(--r-borde);}
-.bub.s{background:var(--r-acento-suave);color:var(--r-texto);border:var(--b-fino) solid var(--r-seleccion);border-bottom-right-radius:6px;} /* Fase 10 · Rediseño · Brief 10: burbuja de la persona en agua, sin sombra */
+.bub.s{background:var(--r-seleccion);color:var(--r-texto);border:none;border-bottom-right-radius:6px;} /* Fase 11 · Brief 04b (B): #BAF1F6 sin borde (antes turquesa 16 % con borde) */ /* Fase 10 · Rediseño · Brief 10: burbuja de la persona en agua, sin sombra */
 /* Fase 10 · Rediseño · Brief 10: avatar de Taremi una vez por tanda. La tanda se corta con .row.s, .sep, .toast o .row.sim;
    visibility conserva el hueco para que burbujas, widgets y comprobantes queden en la misma columna */
 .row:not(.s){align-items:flex-start;}
@@ -455,14 +459,14 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .row.opts .wgt{flex:none;background:none;border:none;padding:0;border-radius:0;align-items:flex-end;gap:var(--esp-s);}
 .row.opts .btn-s,.row.opts .btn-p,.row.opts .btn-danger{width:auto;height:auto;min-height:44px;padding:0 var(--esp-l);border-radius:var(--radio-completo);border:var(--b-fino) solid var(--r-contorno);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);text-align:left;justify-content:flex-start;}
 .row.opts .btn-s,.row.opts .btn-danger{background:var(--r-superficie);}
-.row.opts .btn-p{border-color:var(--r-accion);} .row.opts .btn-danger{border-color:var(--r-critico);} /* Fase 10 · Brief 25: la .btn-p en tinta sólida */
+.row.opts .btn-p{border-color:var(--r-accion);} .row.opts .btn-danger{border-color:var(--r-critico);border-width:var(--b-marcado);} /* Fase 11 · Brief 04b (B) */ /* Fase 10 · Brief 25: la .btn-p en tinta sólida */
 /* Fase 10 · Rediseño · Brief 11: acción única que propone Taremi (lienzo 53): en la columna de las burbujas, a lo ancho, sin tarjeta y oscura */
 .row.act .wgt{background:none;border:none;padding:0;border-radius:0;}
 
 /* Fase 10 · Rediseño · Brief 11: "Para mostrar" del modo consulta (lienzo 52, opción B). Es herramienta: a ancho completo, sin avatar */
 .row.full .t-av{display:none;}
 .wgt.show-w{border-radius:var(--radio-l);padding:var(--esp-m) var(--esp-l);gap:0;}
-.wgt.show-w .wgt-t{font-size:var(--fs-cuerpo);color:var(--r-texto-2);margin-bottom:var(--esp-xs);}
+.wgt.show-w .wgt-tr{margin-bottom:var(--esp-xs);} /* Fase 11 · Brief 03: "Para mostrar" pasa a etiqueta con "Sin conexión" a la derecha */
 .show-r{display:flex;align-items:center;gap:var(--esp-s);padding:var(--esp-m) 0;}
 .show-r + .show-r{border-top:var(--b-fino) solid var(--r-superficie-2);}
 .show-m{flex:1;min-width:0;}
@@ -470,8 +474,13 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .show-s{display:block;font-size:var(--fs-cuerpo);color:var(--r-texto-2);margin-top:var(--esp-xs);}
 .show-btn{min-height:44px;padding:0 var(--esp-l);border-radius:var(--radio-completo);background:var(--r-accion);color:var(--r-sobre-accion);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);display:flex;align-items:center;gap:var(--esp-s);flex-shrink:0;}
 .show-btn:active{transform:scale(.97);}
-.wgt.show-w .ok-chip{margin-top:var(--esp-s);}
-.wgt{background:var(--r-superficie);border-radius:var(--radio-l);padding:var(--esp-l);display:flex;flex-direction:column;gap:var(--esp-m);flex:1;border:var(--b-fino) solid var(--r-borde);}
+.wgt{background:var(--r-superficie);border-radius:var(--radio-l);padding:var(--esp-l);display:flex;flex-direction:column;gap:var(--esp-s);flex:1;border:var(--b-fino) solid var(--r-borde);} /* Fase 11 · Brief 04b (B): 8 entre frases y bloques de un mismo mensaje (antes 12) */
+/* Fase 11 · Brief 04b (B): ritmo dentro de un mensaje (también la tarjeta crítica). El stepper guarda su aire con las etiquetas (12 + 8 de antes);
+   16 del stepper a la primera frase; 12 del último texto a los botones; 8 entre botones (el gap); botones de 48 */
+.wgt>.step-lbl,.crit-b>.step-lbl{margin-top:var(--esp-m);}
+.wgt>.step-lbl+*,.crit-b>.step-lbl+*{margin-top:var(--esp-s);}
+:is(.wgt,.crit-b)>:not(.btn-p):not(.btn-s):not(.btn-danger)+:is(.btn-p,.btn-s,.btn-danger){margin-top:var(--esp-xs);}
+:is(.wgt,.crit-b) :is(.btn-p,.btn-s,.btn-danger){height:48px;}
 .wgt-t{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);line-height:var(--lh-cuerpo);}
 .wgt-d{font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
 /* Fase 6 · widget de error real (ej. falla de red al radicar): mismo ícono/color que .err-msg, no uno nuevo */
@@ -506,7 +515,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .btn-s[disabled]{border-color:transparent;background:var(--r-superficie-2);color:var(--r-texto-3);}
 
 /* Fase 7 · Botones: transición para la respuesta táctil de :active (sin cambio de color, es de peligro) */
-.btn-danger{height:52px;padding:0 var(--esp-xl);background:var(--r-superficie);border:var(--b-fino) solid var(--r-critico);color:var(--r-critico);border-radius:var(--radio-completo);font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);display:flex;align-items:center;justify-content:center;width:100%;transition:transform .12s cubic-bezier(.23,1,.32,1),background-color .1s;}
+.btn-danger{height:52px;padding:0 var(--esp-xl);background:var(--r-superficie);border:var(--b-marcado) solid var(--r-critico);color:var(--r-critico);border-radius:var(--radio-completo);font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);display:flex;align-items:center;justify-content:center;width:100%;transition:transform .12s cubic-bezier(.23,1,.32,1),background-color .1s;} /* Fase 11 · Brief 04b (B): borde --b-marcado (1,5) en toda la app, decidido por Lida */
 /* Fase 7 · Botones: respuesta táctil (scale .97) al presionar, agrupada para los botones y el FAB */
 .btn-p:active,.btn-s:active,.btn-danger:active,.fab:active{transform:scale(.97);}
 /* Fase 10 · Brief 25b: presionado con color, mientras el dedo está encima. Nunca en [disabled]. Sin escala nueva donde no la había */
@@ -516,8 +525,8 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .btn-s:not([disabled]):active,.chip-s:not([disabled]):active,.chip-o:not([disabled]):active,.chip-prob:active,.who:not(.on):active,.slot:not(.sel):active,
 .tabp:active,.fam-top:active,.ob-opt:active,.pop-i:active,.m3i:active,.icon-btn:active{background:var(--r-acento-suave);}
 .btn-danger:not(.soon):not([disabled]):active{background:var(--r-critico-suave);}
-.link-u{font-size:var(--fs-secundario);font-weight:var(--fw-negrita);color:var(--r-texto);text-decoration:underline;padding:var(--esp-s) 0;text-align:center;}
-.back-link{background:transparent;border:none;text-decoration:underline;color:var(--r-texto-2);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);padding:var(--esp-s) 0;text-align:center;width:100%;}
+.link-u{font-size:var(--fs-secundario);font-weight:var(--fw-negrita);color:var(--r-texto);text-decoration:underline;padding:var(--esp-s) 0;text-align:center;min-height:44px;} /* Fase 11 · Brief 04 (A): área táctil de 44 con la letra nueva */
+.back-link{background:transparent;border:none;text-decoration:underline;color:var(--r-texto-2);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);padding:var(--esp-s) 0;text-align:center;width:100%;min-height:44px;} /* Fase 11 · Brief 04 (A) */
 .wgt-div{height:1px;background:var(--r-borde);margin:var(--esp-xs) 0;}
 .wgt-lbl{font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);color:var(--r-texto-2);letter-spacing:.03em;text-transform:uppercase;}
 
@@ -551,10 +560,13 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .sl.done{background:var(--r-accion);}
 .step-lbl{display:flex;justify-content:space-between;font-size:var(--fs-etiqueta);color:var(--r-texto-2);margin-top:var(--esp-s);}/* Fase 7 · +1px para que respire con los círculos .sd más grandes */
 .step-lbl .on{color:var(--r-texto);font-weight:var(--fw-negrita);}
+/* Fase 11 · stepper: cada etiqueta va centrada bajo su círculo (antes space-between dejaba los textos corridos). La etiqueta mide lo mismo
+   que el círculo (32) y el texto se desborda parejo a los dos lados; «¿Cómo te fue?» va en dos líneas (<br>) */
+.step-lbl > span{flex:0 0 32px;width:32px;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;white-space:nowrap;line-height:var(--lh-etiqueta);}
 
 .crit{border-radius:var(--radio-l);overflow:hidden;flex:1;border:var(--b-marcado) solid var(--r-critico);}
 .crit-h{background:var(--r-critico);color:var(--r-sobre-accion);padding:var(--esp-m) var(--esp-l);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);letter-spacing:.04em;display:flex;align-items:center;gap:var(--esp-s);}
-.crit-b{padding:var(--esp-l);background:var(--r-superficie);display:flex;flex-direction:column;gap:var(--esp-m);}
+.crit-b{padding:var(--esp-l);background:var(--r-superficie);display:flex;flex-direction:column;gap:var(--esp-s);} /* Fase 11 · Brief 04b (B): 8 entre frases */
 .crit-b p{margin:0;font-size:var(--fs-cuerpo);color:var(--r-texto);line-height:var(--lh-cuerpo);}
 
 .log{border-top:var(--b-fino) solid var(--r-borde);padding-top:var(--esp-m);display:flex;flex-direction:column;gap:var(--esp-m);}
@@ -563,9 +575,13 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .log-r p{margin:0;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
 .log-r b{color:var(--r-texto);font-weight:var(--fw-negrita);display:block;}
 
-.dots{display:flex;gap:var(--esp-s);}
-.dot{width:15px;height:15px;border-radius:50%;background:var(--r-accion);}
-.dot.off{background:var(--r-superficie);border:var(--b-fino) solid var(--r-contorno);}
+/* Fase 11 · aviso de entrega: tres puntos de 22 px, uno por entrega (antes .dots/.dot, salieron con el stepper) */
+.ent-dots{display:flex;gap:var(--esp-m);margin:var(--esp-xs) 0 var(--esp-xs) var(--esp-xs);}
+.ent-dot{width:22px;height:22px;border-radius:50%;box-sizing:border-box;border:var(--b-marcado) solid var(--r-contorno);background:var(--r-superficie);display:flex;align-items:center;justify-content:center;color:var(--r-sobre-accion);}
+.ent-dot svg{width:14px;height:14px;}
+.ent-dot.hecha{background:var(--r-accion);border-color:var(--r-accion);}
+.ent-dot.lista{background:var(--r-accion);border-color:var(--r-accion);box-shadow:0 0 0 4px var(--r-seleccion);}
+.ent-dot.recibida{background:var(--r-exito);border-color:var(--r-exito);}
 
 .toast{background:var(--r-inverso);color:var(--r-sobre-accion);border-radius:var(--radio-m);padding:var(--esp-l) var(--esp-l);display:flex;align-items:center;justify-content:space-between;gap:var(--esp-m);font-size:var(--fs-secundario);animation:pop .3s ease both;}
 .toast .u{font-weight:var(--fw-negrita);text-decoration:underline;color:var(--r-seleccion-fuerte);white-space:nowrap;}
@@ -577,9 +593,18 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .comp-ck{width:24px;height:24px;border-radius:50%;background:var(--r-exito);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;}
 .comp-ck svg{width:16px;height:16px;stroke:var(--r-sobre-accion);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;} /* Fase 10 · Brief 28 */
 .comp-b{flex:1;min-width:0;}
+/* Fase 11 · Brief 04b (B): el comprobante de cancelar no celebra: blanco, borde de mensaje y X en círculo crítico */
+.comp.cancel{background:var(--r-superficie);border:var(--b-fino) solid var(--r-borde);}
+.comp.cancel .comp-ck{background:var(--r-critico);}
+.comp.cancel .comp-ck svg{stroke:var(--r-sobre-accion);}
 .comp-t{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);line-height:var(--lh-cuerpo);display:block;}
 .comp-s{font-size:var(--fs-secundario);color:var(--r-exito);margin-top:var(--esp-xs);line-height:var(--lh-secundario);display:block;}
 .comp-time{font-size:var(--fs-etiqueta);color:var(--r-exito);margin-top:var(--esp-s);font-weight:var(--fw-negrita);display:block;}
+.comp-time > span{display:inline-block;white-space:nowrap;} /* Fase 11 · comprobantes: la hora y el canal no se parten; si no caben juntos, el canal baja entero, sin puntos suspensivos */
+/* Fase 11 · comprobantes: el stepper dentro del comprobante lleva 16 arriba y 16 abajo */
+.comp .stepper{margin-top:var(--esp-l);}
+.comp .step-lbl{margin-bottom:var(--esp-l);}
+.comp .step-lbl + .comp-time{margin-top:0;}
 .comp-ev{margin-top:var(--esp-m);width:100%;background:var(--r-superficie);border-radius:var(--radio-m);padding:var(--esp-m) var(--esp-m);display:flex;align-items:center;gap:var(--esp-s);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);color:var(--r-texto);text-align:left;}
 .comp-ev svg{width:20px;height:20px;stroke:var(--r-texto);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;flex-shrink:0;}
 .comp-ev .chev{margin-left:auto;}
@@ -658,8 +683,8 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .v-btn{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--papel-barra-texto);flex-shrink:0;}
 .v-btn svg{width:23px;height:23px;}
 .v-txt{flex:1;min-width:0;color:var(--papel-barra-texto);padding:0 var(--esp-xs);}
-.v-t{font-size:15.5px;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.v-s{font-size:12.5px;color:var(--papel-barra-texto-2);display:block;margin-top:2px;}
+.v-t{font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} /* Fase 11 · Brief 04 (A): barra del visor al token */
+.v-s{font-size:var(--fs-etiqueta);line-height:var(--lh-etiqueta);color:var(--papel-barra-texto-2);display:block;margin-top:2px;}
 .v-body{flex:1;display:flex;align-items:center;justify-content:center;padding:var(--esp-xl);overflow-y:auto;}
 /* Fase 10 · Brief 08f: el dato que falta, arriba del documento */
 .v-fix{padding:var(--esp-m) var(--esp-l) 0;display:flex;flex-direction:column;gap:var(--esp-s);flex-shrink:0;}
@@ -671,7 +696,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .v-lab{font-size:12px;font-weight:800;color:var(--papel-texto);margin:14px 0 6px;letter-spacing:.03em;}
 .v-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dotted var(--papel-linea-visor);font-size:11.5px;color:var(--papel-texto-2);}
 .v-row .hi{color:var(--papel-alerta);font-weight:700;}
-.v-bot{height:50px;background:var(--papel-barra);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:var(--papel-barra-texto-2);font-weight:600;}
+.v-bot{height:50px;background:var(--papel-barra);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:var(--fs-secundario);color:var(--papel-barra-texto-2);font-weight:600;}
 
 /* Hoja nativa de compartir — del sistema, no de Taremi */
 .nat-scrim{position:absolute;inset:0;background:var(--r-sistema-velo);z-index:45;display:flex;align-items:flex-end;}
@@ -695,7 +720,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .pcard.open{border-color:var(--r-seleccion-fuerte);box-shadow:inset 0 0 0 var(--b-realce) var(--r-seleccion-fuerte);}
 .pcard-h{width:100%;display:flex;align-items:center;gap:var(--esp-m);padding:var(--esp-m);text-align:left;}
 .pcard-nm{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);display:block;}
-.pcard-rel{font-size:var(--fs-secundario);color:var(--r-texto-2);display:block;margin-top:var(--esp-xs);}
+/* Fase 11 · Brief 02: sale .pcard-rel (la relación bajo el nombre del paso 3 y de #I1) */
 .pcard-b{border-top:var(--b-fino) solid var(--r-borde);padding:var(--esp-m);display:flex;flex-direction:column;gap:var(--esp-m);}
 .sel-wrap{position:relative;}
 .m3menu{position:absolute;inset:0;background:var(--r-velo);z-index:40;display:flex;align-items:flex-end;}
@@ -723,7 +748,6 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 /* Ayuda */
 /* Fase 6 · más aire + línea divisoria antes de "Ir directo a" — antes se leía casi pegada a las 3
    tarjetas de arriba, como una sola lista continua en vez de dos bloques (explicación vs. atajos) */
-.help-lbl{font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);color:var(--r-texto-2);letter-spacing:.03em;margin:28px 0 var(--esp-xs);padding-top:var(--esp-l);border-top:var(--b-fino) solid var(--r-borde);}
 
 /* composer real */
 /* Fase 7 · Fundamentos: fondos transparentes para continuidad visual con el degradado */
@@ -740,6 +764,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .dock-in > .composer{pointer-events:none;}
 .dock-in > .composer > *{pointer-events:auto;}
 .content{padding-bottom:calc(var(--dock-h, 0px) + var(--esp-m));}
+#app:has(#TH.on) .content{padding-bottom:calc(var(--dock-h, 0px) + var(--esp-s));} /* Fase 11 · Brief 04b (B): en el hilo, la barra (chip «Tengo un problema» + compositor) más 8; el chip nunca tapa el último mensaje */
 /* Fase 10 · Brief 21: chip "Tengo un problema" encima del compositor, a la derecha, y su panel */
 .dock-in > .prob-bar{pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--esp-xs);padding:0 var(--esp-l);}
 .prob-bar[hidden],.prob-panel[hidden]{display:none;}
@@ -805,8 +830,8 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .bov-cat.vacia{border-radius:var(--radio-l);} /* Fase 10 · Brief 31: clase .vacia */
 .bov-cat-ic{width:48px;height:48px;border-radius:var(--radio-m);background:var(--r-acento-suave);display:flex;align-items:center;justify-content:center;color:var(--r-acento);flex-shrink:0;}
 .bov-cat-ic svg,.mm-ic svg,.ob-card-ic svg{width:24px;height:24px;} /* Fase 10 · Brief 28 · §6 · cuadrado 48, ícono 24 */
-.doc-ic svg,.curso-fold-ic svg,.notif-ic svg,.ob-add-ic svg{width:20px;height:20px;} /* cuadrado 40 · círculo 40, ícono 20 · Fase 10 · Brief 29: .doc-ic pasa a 40 y sale la regla de las letras del escáner */
-.ob-ben-ic svg,.voice-play svg{width:16px;height:16px;} /* cuadrado 32 · círculo 28, ícono 16 */
+.doc-ic svg,.curso-fold-ic svg,.notif-ic svg{width:20px;height:20px;} /* cuadrado 40 · círculo 40, ícono 20 · Fase 10 · Brief 29: .doc-ic pasa a 40 y sale la regla de las letras del escáner */
+.voice-play svg{width:16px;height:16px;} /* cuadrado 32 · círculo 28, ícono 16 */
 .hilo-back svg,.side-x svg,.ob-back svg,.comp-plus svg{width:24px;height:24px;} /* botón de ícono 48, ícono 24 */
 /* Fase 10 · Brief 28 · ícono de estado vacío: círculo de 72, ícono 32 */
 .ic-vacio{width:72px;height:72px;border-radius:50%;background:var(--r-seleccion);color:var(--r-texto);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 auto;}
@@ -1025,6 +1050,18 @@ button.thumb{padding:0;cursor:pointer;}
 .sheet-col>.doc-filas>.doc-fila{flex-shrink:0;} /* dentro del scroll, las filas conservan su alto */
 /* Fase 10 · Brief 30b: los botones de una hoja, 12 entre la lista y ellos y 12 entre ellos (#scrimFamDocs, #scrimOtra) */
 .sh-acciones{display:flex;flex-direction:column;gap:var(--esp-m);margin-top:var(--esp-m);}
+/* Fase 11 · Brief 04 (B): hoja de la política. Título y cierre arriba, «Entendido» abajo; solo el texto hace scroll */
+.pol-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--esp-s);flex-shrink:0;}
+.pol-hd h3{margin:var(--esp-s) 0 0;line-height:var(--lh-h2);}
+.pol-hd .icon-btn{margin:-4px -8px 0 0;}
+.pol-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding-top:var(--esp-m);}
+.pol-aviso{margin:0 0 var(--esp-m);padding:var(--esp-m);border-radius:var(--radio-m);background:var(--r-pendiente-suave);color:var(--r-pendiente);font-size:var(--fs-secundario);line-height:var(--lh-secundario);}
+.pol-indice{background:var(--r-fondo-plano);border-radius:var(--radio-m);padding:var(--esp-m) var(--esp-l);margin:0 0 var(--esp-l);}
+.pol-indice .wgt-lbl{margin:0 0 var(--esp-s);}
+.pol-indice ol{margin:0;padding-left:var(--esp-l);font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto);}
+.pol-indice li{margin:var(--esp-xs) 0;}
+.sheet .pol-h{font-family:var(--font-body);font-size:var(--fs-h3);line-height:var(--lh-h3);margin:var(--esp-l) 0 var(--esp-s);}
+.pol-p{font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);color:var(--r-texto);margin:0 0 var(--esp-s);}
 .menu-i{width:100%;display:flex;align-items:center;gap:var(--esp-m);padding:var(--esp-l) var(--esp-xs);border-top:var(--b-fino) solid var(--r-borde);font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);}
 .menu-i:first-of-type{border-top:none;}
 .menu-i.soon{color:var(--r-texto-2);cursor:default;}
@@ -1042,7 +1079,6 @@ button.thumb{padding:0;cursor:pointer;}
 .side-mail{display:block;font-size:var(--fs-secundario);color:var(--r-texto-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .side-x{width:48px;height:48px;margin:-2px 0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--r-texto-2);flex-shrink:0;}
 .side-div{height:1px;background:var(--r-borde);margin:0 var(--esp-m);flex-shrink:0;}
-.side-grp{margin:var(--esp-m) var(--esp-m) var(--esp-xs);font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);letter-spacing:.04em;text-transform:uppercase;color:var(--r-texto-2);}
 .side-nav>.menu-i{min-height:48px;padding:0 var(--esp-m);border-top:none;border-radius:var(--radio-m);flex-shrink:0;}
 .side-nav>.menu-i:active{background:var(--r-acento-suave);}
 .side-nav>.menu-i:last-of-type{margin-bottom:var(--esp-l);}
@@ -1072,7 +1108,6 @@ button.thumb{padding:0;cursor:pointer;}
 .menu-i[data-thread="gen"]{background:var(--r-acento-suave);border-top:none;border-radius:var(--radio-m);padding:var(--esp-l) var(--esp-m);margin-top:var(--esp-s);}
 /* Fase 10 · Brief 02: etiquetas de grupo en Familia */
 #famScreen .wgt-lbl{margin:var(--esp-l) 0 var(--esp-xs);font-size:var(--fs-cuerpo);letter-spacing:0;text-transform:none;} /* Fase 10 · Rediseño · Brief 13b (corrección 3): en oración normal, 16/700 --muted, como en el onboarding (lienzo 58) */
-#famScreen .fam-c{margin:0 0 var(--esp-xs);} /* Fase 10 · Rediseño · Brief 13b (corrección): la línea de consecuencia bajo el grupo */
 #famScreen .menu-i.soon{margin-top:var(--esp-m);border-top:var(--b-fino) solid var(--r-borde);}
 .tag-soon{margin-left:auto;background:var(--r-superficie-2);color:var(--r-texto-2);font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);padding:var(--esp-xs) var(--esp-s);border-radius:var(--radio-completo);white-space:nowrap;}
 /* Fase 8 · Estructura 1: "Eliminar perfil" atenuado, mismos tokens que .btn-s[disabled] y .menu-i.soon */
@@ -1116,8 +1151,8 @@ button.thumb{padding:0;cursor:pointer;}
 .notif-tx{flex:1;min-width:0;}
 .notif h5{margin:0;font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);line-height:var(--lh-cuerpo);color:var(--r-texto);}
 .notif p{margin:var(--esp-xs) 0 0;font-size:var(--fs-cuerpo);color:var(--r-texto-2);line-height:var(--lh-cuerpo);}
-.notif .notif-when{display:block;margin-top:var(--esp-s);font-size:var(--fs-secundario);color:var(--r-texto-2);}
-.notif .notif-link{display:block;min-height:44px;padding:var(--esp-m) 0;text-align:left;} /* Fase 10 · Brief 19: "Ver en la Bóveda" */
+.notif .notif-when{display:block;margin:0 0 var(--esp-xs);font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto-2);} /* Fase 11 · Brief 06f: hora arriba, ritmo de 4 px */
+.notif .notif-link{display:flex;align-items:center;min-height:44px;padding:0;margin:calc(var(--esp-xs) - 10px) 0 -10px;text-align:left;} /* Fase 11 · Brief 06f: 44 px táctiles, 4 px visibles arriba y el borde de la tarjeta a 12 px del texto */ /* Fase 10 · Brief 19: "Ver en la Bóveda" */
 .screen-title.st-30 h2{font-size:var(--fs-h1);line-height:var(--lh-h1);}
 .fam-r{width:100%;display:flex;align-items:center;gap:var(--esp-m);padding:var(--esp-l) var(--esp-xs);border-top:var(--b-fino) solid var(--r-borde);}
 .fam-r:first-of-type{border-top:none;}
@@ -1216,7 +1251,7 @@ button.thumb{padding:0;cursor:pointer;}
 @media (prefers-reduced-motion: reduce){ .bt-bubble,.bt-prog span{transition:none;} }
 
 /* ---------- ONBOARDING ---------- */
-.ob{position:absolute;inset:0;z-index:500;background:var(--r-superficie);display:flex;flex-direction:column;}
+.ob{position:absolute;inset:0;z-index:500;background:var(--r-fondo); /* Fase 11 · Brief 02 (corrección): el mismo fondo de la app */display:flex;flex-direction:column;}
 .ob.hidden{display:none;}
 .ob-bar{flex:0 0 auto;display:flex;gap:var(--esp-s);padding:calc(var(--safe-top) + var(--esp-m)) var(--esp-xl) calc(44px + var(--esp-s));} /* Fase 10 · Brief 46b: menos aire arriba; abajo, la fila del botón atrás (44) + 8 */ /* Fase 10 · Rediseño · Brief 13 (corrección 7): 52 px abajo = la fila del botón atrás (lienzos 65 y 66), que ya no tapa la barra */ /* Fase 10 · Brief 05: .ob-step cuelga de esta barra, así hereda la zona segura */
 .ob-bar i{flex:1;height:4px;border-radius:3px;background:var(--r-borde);display:block;}
@@ -1232,14 +1267,11 @@ button.thumb{padding:0;cursor:pointer;}
 /* Fase 7 · Fundamentos: sombra tokenizada --sh-2 */
 /* Fase 10 · Rediseño · Brief 14: la mascota (140 px) va sobre el halo de 57, sin su halo propio */
 .ob-hero .tm-halo{display:none;}
-.ob-float{position:absolute;background:var(--r-superficie);padding:var(--esp-s) var(--esp-m);border-radius:var(--radio-m);border:var(--b-fino) solid var(--r-borde);font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);color:var(--r-texto);}
-.ob-float.f1{top:-4px;left:-22px;transform:rotate(-5deg);}
-.ob-float.f2{bottom:10px;right:-28px;transform:rotate(5deg);}
-.ob-float.f3{bottom:-12px;left:6px;transform:rotate(-2deg);}
+/* Fase 11 · Brief 02: salen .ob-float (las etiquetas flotantes de la bienvenida) y .ob-desc-s */
 .ob-title{font-family:var(--font-display);font-weight:var(--fw-negrita);font-size:var(--fs-h1);line-height:var(--lh-h1);margin:0 0 var(--esp-s);text-align:center;color:var(--r-texto);}
 .ob-desc{font-size:var(--fs-cuerpo);color:var(--r-texto-2);line-height:var(--lh-cuerpo);text-align:center;margin:0 0 var(--esp-xl);}
-.ob-desc-s{font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);text-align:center;margin:-12px 0 var(--esp-xl);max-width:280px;margin-left:auto;margin-right:auto;}
-.ob-icon{width:96px;height:96px;border-radius:50%;background:var(--r-exito-suave);color:var(--r-exito);display:flex;align-items:center;justify-content:center;margin:0 auto var(--esp-xl);}
+/* Fase 11 · Brief 02: salen .ob-icon y .ob-ben (el paso 7 «Ya está»); «Listo» usa la mascota en .ob-hero.ob-hero-s */
+.ob-hero.ob-hero-s{width:120px;height:120px;margin-bottom:var(--esp-l);flex-shrink:0;}
 /* Fase Móvil · reemplaza etiquetas de carga por frases de situación: tarjetas sin borde con sombra (--sh-2, mismo token de .card-in/.doc-in/.bov-cat), más grandes, dos líneas (nombre + frase) */
 .ob-opt{display:flex;flex-direction:column;align-items:flex-start;gap:var(--esp-xs);padding:var(--esp-l);border:var(--b-fino) solid var(--r-borde);border-radius:var(--radio-m);margin-bottom:var(--esp-s);background:var(--r-superficie);width:100%;text-align:left;font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);}
 .ob-opt-desc{font-size:var(--fs-secundario);font-weight:var(--fw-regular);color:var(--r-texto-2);line-height:var(--lh-secundario);}
@@ -1251,33 +1283,19 @@ button.thumb{padding:0;cursor:pointer;}
 .ob-card p{margin:0;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
 .ob-link{text-align:center;font-size:var(--fs-secundario);color:var(--r-texto);font-weight:var(--fw-negrita);text-decoration:underline;margin-top:var(--esp-m);width:100%;padding:var(--esp-s) 0;}
 .ob-skip{text-align:center;font-size:var(--fs-secundario);color:var(--r-texto-2);font-weight:var(--fw-negrita);text-decoration:underline;width:100%;padding:var(--esp-s) 0;}
-.ob-ben{display:flex;gap:var(--esp-m);align-items:flex-start;margin-bottom:var(--esp-m);}
-.ob-ben-ic{width:32px;height:32px;border-radius:var(--radio-s);background:var(--r-seleccion);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--r-texto);}
-.ob-ben h5{margin:0 0 var(--esp-xs);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);color:var(--r-texto);}
-.ob-ben p{margin:0;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
 .ob-bottom{position:absolute;left:0;right:0;bottom:0;padding:var(--esp-l) var(--esp-xl) calc(var(--safe-bottom) + var(--esp-s));background:linear-gradient(0deg,var(--r-fondo-plano) 68%,transparent); /* Fase 10 · Brief 05 */display:flex;flex-direction:column;gap:var(--esp-s);}
 /* Fase 10 · Rediseño · Brief 13 · Onboarding: historia, cuenta, tú y bandeja (lienzos 64–67, 56) */
 .ob-skip{min-height:44px;} /* Fase 10 · Rediseño · Brief 13: "Ahora no" y "Saltar" con área táctil de 44 px */
 .ob-step>.ob-title:first-child,.ob-step>[data-cview]>.ob-title:first-child{margin-top:var(--esp-s);}
-/* 1 · historia */
+/* Fase 11 · Brief 01: sale el paso 1 (historia) y sus estilos; .ob-demo queda para DEMO_TAG (en fila) */
 .chip-sim.ob-demo{position:absolute;top:calc(var(--safe-top) + var(--esp-m) + 8px);right:22px;z-index:5;min-height:44px;padding:0 var(--esp-m);background:transparent;cursor:default;} /* Fase 10 · Rediseño · Brief 13 (corrección 7): en la fila del botón atrás */ /* Fase 10 · Brief 46b: centrada con el botón atrás */
-.chip-sim.ob-demo[hidden]{display:none;}
 .chip-sim.ob-demo.en-fila{position:static;align-self:flex-start;margin-top:var(--esp-s);min-height:44px;} /* Fase 10 · Brief 16: la etiqueta en la fila de la consulta y arriba del visor, no flotando */
-.ob-stories{display:flex;flex-direction:column;gap:var(--esp-m);}
-.ob-opt.ob-story{flex-direction:row;align-items:flex-start;gap:var(--esp-m);margin:0;}
-.ob-story>.av{width:var(--av-l);height:var(--av-l);font-size:var(--fs-cuerpo);}
-.ob-story-t{flex:1;min-width:0;display:flex;flex-direction:column;}
-.ob-story-t strong{font-family:var(--font-body);font-weight:var(--fw-negrita);font-size:var(--fs-h3);color:var(--r-texto);}
-.ob-story-t .ob-opt-desc{font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);margin-top:var(--esp-xs);}
-.ob-story>.chev{margin-top:var(--esp-m);}
-.ob-pile{display:flex;margin-top:var(--esp-s);}
-.ob-pile .av{width:var(--av-xs);height:var(--av-xs);font-size:var(--fs-etiqueta);border:var(--b-marcado) solid var(--r-superficie);margin-left:-4px;} /* Fase 10 · Rediseño · Brief 13 (corrección): -4 px como en .fam-mini; con -8 px se tapaban las iniciales anchas */
-.ob-pile .av:first-child{margin-left:0;}
 /* 2 · cuenta */
 .ob-acc{display:flex;flex-direction:column;gap:var(--esp-s);margin-top:var(--esp-xs);}
 .btn-s.ob-acc-b{min-height:52px;gap:var(--esp-s);}
 .ob-g{width:24px;height:24px;border-radius:50%;background:var(--r-superficie-2);color:var(--r-texto-2);display:inline-flex;align-items:center;justify-content:center;font-size:var(--fs-secundario);font-weight:var(--fw-negrita);flex-shrink:0;}
-.ob-acc-note{font-size:var(--fs-cuerpo);color:var(--r-texto-2);line-height:var(--lh-cuerpo);text-align:center;margin:var(--esp-l) var(--esp-s) 0;}
+/* Fase 11 · Brief 02: .ob-acc-note pasa a una caja (.ob-caja.suave con candado) */
+.ob-acc-caja{margin-top:var(--esp-l);}
 .ob-strong{color:var(--r-texto);font-weight:var(--fw-negrita);overflow-wrap:anywhere;}
 .ob-code{display:flex;gap:var(--esp-s);margin-top:var(--esp-xs);}
 .ob-code i{flex:1;height:56px;border-radius:var(--radio-m);background:var(--r-superficie);border:var(--b-fino) solid var(--r-contorno);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-negrita);font-style:normal;color:var(--r-texto);}
@@ -1289,10 +1307,10 @@ button.thumb{padding:0;cursor:pointer;}
 .pcard.ob-pc{background:var(--pc-t);}
 .pcard.ob-pc .pcard-b{border-top-color:var(--r-borde);}
 /* Fase 10 · Rediseño · Brief 13c (lienzo 66): "Agregar a quien cuidas" punteado y "Quitar" en cada tarjeta agregada */
-.ob-add{display:flex;align-items:center;gap:var(--esp-m);min-height:60px;padding:0 var(--esp-l);border-radius:var(--radio-l);border:1.5px dashed var(--r-contorno);font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);width:100%;text-align:left;}
-.ob-add-ic{width:40px;height:40px;border-radius:50%;background:var(--r-acento-suave);color:var(--r-acento);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+/* Fase 11 · Brief 02: sale .ob-add punteado; "Agregar a alguien" es un .btn-s de contorno con el "+" */
+.btn-s.ob-add-b{gap:var(--esp-s);margin-top:var(--esp-xs);}
+.btn-s.ob-add-b svg{width:20px;height:20px;}
 /* Fase 10 · Brief 15: la cuarta historia lleva el "+" del tamaño del avatar; Escanear, Subir y Pegar en "Próximamente" (mismos tokens que .menu-i.soon) */
-.ob-story>.ob-add-ic{width:var(--av-l);height:var(--av-l);} /* Fase 10 · Brief 28 · ocupa el lugar de un avatar */
 .ob-card.soon,.fd-it.soon{cursor:pointer;} /* Fase 10 · Brief 18: se pueden tocar (abren #scrimOtra) */
 .ob-card.soon h5,.fd-it.soon .fd-lbl{color:var(--r-texto-2);}
 .ob-card.soon .ob-card-ic,.fd-it.soon .fd-c{background:var(--r-superficie-2);color:var(--r-texto-2);}
@@ -1304,33 +1322,62 @@ button.thumb{padding:0;cursor:pointer;}
 /* Fase 10 · Rediseño · Brief 13b: sale .ob-nivel (el nivel se pregunta en "¿Quién es quién?"). La fecha vacía o con error */
 .err-msg[hidden]{display:none;}
 /* 4 · bandeja */
-.ob-halo{align-self:center;width:132px;height:132px;border-radius:50%;background:var(--ob-halo);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ob-halo span{width:72px;height:72px;border-radius:50%;background:var(--r-acento-suave);color:var(--r-texto);display:flex;align-items:center;justify-content:center;}
-.ob-trust{display:flex;flex-direction:column;gap:var(--esp-m);padding:var(--esp-l);border-radius:var(--radio-l);background:var(--r-superficie-2);}
+/* Fase 11 · Brief 02: salen .ob-halo y la caja .ob-trust de la bandeja; cada idea va en su propia .ob-caja */
 .ob-trust-i{display:flex;gap:var(--esp-m);align-items:flex-start;}
 .ob-trust-i strong{display:block;font-size:var(--fs-cuerpo);color:var(--r-texto);}
 .ob-trust-i>div>span{display:block;font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);color:var(--r-texto-2);margin-top:var(--esp-xs);}
 .ob-trust-ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ob-trust-ic.ok{background:var(--r-exito-suave);color:var(--r-exito);}
 .ob-trust-ic.no{background:var(--r-critico-suave);color:var(--r-critico);}
-.ob-trust-ic.lock{background:var(--r-acento-suave);color:var(--r-acento);}
+.ob-trust-ic.lock,.ob-trust-ic.info{background:var(--r-acento-suave);color:var(--r-acento);}
+/* Fase 11 · Brief 02 · onboarding corto (lienzo, filas 2 y 4): cada idea en su caja (.ob-caja); .suave = aviso sin borde; .marcada = la casilla.
+   .sq = ícono en un cuadro de 40, como .doc-ic */
+.ob-cajas{display:flex;flex-direction:column;gap:var(--esp-s);}
+.ob-caja{align-items:center;padding:var(--esp-m) var(--esp-l);border-radius:var(--radio-l);background:var(--r-superficie);border:var(--b-fino) solid var(--r-borde);}
+.ob-caja.suave{background:var(--r-superficie-2);border-color:transparent;}
+.ob-caja.marcada{border:var(--b-marcado) solid var(--r-texto);}
+.ob-caja>div>span:first-child{margin-top:0;}
+.ob-trust-ic.sq{width:40px;height:40px;border-radius:var(--radio-m);background:var(--r-seleccion);color:var(--r-texto);}
+.ob-acepto{min-height:44px;cursor:pointer;}
+.ob-acepto input{width:24px;height:24px;margin:0;flex-shrink:0;accent-color:var(--r-accion);}
+.ob-acepto>span{font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);color:var(--r-texto);}
+/* 0 · bienvenida: tres cajitas iguales en fila */
+.ob-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--esp-s);margin:0 0 var(--esp-l);}
+.ob-card.ob-mini{flex-direction:column;align-items:center;gap:var(--esp-s);margin:0;padding:var(--esp-m) var(--esp-xs);text-align:center;font-size:var(--fs-secundario);font-weight:var(--fw-negrita);color:var(--r-texto);}
+.ob-mini .ob-card-ic{width:40px;height:40px;}
+.ob-mini .ob-card-ic svg{width:20px;height:20px;}
+/* 4 · traer documentos: el correo con borde marcado y "Lo más rápido" */
+.ob-card.ob-card-top{border:var(--b-marcado) solid var(--r-seleccion-fuerte);}
+.ob-card>.pill{margin-left:auto;}
+.ob-card[data-done]>.pill{display:none;} /* ya se trajo: sale "Lo más rápido" */
+/* bandeja: etiquetas de grupo y la nota final */
+.wgt-lbl.ob-lbl{margin:var(--esp-l) var(--esp-xs) var(--esp-s);}
+.ob-desc.ob-nota{margin:var(--esp-l) 0 0;font-size:var(--fs-secundario);line-height:var(--lh-secundario);}
+/* 3 · tú y tu familia: tu tarjeta sin encabezado; la familia en filas con lápiz y el nombre abierto en la misma fila */
+.pcard.ob-tu .pcard-b{border-top:none;}
+.ob-opc{font-weight:var(--fw-regular);margin-left:var(--esp-xs);}
+.det-grp.ob-fam-grp{margin:0;}
+.ob-fam>.ob-fam-g{margin:var(--esp-s) var(--esp-xs) 0;}
+.ob-fam>.ob-fam-g:first-child{margin-top:0;}
+.ob-fam-grp .fam-r{padding:var(--esp-s) var(--esp-xs);}
+.icon-btn.ob-lapiz svg{width:20px;height:20px;}
+.ob-fam-ed{padding:0 var(--esp-xs) var(--esp-m);display:flex;flex-direction:column;}
 /* Fase 10 · Rediseño · Brief 13b (corrección 2): en el onboarding los títulos de grupo van en oración normal, 16/700 --muted */
 .ob .wgt-lbl{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto-2);letter-spacing:0;text-transform:none;}
 /* Fase 10 · Rediseño · Brief 13b · 6 · "Así quedó tu familia" como pantalla propia (lienzo 56), agrupada como Familia (58).
-   Grupos con su línea de consecuencia; filas con avatar de 56 px y el lápiz abajo a la derecha. Los grupos reusan .wgt-lbl y .det-grp */
+   Grupos "Tú" y "Tu familia" (Fase 11 · Brief 01: sin línea de consecuencia); filas con avatar de 56 px y el lápiz abajo a la derecha. Los grupos reusan .wgt-lbl y .det-grp */
 .ob-fam-g{margin:var(--esp-l) var(--esp-xs) 0;}
 .ob-famres>.ob-fam-g:first-child{margin-top:var(--esp-xs);}
-.ob-fam-c{margin:var(--esp-xs) 0 0;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
 .ob-fam-r{padding:var(--esp-m) var(--esp-xs);}
 .ob-fam-r .card-title{font-size:var(--fs-cuerpo);}
 .ob-famsum-av{position:relative;display:block;flex-shrink:0;}
 .ob-famsum-av>.av{width:var(--av-l);height:var(--av-l);font-size:var(--fs-cuerpo);}
 .ob-famsum-av .av-badge.av-badge-sm{left:auto;right:-10px;top:auto;bottom:-6px;} /* Fase 10 · Brief 38 · misma especificidad que la regla base */
 /* el selector de ícono se abre desde "Así quedó tu familia", por encima del onboarding */
-.ob:not(.hidden) ~ #scrimIcon,.ob:not(.hidden) ~ #scrimOtra{z-index:510;} /* Fase 10 · Brief 18: #scrimOtra también se abre desde el paso 4 */
+.ob:not(.hidden) ~ #scrimIcon,.ob:not(.hidden) ~ #scrimOtra,.ob:not(.hidden) ~ #scrimPolitica{z-index:510;} /* Fase 11 · Brief 04: la política se abre desde el paso 1 */ /* Fase 10 · Brief 18: #scrimOtra también se abre desde el paso 4 */
 /* ============ FASE 10 ============ */
 /* Fase 10 · Brief 01: pill de la cita de mañana (y de hoy) — turquesa de navegación, texto negro (contraste AA) */
-.pill.manana{background:var(--r-seleccion);color:var(--r-texto);}
+.pill.manana,.pill.rapido{background:var(--r-seleccion);color:var(--r-texto);} /* Fase 11 · Brief 02: "Lo más rápido" con el fondo de selección */
 /* Fase 10 · Brief 01: filas tocables de "Qué llevar" y "Tus preguntas" (mismo .exrow de #DET), a todo el ancho y 44 px */
 .exlist button.exrow{width:100%;text-align:left;min-height:56px;}
 /* Fase 10 · Brief 01 (corrección): casilla cuadrada redondeada a la izquierda, como en la referencia 13b */
@@ -1340,6 +1387,11 @@ button.thumb{padding:0;cursor:pointer;}
 .exlist .exrow.check::before{content:'✓';background:var(--r-exito);border-color:var(--r-exito);color:var(--r-fondo-plano);}
 /* Fase 10 · Brief 01: pregunta ya hecha, se tacha sin contarla */
 .exrow.done .ex-v{text-decoration:line-through;color:var(--r-texto-2);font-weight:var(--fw-negrita);}
+/* Fase 11 · negrilla: en «Qué llevar» solo el título (Qué llevar / Todo listo para mañana) va en negrilla. Las etiquetas de grupo, las filas,
+   «En tu celular» y lo tachado van en regular. Solo esta lista: .ex-v sigue en negrilla en «Esto entendí» y en la detección */
+.wgt-lbl.llevar-lbl{font-weight:var(--fw-regular);}
+.exlist.llevar .ex-v,.exlist.llevar .exrow.done .ex-v,.exlist.llevar .ok-chip,
+.exlist.preguntas .ex-v,.exlist.preguntas .exrow.done .ex-v{font-weight:var(--fw-regular);} /* «Tus preguntas»: la misma regla; su título es la etiqueta «Tus preguntas» */
 /* Fase 10 · Brief 01 (corrección): progreso de "Qué llevar" — riel gris de bordes, relleno turquesa; verde al completarse */
 .progress{height:8px;border-radius:var(--radio-completo);background:var(--r-borde);overflow:hidden;}
 /* Fase 10 · Brief 04: relleno --azul-og (el turquesa no llegaba a 3:1 sobre --border) */
@@ -1349,22 +1401,26 @@ button.thumb{padding:0;cursor:pointer;}
 .det-list{display:flex;flex-direction:column;gap:var(--esp-s);}
 .det-q{font-size:var(--fs-secundario);font-weight:var(--fw-negrita);color:var(--r-texto);margin:0 0 var(--esp-s);line-height:var(--lh-secundario);}
 /* Fase 10 · Rediseño · Brief 13b · "¿Quién es quién?" con el diseño del lienzo 56: tarjeta abierta, radio 22, avatar de 44,
-   nombre 17/700 y la evidencia debajo. El nivel usa las tarjetas del horario (.slot) con el tinte de la persona (--tinte en la tarjeta) */
+   nombre 17/700 y la evidencia debajo. Fase 11 · Brief 02: sin nivel ni relación */
 .pcard.det-card{border-radius:var(--radio-l);}
 .det-card .pcard-h{padding:var(--esp-l);}
 .det-card .pcard-h .av{width:var(--av-l);height:var(--av-l);font-size:var(--fs-cuerpo);}
 .det-card .pcard-nm{font-size:var(--fs-h3);}
-.det-ev{display:block;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);margin-top:var(--esp-xs);}
+/* Fase 11 · Brief 02 · "Leí tus documentos": salen .det-ev, .det-ok, .det-rel, .det-hint y .det-opt (la relación y la evidencia en texto).
+   Check verde de 20 sin círculo; "En N documentos" abre las consultas (.det-epis, la tarjeta de «Lo que encontré»); dos botones en dos columnas */
+.det-chk{width:20px;height:20px;flex-shrink:0;color:var(--r-exito);}
+.det-chk svg{width:20px;height:20px;display:block;}
+.det-evb{display:flex;align-items:center;min-height:44px;margin:calc(var(--esp-s) * -1) 0;font-size:var(--fs-secundario);color:var(--r-texto-2);text-decoration:underline;text-align:left;}
+.det-r{padding:var(--esp-m) var(--esp-xs);}
+.det-plegada{padding:var(--esp-s) var(--esp-l);}
+.det-plegada .ob-link{width:auto;font-size:var(--fs-secundario);}
+.det-epis{display:flex;flex-direction:column;gap:var(--esp-s);padding:0 0 var(--esp-m);}
+.det-card .det-epis{padding:0 var(--esp-l) var(--esp-m);}
+.det-epis .epi-chev{display:none;}
+.det-2b{display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-s);}
+.det-list>.wgt-lbl{margin:var(--esp-s) var(--esp-xs) 0;}
 .det-card .pcard-b{border-top:none;padding:0 var(--esp-l) var(--esp-l);}
-.ok-chip.det-ok{align-self:flex-start;}
-.det-rel{display:flex;align-items:center;gap:var(--esp-m);flex-wrap:wrap;}
-.det-rel .ob-link{width:auto;padding:var(--esp-s) var(--esp-xs);font-size:var(--fs-secundario);}
 .det-card .pcard-b>.ob-link{align-self:flex-start;width:auto;font-size:var(--fs-secundario);}
-.det-hint{margin:0 0 var(--esp-s);font-size:var(--fs-cuerpo);color:var(--r-texto);line-height:var(--lh-cuerpo);}
-.det-niv-l{display:flex;flex-direction:column;gap:var(--esp-s);}
-.slot.det-niv{min-height:64px;border-radius:var(--radio-m);}
-.det-niv .slot-when{white-space:normal;}
-.who.det-opt{min-height:44px;}
 .ob-link.det-link{min-height:44px;margin-top:0;}
 .pcard-h[disabled]{opacity:1;cursor:default;}
 /* Fase 10 · Brief 03c: campo "¿Quién es para ti?" de la detección, sin estilo inline */
@@ -1399,7 +1455,10 @@ button.thumb{padding:0;cursor:pointer;}
 .gen-av{display:none;} /* Fase 10 · Brief 06b: sin "Nueva pregunta" */
 .hilo-top.gen .hilo-back,.hilo-top.gen #hiloAv{display:none;}
 .hilo-top.gen .hilo-in{padding-left:var(--esp-m);}
-.hilo-top.gen .gen-av{display:block;width:42px;height:42px;flex-shrink:0;} /* Fase 10 · Rediseño · Brief 14: mascota de 42 px, calma */
+.hilo-top.gen .gen-av{display:block;width:42px;height:42px;flex-shrink:0;position:relative;} /* Fase 10 · Rediseño · Brief 14: mascota de 42 px, calma */
+/* Fase 11 · cierre: vuelve el punto de "en línea", sin texto: estado sobre la mascota, abajo a la derecha, con borde de 2 px del fondo del encabezado */
+.hilo-top.gen .gen-av::after{content:'';position:absolute;right:0;bottom:0;width:12px;height:12px;border-radius:50%;background:var(--r-exito);border:2px solid var(--r-seleccion);box-sizing:border-box;}
+:root[data-tema="oscuro"] .hilo-top.gen .gen-av::after{border-color:var(--r-fondo-plano);}
 
 /* bienvenida del asistente */
 .gen-hello{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--esp-s);padding:var(--esp-xl) var(--esp-xs) var(--esp-s);}
@@ -1426,9 +1485,10 @@ button.thumb{padding:0;cursor:pointer;}
 .todo-row .card-main{display:flex;flex-direction:column;}
 .todo-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--esp-s);min-width:0;}
 .todo-row .todo-top .todo-t{white-space:normal;} /* el nombre completo manda: si no cabe junto a la etiqueta, baja de línea */
-.todo-t{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-.todo-s{display:block;font-size:var(--fs-cuerpo);color:var(--r-texto-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:var(--esp-xs);}
+.todo-t{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;line-height:var(--lh-secundario);} /* Fase 11 · Brief 06d: 20 px, más cerca del secundario */
+.todo-s{display:block;font-size:var(--fs-cuerpo);color:var(--r-texto-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0;line-height:var(--lh-secundario);} /* Fase 11 · Brief 06d */
 .todo-row .pill{font-size:var(--fs-etiqueta);padding:var(--esp-xs) var(--esp-s);}
+.todo-row .todo-top .pill{margin-top:-2px;} /* Fase 11 · Brief 06g: píldora de 24 px centrada con la primera línea del título (20 px) */
 .todo-more{align-self:center;min-height:44px;}
 
 /* Inicio · "En curso" plegado, en gris */
@@ -1436,7 +1496,7 @@ button.thumb{padding:0;cursor:pointer;}
 .curso-fold{width:100%;min-height:60px;display:flex;align-items:center;gap:var(--esp-m);padding:var(--esp-s) var(--esp-m);margin-top:var(--esp-xs);border-radius:var(--radio-l);text-align:left;background:var(--r-superficie-2);}
 .curso-fold-ic{width:40px;height:40px;border-radius:12px;background:var(--r-superficie);display:flex;align-items:center;justify-content:center;color:var(--r-texto-2);flex-shrink:0;}
 .curso-fold .todo-t{color:var(--r-texto);}
-.curso-fold .todo-s{white-space:normal;font-size:var(--fs-secundario);margin-top:var(--esp-xs);}
+.curso-fold .todo-s{white-space:normal;font-size:var(--fs-secundario);margin-top:0;} /* Fase 11 · Brief 06d */
 .curso-fold-chev{width:20px;height:20px;color:var(--r-texto-2);flex-shrink:0;transform:rotate(90deg);transition:transform .2s ease;}
 .curso-fold.open .curso-fold-chev{transform:rotate(-90deg);}
 .curso-fold-chev svg{width:100%;height:100%;display:block;}
@@ -1450,18 +1510,28 @@ button.thumb{padding:0;cursor:pointer;}
 /* Calendario · día elegido y "Aún sin cita" */
 .cal-d.sel-d{background:var(--r-seleccion);}
 .cal-all{align-self:flex-start;min-height:44px;}
-/* Fase 10 · Rediseño · Brief 11: "Aún sin cita" (lienzo 47). Es la única caja con borde del Calendario; la bandera va en --nocita-flag */
-.nocita{background:var(--r-pendiente-suave);border:var(--b-fino) solid var(--r-alerta-borde);border-radius:var(--radio-l);overflow:hidden;margin-top:var(--esp-m);display:flex;flex-direction:column;}
-.nocita-h{display:flex;align-items:center;gap:var(--esp-s);font-family:var(--font-body);font-weight:var(--fw-negrita);font-size:var(--fs-h3);margin:0;padding:var(--esp-m) var(--esp-m) 0;color:var(--r-texto);}
-.nocita-flag{width:16px;height:16px;fill:var(--r-alerta);flex-shrink:0;}
-.nocita-s{font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto-2);margin:0;padding:var(--esp-s) var(--esp-m) var(--esp-s);}
-.nocita-r{display:flex;align-items:center;gap:var(--esp-s);padding:var(--esp-m) var(--esp-l);min-height:56px;border-top:var(--b-fino) solid var(--r-alerta-borde);}
+/* Fase 11 · Brief 05 (A): «Sin agendar · N», plegada al final del Calendario (sale "Aún sin cita" con bandera, explicación y botones).
+   Cerrada: avatares superpuestos, cuenta, primer vencimiento y chevrón; se abre en el lugar con data-rev. Los tokens cambian solos en oscuro */
+.cal-lbl{margin:var(--esp-l) var(--esp-xs) 0;}
+/* Fase 11 · Brief 05 (ajuste): 8 entre el día y su tarjeta, 16 entre un día y el siguiente, 24 antes de «Sin agendar» */
+#calList p.cal-fecha{font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);margin:var(--esp-l) 0 var(--esp-s) !important;}
+#calList .cal-lbl + p.cal-fecha{margin-top:var(--esp-s) !important;}
+/* Fase 11 · Brief 05 (ajuste): el espacio para el FAB va en .content, como con #probBar: lo que ocupa (60 + 16 hasta la barra) más 8.
+   #F1 no se encoge: encogido, «Sin agendar» abierto se salía de su caja y el espacio de abajo no contaba */
+#F1{flex-shrink:0;}
+#F1.screen[data-fab="1"][data-comp="0"]{padding-bottom:0;}
+#app:has(#F1.on) .content{padding-bottom:calc(60px + 16px + var(--esp-s));}
+.nocita{background:var(--r-superficie-2);border-radius:var(--radio-l);overflow:hidden;margin-top:var(--esp-xl);display:flex;flex-direction:column;}
+.nocita-h{display:flex;align-items:center;gap:var(--esp-m);min-height:64px;padding:var(--esp-m) var(--esp-l);width:100%;text-align:left;color:var(--r-texto);}
+.nocita-h .fam-mini .av{border-color:var(--r-superficie-2);}
+.nocita-h .card-main,.nocita-r .card-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.nocita-h[aria-expanded="true"] .epi-chev{transform:rotate(180deg);}
+.nocita-h .epi-chev svg{width:20px;height:20px;}
+.nocita-r{display:flex;align-items:center;gap:var(--esp-s);padding:var(--esp-m) var(--esp-l);min-height:56px;width:100%;text-align:left;color:var(--r-texto);border-top:var(--b-fino) solid var(--r-borde);}
 .nocita-r .av{width:var(--av-s);height:var(--av-s);font-size:var(--fs-etiqueta);}
-.nocita-r .card-main{display:flex;flex-direction:column;}
-.nocita-r .todo-s,.nocita-r .todo-t{white-space:normal;}
+.nocita-h .todo-s,.nocita-r .todo-s,.nocita-r .todo-t{white-space:normal;}
 .nocita-f{width:38px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);color:var(--r-texto-2);line-height:var(--lh-etiqueta);}
 .nocita-f b{font-family:var(--font-body);font-size:var(--fs-h3);color:var(--r-texto);}
-.nocita-btn{min-height:44px;padding:0 var(--esp-l);border-radius:var(--radio-completo);background:var(--r-accion);color:var(--r-sobre-accion);font-size:var(--fs-secundario);font-weight:var(--fw-negrita);flex-shrink:0;}
 
 /* Bóveda · documentos de un grupo abierto: filas blancas (.doc-fila) sobre el gris del grupo, 8 entre filas (Fase 10 · Brief 29) */
 .epi-b{display:flex;flex-direction:column;gap:var(--esp-s);} /* Fase 10 · Brief 34 · sale el gris del grupo: la tarjeta ya da el fondo */
@@ -1524,7 +1594,8 @@ button.thumb{padding:0;cursor:pointer;}
 /* pantallas angostas: el título baja un poco y el filtro se compacta para caber en una fila */
 @container (max-width:400px){ /* Fase 10 · Brief 42: antes @media */
   .screen-title{padding-left:var(--esp-l);padding-right:var(--esp-l);} /* mismo margen que .content */
-  /* Fase 10 · Brief 44: se quitó .st-row .st-txt h2 → --fs-h2; con h1 en 24 px «Inicio» cabe junto al filtro */
+  /* Fase 11 · Brief 04 (A): vuelve el título en --fs-h2 junto al filtro; con h1 en 28 px «Calendario» se cortaba */
+  .st-row .st-txt h2{font-size:var(--fs-h2);line-height:var(--lh-h2);}
   .st-row .fam-top{margin-left:var(--esp-s);}
   .fam-top{height:44px;gap:var(--esp-xs);padding:0 var(--esp-s) 0 var(--esp-xs);}
   .fam-top .fam-label{font-size:var(--fs-secundario);}
@@ -1537,5 +1608,69 @@ button.thumb{padding:0;cursor:pointer;}
 .hilo-top.gen .hilo-sub{display:none;}
 /* Fase 10 · Brief 14 (corrección): descripción de la barra de contacto (lienzo 50), solo en el chat general */
 .gen-desc{display:none;}
-.hilo-top.gen .gen-desc{display:flex;align-items:center;gap:var(--esp-s);margin:var(--esp-xs) 0 0;font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto-2);}
-.gen-dot{width:8px;height:8px;border-radius:50%;background:var(--r-exito);flex-shrink:0;}
+.hilo-top.gen .gen-desc{display:block; /* Fase 11 · Brief 03: dos líneas, sin punto. Fase 11 · cierre: una línea; el punto va sobre la mascota */margin:var(--esp-xs) 0 0;font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto-2);}
+
+/* Fase 11 · Brief 03 · día de la cita en cajas: fila de etiqueta con dato a la derecha, la hora grande con reloj y el botón con ícono */
+.wgt-tr{display:flex;align-items:center;justify-content:space-between;gap:var(--esp-s);}
+.wgt-tr-s{font-size:var(--fs-secundario);color:var(--r-texto-2);text-align:right;}
+.cita-hoy{display:flex;align-items:center;gap:var(--esp-s);color:var(--r-texto);}
+.cita-hoy h2{margin:0;font-size:var(--fs-h2);font-weight:var(--fw-negrita);line-height:var(--lh-cuerpo);color:var(--r-texto);}
+.btn-s.btn-ic{gap:var(--esp-s);}
+
+/* Fase 11 · Brief 05 (A): «Todos los documentos» por persona y tema. La caja de la mascota, la tarjeta de cada persona (tinte y borde de su color)
+   y los temas como filas cerradas sobre la superficie. Al abrir, la consulta (.tema-c) y sus documentos en .epi-linea. Todo con tokens: sirve en oscuro */
+.bov-tm{display:flex;align-items:center;gap:var(--esp-m);background:var(--r-acento-suave);border-radius:var(--radio-m);padding:var(--esp-m) var(--esp-l);margin-top:var(--esp-m);}
+.bov-tm p{margin:0;font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto);}
+.tema-p{display:flex;flex-direction:column;gap:var(--esp-s);margin-top:var(--esp-m);padding:var(--esp-m);border-radius:var(--radio-l);background:var(--tinte, var(--r-superficie-2));border:var(--b-fino) solid var(--pc, var(--r-borde));}
+.tema-p-h{display:flex;align-items:center;gap:var(--esp-m);padding:var(--esp-xs) var(--esp-xs) var(--esp-s);}
+.tema-p-h .av{width:var(--av-m);height:var(--av-m);font-size:var(--fs-secundario);}
+.tema-p-h b,.tema-h b{display:block;font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto);line-height:var(--lh-cuerpo);}
+.tema-p-h small,.tema-h small{display:block;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
+.tema{background:var(--r-superficie);border-radius:var(--radio-m);}
+.tema-h{display:flex;align-items:center;gap:var(--esp-s);width:100%;min-height:56px;padding:var(--esp-m) var(--esp-l);text-align:left;color:var(--r-texto);border-radius:var(--radio-m);}
+.tema-h .card-main{flex:1;min-width:0;}
+.tema-h[aria-expanded="true"] .epi-chev{transform:rotate(180deg);}
+.tema-h .epi-chev svg{width:20px;height:20px;display:block;}
+.tema-b{padding:0 var(--esp-m) var(--esp-xs);}
+.tema-c{margin:var(--esp-xs) var(--esp-xs) var(--esp-s);}
+
+/* Fase 11 · Brief 05 (B): chip chiquito de demo y el panel claro de otras entradas.
+   Brief 05 (ajuste): el chip va debajo del visor con el gris punteado de los demás .chip-sim (sale el relleno oscuro), en 32 px y 12 px.
+   El ::after lleva el área táctil a 44 px sin agrandar el chip */
+#CAM .chip-sim-mini{position:relative;align-self:flex-start;min-height:32px;height:32px;padding:0 var(--esp-m);font-size:var(--fs-etiqueta);}
+#CAM.cam-alt-on .scan-bub{display:none;} /* Fase 11 · Brief 05 (ajuste): con el panel abierto, sin "Enfoca la hoja…" */
+#CAM .chip-sim-mini::after{content:'';position:absolute;inset:-6px 0;}
+/* Fase 11 · Brief 05 (corrección): el panel es una hoja (.sheet-scrim › .sheet), completa sin scroll. Salen el fondo, borde y padding propios
+   (los da .sheet) y la regla que escondía disparador y «Listo» (el velo los tapa) */
+.cam-alt{display:flex;flex-direction:column;}
+.cam-alt-h{display:flex;align-items:center;gap:var(--esp-m);margin-bottom:var(--esp-m);}
+.cam-alt-h h3{margin:0;font-family:var(--font-body);font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);}
+.cam-alt .ob-card{margin-bottom:var(--esp-s);}
+.cam-alt .ob-card[hidden]{display:none;}
+.cam-alt-n{margin:var(--esp-xs) 0 0;font-size:var(--fs-secundario);line-height:var(--lh-secundario);color:var(--r-texto-2);}
+.cam-alt-seguir{align-self:center;margin-top:var(--esp-s);}
+
+/* Fase 11 · Brief 06 · Tus datos y «¿Qué es esto?»: cajas de las hojas, botón ⓘ del hilo y botones de 48 en Configuración */
+.sh-caja{display:flex;flex-direction:row;align-items:flex-start;gap:var(--esp-m);margin:0 0 var(--esp-s);padding:var(--esp-m);border-radius:var(--radio-m);background:var(--r-superficie-2);color:var(--r-texto);font-size:var(--fs-secundario);line-height:var(--lh-secundario);} /* Fase 11 · Brief 06c: ícono a la izquierda */
+.sh-ic{width:40px;height:40px;border-radius:var(--radio-s);background:var(--r-superficie);color:var(--r-texto);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sh-tx{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.sh-tx b{font-weight:var(--fw-negrita);}
+.sh-tx span{color:var(--r-texto-2);}
+.sh-tarjeta{background:var(--r-superficie);border:var(--b-fino) solid var(--r-borde);border-radius:var(--radio-m);margin:0 0 var(--esp-s);}
+.sh-pal{display:flex;flex-direction:column;gap:2px;padding:var(--esp-m);font-size:var(--fs-secundario);line-height:var(--lh-secundario);}
+.sh-pal+.sh-pal{border-top:var(--b-fino) solid var(--r-borde);}
+.sh-pal b{font-weight:var(--fw-negrita);color:var(--r-texto);}
+.sh-pal span{color:var(--r-texto-2);}
+.sh-rotulo{margin:var(--esp-m) 0 var(--esp-s);}
+.cfg-acc :is(.btn-s,.btn-danger){height:48px;gap:var(--esp-s);}
+.hilo-info{width:48px;height:48px;margin:-2px -4px -2px 0;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--r-texto);}
+.hilo-info svg{width:24px;height:24px;}
+.hilo-top.gen .hilo-info{display:none;}
+
+/* Fase 11 · Brief 06e: interruptor de Configuración › Avisos. Encendido en tinta (es una acción); el área táctil es de 48 px */
+.cfg-sw{position:relative;width:48px;height:48px;flex-shrink:0;background:transparent;border-radius:var(--radio-completo);}
+.cfg-sw::before{content:"";position:absolute;left:0;top:12px;width:48px;height:24px;border-radius:var(--radio-completo);background:var(--r-contorno);transition:background-color .15s;}
+.cfg-sw.on::before{background:var(--r-texto);}
+.cfg-sw-k{position:absolute;left:4px;top:16px;width:16px;height:16px;border-radius:50%;background:var(--r-superficie);transition:transform .15s;}
+.cfg-sw.on .cfg-sw-k{transform:translateX(24px);}
+.cfg-sw:focus-visible{outline:none;box-shadow:var(--sh-foco);}
