@@ -325,6 +325,8 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 .tm-ojo{fill:var(--tm-tinta);} .tm-ojo-b{fill:var(--tm-brillo);}
 .tm-trazo{fill:none;stroke:var(--tm-tinta);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;}
 .tm-arco{stroke-width:5;}
+.tm-s .tm-trazo{stroke-width:7;} /* Fase 11 · Brief 12: trazo del logo a 36 y 42 px */
+.tm-s .tm-arco{stroke-width:7.5;}
 .tm-boca-l{fill:var(--tm-tinta);}
 .tm-chispa{fill:var(--tm-destello);}
 .tm-z{fill:var(--tm-z);font-family:var(--font-display);font-weight:700;}
@@ -334,7 +336,7 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 @keyframes tmWave{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-14deg)}}
 /* en las tandas del chat (36 px) no se mueve: con tantas juntas sería demasiado */
 .t-av .tmBob,.t-av .tmWave{animation:none;}
-@media (prefers-reduced-motion: reduce){ .tmBob,.tmWave{animation:none!important;} }
+@media (prefers-reduced-motion: reduce){ .tmBob,.tmWave,.proc-m .tm-chispa circle{animation:none!important;} } /* Fase 11 · Brief 12b */
 /* Fase Móvil · burbuja de diálogo (ajuste 3, contra mockup de referencia): blanco translúcido (deja ver el degradado detrás) en vez de blanco sólido — mismo achatado hacia el avatar que el ajuste 2 */
 .mascot-bubble{background:var(--r-vidrio);border-radius:var(--radio-m);border-top-left-radius:6px;padding:var(--esp-l) var(--esp-l);border:var(--b-fino) solid var(--r-borde);flex:1;min-width:0;margin-top:var(--esp-xs);}
 /* Fase Móvil · ajuste 3: el saludo vuelve a Outfit (es el título de la pantalla, como pide CLAUDE.md) y baja un punto de tamaño; especificidad de 2 clases para ganarle a ".screen-title h2". El gancho se mantiene en la fuente del cuerpo, normal/atenuado (.mascot-hook, sin cambios de este ajuste). */
@@ -346,6 +348,11 @@ body{margin:0;padding:0;background:var(--r-fondo-plano);font-family:var(--font-b
 /* Fase 10 · Brief 01b: min-height:0 para que el flex le dé un alto límite y el scroll sea interno */
 .content{flex:1;min-height:0;overflow-y:auto;padding:var(--esp-l) var(--esp-l) var(--esp-m);display:flex;flex-direction:column;gap:var(--esp-m);background:transparent;scroll-behavior:smooth;}
 .content::-webkit-scrollbar{width:0;}
+/* Fase 11 · Brief 14d: bajo la barra fija no se ve contenido; el degradado termina en transparente */
+/* Fase 11 · Brief 14b: degradado de 40px solo con transparencia; el de abajo termina justo encima de la barra fija (--dock-h) */
+.content{--fade-t:0px;--fade-b:0px;-webkit-mask-image:linear-gradient(to bottom,transparent 0,black var(--fade-t),black calc(100% - var(--dock-h,0px) - var(--fade-b)),transparent calc(100% - var(--dock-h,0px)));mask-image:linear-gradient(to bottom,transparent 0,black var(--fade-t),black calc(100% - var(--dock-h,0px) - var(--fade-b)),transparent calc(100% - var(--dock-h,0px)));}
+.content.fade-t{--fade-t:40px;}
+.content.fade-b{--fade-b:40px;}
 /* Fase 10 · Brief 44b: ninguna barra de scroll nativa dentro del marco (#confList, hojas, menús…); el scroll sigue con rueda y dedo */
 #app *{scrollbar-width:none;}
 #app *::-webkit-scrollbar{width:0;height:0;}
@@ -954,37 +961,42 @@ button.doc-fila:active{transform:scale(.97);}
 .scan-view p{font-size:var(--fs-secundario);color:var(--r-texto-2);margin:0;text-align:center;padding:0 28px;line-height:var(--lh-secundario);}
 .thumbs{display:flex;gap:var(--esp-s);min-height:44px;flex-wrap:wrap;}
 /* Fase 10 · Brief 14 (captura) · lienzo 59: el visor es una cámara oscura con la hoja marcada por 4 esquinas turquesa */
-#CAM .scan-view{flex:1 0 316px;min-height:316px;border:none;border-radius:var(--radio-l);background:var(--camara);overflow:hidden;justify-content:flex-start;gap:0;}
+#CAM .scan-view{flex:1 1 0;min-height:220px;border:none;border-radius:var(--radio-l);background:var(--camara);overflow:hidden;justify-content:flex-start;gap:0;}
 #CAM .shot-c{z-index:2;background:var(--camara-chip);color:var(--camara-texto);}
-.scan-hoja{position:absolute;left:50%;top:26px;width:150px;height:190px;margin-left:-75px;background:var(--papel);border-radius:4px;transform:rotate(-3deg);padding:18px 14px;display:flex;flex-direction:column;gap:9px;}
+/* Fase 11 · Brief 14c: .scan-stage ocupa el visor sobre la burbuja; .scan-frame (206×214) se escala a su alto y centra hoja y esquinas */
+.scan-stage{position:absolute;left:0;right:0;top:12px;bottom:84px;display:flex;align-items:center;justify-content:center;}
+.scan-frame{position:relative;height:100%;max-height:214px;aspect-ratio:206/214;}
+.scan-hoja{position:absolute;left:13.6%;top:4.7%;width:72.8%;height:88.8%;background:var(--papel);border-radius:4px;transform:rotate(-3deg);padding:9% 7%;display:flex;flex-direction:column;justify-content:space-evenly;overflow:hidden;box-sizing:border-box;}
 .scan-hoja i,.t-hoja i{display:block;height:4px;border-radius:2px;background:var(--papel-linea);}
 .scan-hoja i:first-child{height:6px;width:60%;border-radius:3px;background:var(--papel-titulo);}
 .scan-hoja i:nth-child(4){width:80%;} .scan-hoja i:nth-child(6){width:70%;}
 .scan-esq{position:absolute;width:22px;height:22px;border:0 solid var(--r-seleccion-fuerte);}
-.scan-esq.e1{left:calc(50% - 103px);top:16px;border-left-width:3px;border-top-width:3px;border-radius:4px 0 0 0;}
-.scan-esq.e2{right:calc(50% - 103px);top:16px;border-right-width:3px;border-top-width:3px;border-radius:0 4px 0 0;}
-.scan-esq.e3{left:calc(50% - 103px);top:208px;border-left-width:3px;border-bottom-width:3px;border-radius:0 0 0 4px;}
-.scan-esq.e4{right:calc(50% - 103px);top:208px;border-right-width:3px;border-bottom-width:3px;border-radius:0 0 4px 0;}
+.scan-esq.e1{left:0;top:0;border-left-width:3px;border-top-width:3px;border-radius:4px 0 0 0;}
+.scan-esq.e2{right:0;top:0;border-right-width:3px;border-top-width:3px;border-radius:0 4px 0 0;}
+.scan-esq.e3{left:0;bottom:0;border-left-width:3px;border-bottom-width:3px;border-radius:0 0 0 4px;}
+.scan-esq.e4{right:0;bottom:0;border-right-width:3px;border-bottom-width:3px;border-radius:0 0 4px 0;}
 /* el comentario en burbuja blanca abajo, con la mascota de 36 px (piensa · calma · atenta, ver scanSay) */
 .scan-bub{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;background:var(--r-superficie);border-radius:var(--radio-l);border-bottom-left-radius:6px;padding:var(--esp-s) var(--esp-m) var(--esp-s) var(--esp-s);display:flex;gap:var(--esp-s);align-items:center;border:var(--b-fino) solid var(--r-borde);}
 .scan-av{width:36px;height:36px;flex-shrink:0;}
 #CAM .scan-view .scan-bub p{flex:1;min-width:0;padding:0;text-align:left;font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);color:var(--r-texto);}
-.thumbs-lbl{margin:0;font-size:var(--fs-cuerpo);font-weight:var(--fw-negrita);color:var(--r-texto-2);} /* "Ya tienes estas" en oración normal */
 /* miniaturas: papel blanco de 58×76 con sombra, marca de 22 px arriba a la derecha y el nombre corto debajo */
-#CAM .thumbs{gap:var(--esp-m);padding-top:var(--esp-s);align-items:flex-start;}
+#CAM .thumbs{gap:var(--esp-m);padding:12px 10px 0 0;align-items:flex-start;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;} /* Fase 11 · Brief 14c: una sola fila */
+#CAM .thumbs::-webkit-scrollbar{height:0;}
 /* con miniaturas más altas la pantalla crece y se desplaza, en vez de encimar el aviso, el obturador y el botón */
-#CAM{flex:1 0 auto;}
-#CAM > *{flex-shrink:0;}
-#CAM .thumb{width:68px;height:auto;border:none;background:none;border-radius:0;flex-direction:column;gap:var(--esp-s);justify-content:flex-start;font-family:var(--font-body);}
-#CAM .thumb.borrosa{width:68px;background:none;}
-.t-hoja{position:relative;width:58px;height:76px;background:var(--r-superficie);border-radius:8px;border:var(--b-fino) solid var(--r-borde);padding:10px 8px;display:flex;flex-direction:column;gap:6px;}
+#CAM > *:not(.scan-view){flex-shrink:0;} /* Fase 11 · Brief 14c: el visor toma lo que sobra y cede alto */
+#CAM .thumb{width:56px;height:auto;border:none;background:none;border-radius:0;flex-direction:column;gap:var(--esp-s);justify-content:flex-start;font-family:var(--font-body);}
+#CAM .thumb.borrosa{width:56px;background:none;}
+.t-hoja{position:relative;width:48px;height:62px;background:var(--r-superficie);border-radius:8px;border:var(--b-fino) solid var(--r-borde);padding:8px 6px;display:flex;flex-direction:column;gap:5px;box-sizing:border-box;}
 .t-hoja i{height:3px;} .t-hoja i:first-child{height:4px;width:60%;background:var(--papel-titulo);} .t-hoja i:nth-child(4){width:75%;}
 .thumb.borrosa .t-hoja i{filter:blur(1.5px);}
 .thumb.nueva .t-hoja{border-color:var(--r-seleccion-fuerte);box-shadow:inset 0 0 0 var(--b-realce) var(--r-seleccion-fuerte);}
 .thumb.sel .t-hoja{border-color:var(--r-alerta);box-shadow:inset 0 0 0 var(--b-realce) var(--r-alerta);}
-#CAM .thumb .t-mk{top:-9px;right:-9px;width:24px;height:24px;border:var(--b-marcado) solid var(--r-fondo-plano);}
+#CAM .thumb .t-mk{top:-9px;right:-9px;width:22px;height:22px;border:var(--b-marcado) solid var(--r-fondo-plano);}
 #CAM .thumb .t-mk.warn{background:var(--r-alerta);color:var(--r-sobre-alerta);border:var(--b-marcado) solid var(--r-fondo-plano);}
-.t-nm{font-size:var(--fs-etiqueta);line-height:var(--lh-etiqueta);text-align:center;color:var(--r-texto-2);font-weight:var(--fw-regular);}
+.t-nm{font-size:var(--fs-etiqueta);line-height:var(--lh-etiqueta);text-align:center;color:var(--r-texto-2);font-weight:var(--fw-regular);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+/* Fase 11 · Brief 14c: foco solo con teclado, sobre la hoja */
+#CAM button.thumb{outline:none;-webkit-tap-highlight-color:transparent;}
+#CAM button.thumb:focus-visible .t-hoja{box-shadow:var(--sh-foco);}
 .thumb{width:34px;height:44px;border-radius:var(--radio-s);background:var(--r-superficie);border:var(--b-fino) solid var(--r-contorno);flex-shrink:0;animation:pop .2s ease both;display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);color:var(--r-texto-2);}
 .thumb.nueva{border-color:var(--r-texto);box-shadow:inset 0 0 0 var(--b-realce) var(--r-texto);color:var(--r-texto);}
 /* Fase 10 · Brief 08: escáner con feedback inmediato */
@@ -1010,10 +1022,13 @@ button.thumb{padding:0;cursor:pointer;}
 /* Fase 7 · el perfil (I3) apilaba tarjetas y botones sin separación */
 #i3Body{display:flex;flex-direction:column;gap:var(--esp-m);}
 .proc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--esp-l);
-  background:linear-gradient(180deg,var(--r-fondo-plano) 0%,var(--r-seleccion) 100%);
+  /* Fase 11 · Brief 11: sin degradado propio; se ve el fondo continuo de #app */
   margin:-16px;padding:var(--esp-l);border-radius:0;}
-.spin{width:52px;height:52px;border-radius:50%;border:5px solid var(--r-superficie-2);border-top-color:var(--r-texto);animation:sp .9s linear infinite;}
-@keyframes sp{to{transform:rotate(360deg);}}
+.proc-m{line-height:0;} /* Fase 11 · Brief 12 */
+/* Fase 11 · Brief 12b: las burbujas de «piensa» se encienden como los puntos de «escribiendo» */
+.proc-m .tm-piensa .tm-chispa circle{animation:bl 1.3s infinite;transform-box:fill-box;transform-origin:center;}
+.proc-m .tm-piensa .tm-chispa circle:nth-child(2){animation-delay:.18s;}
+.proc-m .tm-piensa .tm-chispa circle:nth-child(3){animation-delay:.36s;}
 .proc p{margin:0;font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:0 30px;line-height:var(--lh-cuerpo);}
 .gal{display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-s);}
 .gal-i{aspect-ratio:1;border-radius:var(--radio-m);background:var(--r-superficie-2);border:var(--b-fino) solid var(--r-borde);display:flex;align-items:flex-end;justify-content:center;padding-bottom:var(--esp-s);font-size:var(--fs-etiqueta);font-weight:var(--fw-negrita);color:var(--r-texto-2);}
@@ -1168,7 +1183,6 @@ button.thumb{padding:0;cursor:pointer;}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:var(--esp-m);padding:0 var(--esp-xl);}
 .empty h4{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-negrita);margin:0;color:var(--r-texto);}
 /* Fase 10 · Rediseño · Brief 14: mascota en calma (112 px) en el vacío del filtro */
-.empty > .tm{margin-bottom:var(--esp-xs);}
 .empty p{margin:0;font-size:var(--fs-cuerpo);color:var(--r-texto-2);line-height:var(--lh-cuerpo);}
 /* Fase 10 · Brief 40: "Documentos sin organizar" (Inicio y portada de la Bóveda): el vacío de "Buscar en tu bandeja" como tarjeta, sin ocupar la pantalla */
 .empty.sin-org{flex:none;padding:var(--esp-l) var(--esp-m);margin-bottom:var(--esp-l);border-radius:var(--radio-l);background:var(--r-superficie);border:var(--b-fino) solid var(--r-borde);}
@@ -1318,6 +1332,7 @@ button.thumb{padding:0;cursor:pointer;}
 .fd-lbl .tag-soon{margin-left:var(--esp-s);}
 .ob-link.ob-quitar{align-self:flex-start;width:auto;min-height:44px;margin-top:0;padding:var(--esp-s) 0;font-size:var(--fs-secundario);}
 .ob-gnote{display:flex;align-items:center;gap:var(--esp-s);margin:-8px 0 0;font-size:var(--fs-secundario);color:var(--r-texto-2);line-height:var(--lh-secundario);}
+.ob-fam>.ob-gnote{margin-left:var(--esp-xs);} /* Fase 11 · Brief 09: alineada con la etiqueta "Tu familia" (.ob-fam-g, mismo margen) */
 .ob-gnote .ob-g{width:20px;height:20px;font-size:var(--fs-etiqueta);background:var(--r-superficie);}
 /* Fase 10 · Rediseño · Brief 13b: sale .ob-nivel (el nivel se pregunta en "¿Quién es quién?"). La fecha vacía o con error */
 .err-msg[hidden]{display:none;}
@@ -1330,16 +1345,22 @@ button.thumb{padding:0;cursor:pointer;}
 .ob-trust-ic.ok{background:var(--r-exito-suave);color:var(--r-exito);}
 .ob-trust-ic.no{background:var(--r-critico-suave);color:var(--r-critico);}
 .ob-trust-ic.lock,.ob-trust-ic.info{background:var(--r-acento-suave);color:var(--r-acento);}
-/* Fase 11 · Brief 02 · onboarding corto (lienzo, filas 2 y 4): cada idea en su caja (.ob-caja); .suave = aviso sin borde; .marcada = la casilla.
+/* Fase 11 · Brief 02 · onboarding corto (lienzo, filas 2 y 4): cada idea en su caja (.ob-caja); .suave = aviso sin borde. Fase 11 · Brief 07b: sale .marcada; la casilla va aparte (.ob-acepto).
    .sq = ícono en un cuadro de 40, como .doc-ic */
 .ob-cajas{display:flex;flex-direction:column;gap:var(--esp-s);}
 .ob-caja{align-items:center;padding:var(--esp-m) var(--esp-l);border-radius:var(--radio-l);background:var(--r-superficie);border:var(--b-fino) solid var(--r-borde);}
 .ob-caja.suave{background:var(--r-superficie-2);border-color:transparent;}
-.ob-caja.marcada{border:var(--b-marcado) solid var(--r-texto);}
 .ob-caja>div>span:first-child{margin-top:0;}
 .ob-trust-ic.sq{width:40px;height:40px;border-radius:var(--radio-m);background:var(--r-seleccion);color:var(--r-texto);}
-.ob-acepto{min-height:44px;cursor:pointer;}
-.ob-acepto input{width:24px;height:24px;margin:0;flex-shrink:0;accent-color:var(--r-accion);}
+/* Fase 11 · Brief 07b · la casilla sin tarjeta: línea fina encima, cuadro de 32 px en tinta que se rellena al marcar */
+.ob-step[data-step="1"] .ob-link{margin-top:var(--esp-xl);}
+/* Fase 11 · Brief 07c: aire bajo la casilla, para que su última línea no quede junto al botón */
+.ob-step[data-step="1"]{padding-bottom:calc(var(--ob-pie, calc(var(--safe-bottom) + 152px)) + var(--esp-xl));}
+.ob-acepto{flex-shrink:0;display:flex;align-items:center;gap:var(--esp-m);min-height:44px;margin-top:var(--esp-xl);padding-top:var(--esp-xl);border-top:var(--b-fino) solid var(--r-borde);cursor:pointer;}
+.ob-acepto input{appearance:none;-webkit-appearance:none;position:relative;width:32px;height:32px;margin:0;flex-shrink:0;border:var(--b-marcado) solid var(--r-texto);border-radius:var(--radio-s);background:var(--r-superficie);cursor:pointer;}
+.ob-acepto input:checked{background:var(--r-accion);border-color:var(--r-accion);}
+.ob-acepto input:checked::after{content:"";position:absolute;left:10px;top:5px;width:8px;height:14px;border:solid var(--r-sobre-accion);border-width:0 3px 3px 0;transform:rotate(45deg);}
+.ob-acepto input:focus-visible{outline:none;box-shadow:var(--sh-foco);}
 .ob-acepto>span{font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);color:var(--r-texto);}
 /* 0 · bienvenida: tres cajitas iguales en fila */
 .ob-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--esp-s);margin:0 0 var(--esp-l);}
@@ -1464,6 +1485,7 @@ button.thumb{padding:0;cursor:pointer;}
 .gen-hello{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--esp-s);padding:var(--esp-xl) var(--esp-xs) var(--esp-s);}
 /* Fase 10 · Brief 14 (corrección): aire para el halo de la mascota de 150 px (se extiende ~34 px) y al menos 24 px bajo la barra */
 .gen-hello{padding-top:44px;}
+#TH:not(.gen-w) .gen-hello{padding-top:16px;} /* Fase 11 · Brief 14c: con historial, la mascota queda cerca del último mensaje */
 .gen-hello-m{overflow:visible;}
 .gen-hello-t{font-family:var(--font-display);font-weight:var(--fw-negrita);font-size:var(--fs-h2);line-height:var(--lh-h2);margin:var(--esp-l) 0 0;color:var(--r-texto);}
 .gen-hello-s{font-size:var(--fs-cuerpo);line-height:var(--lh-cuerpo);color:var(--r-texto-2);margin:0 0 var(--esp-m);}

@@ -578,7 +578,7 @@ tourBub.addEventListener('keydown', function(e){
 window.addEventListener('resize', tourPlace);
 /* Fase 10 · Rediseño · Brief 14 · mascota (RV_Taremi, brazos de trazo). Un solo dibujo para todos los lugares.
    TM_BASE/TM_M son la tabla M de la referencia. Degradado, recorte y grano viven en svg.tm-defs (index.html): ninguna mascota repite ids.
-   Colores en tokens --tm-* (styles.css). El halo solo desde 84 px. "descansa" queda dibujado pero no se usa (no hay reloj). */
+   Colores en tokens --tm-* (styles.css). El halo solo desde 84 px. "descansa" sale en Inicio cuando todo está agendado (Fase 11 · Brief 13). */
 var TM_CUERPO='M100 26C130 24 166 48 170 86C174 130 148 172 104 178C60 184 26 154 20 110C15 64 52 30 100 26Z';
 var TM_BASE={ armL:'M34 118C18 126 14 142 24 150', armR:'M164 112C180 120 186 136 176 146', browL:'M68 80L88 78', browR:'M112 78L132 80', cejas:0,
   arco:0, eLx:80, eRx:120, eY:97, arcL:'M72 100C76 92 86 92 90 100', arcR:'M110 100C114 92 124 92 128 100',
@@ -588,17 +588,18 @@ var TM_M={
   calma: {},
   piensa: { eLx:86, eRx:126, eY:92, armR:'M164 124C150 142 128 150 116 140', cejas:1, browL:'M72 80L90 80', browR:'M114 74L132 70', mouth:'M94 122C100 124 106 123 110 119', burbujas:1 },
   celebra: { armL:'M36 104C20 92 14 74 20 56', armR:'M164 100C180 88 188 70 182 52', arco:1, mouth:'M80 114C86 134 114 134 120 114Z', llena:1, chispas:1 },
-  atenta: { armR:'M164 108C178 106 190 98 196 84', cejas:1, browL:'M70 78C76 73 85 72 92 75', browR:'M114 75C121 72 130 73 136 78', eLx:84, eRx:124, eY:97, mouth:'M92 120C98 125 106 125 113 120' }, /* Fase 10 · Brief 37: atenta señala, ya no se ve triste */
+  atenta: { armR:'M164 108C178 106 190 98 196 84', cejas:1, browL:'M72 81C79 80 86 77 92 71', browR:'M116 71C122 77 129 80 136 81', eLx:84, eRx:124, eY:98, mouth:'M95 121L111 121' }, /* Fase 11 · Brief 12: cejas oblicuas y boca recta; preocupada, no triste ni alarmada */
   descansa: { arco:1, arcL:'M72 98C77 104 85 104 90 98', arcR:'M110 98C115 104 123 104 128 98', mouth:'M92 121C97 124 103 124 108 121', zz:1 }
 };
 function mascotaSVG(gesto, px){
   if(!TM_M[gesto]) gesto='calma';
   var o=Object.assign({}, TM_BASE, TM_M[gesto]);
+  var ch = px<=42; /* Fase 11 · Brief 12: trazo grueso a 36 y 42 px */
   var ojos = o.arco
     ? '<path class="tm-trazo tm-arco" d="'+o.arcL+'"/><path class="tm-trazo tm-arco" d="'+o.arcR+'"/>'
-    : '<circle class="tm-ojo" cx="'+o.eLx+'" cy="'+o.eY+'" r="7.5"/><circle class="tm-ojo" cx="'+o.eRx+'" cy="'+o.eY+'" r="7.5"/>'+
-      '<circle class="tm-ojo-b" cx="'+(o.eLx+2.6)+'" cy="'+(o.eY-2.6)+'" r="2.4"/><circle class="tm-ojo-b" cx="'+(o.eRx+2.6)+'" cy="'+(o.eY-2.6)+'" r="2.4"/>';
-  return '<span class="tm tm-'+gesto+'" aria-hidden="true">'+(px>=84 ? '<span class="tm-halo"></span>' : '')+
+    : '<circle class="tm-ojo" cx="'+o.eLx+'" cy="'+o.eY+'" r="'+(ch?9:7.5)+'"/><circle class="tm-ojo" cx="'+o.eRx+'" cy="'+o.eY+'" r="'+(ch?9:7.5)+'"/>'+
+      '<circle class="tm-ojo-b" cx="'+(o.eLx+2.6)+'" cy="'+(o.eY-2.6)+'" r="'+(ch?3:2.4)+'"/><circle class="tm-ojo-b" cx="'+(o.eRx+2.6)+'" cy="'+(o.eY-2.6)+'" r="'+(ch?3:2.4)+'"/>';
+  return '<span class="tm tm-'+gesto+(ch?' tm-s':'')+'" aria-hidden="true">'+(px>=84 ? '<span class="tm-halo"></span>' : '')+
     '<svg viewBox="0 0 200 200" width="'+px+'" height="'+px+'" focusable="false" aria-hidden="true">'+
     (px>=84 ? '<ellipse class="tm-piso" cx="98" cy="190" rx="52" ry="7"/>' : '')+ /* Fase 10 · Brief 14 (corrección): sin piso a 36 y 42 px */
     '<g class="tmBob">'+
@@ -637,6 +638,7 @@ function mascotAInicio(){ A1.insertBefore(mascotHd, A1.firstChild); mascotHd.sty
 var cursoOpen=false;
 /* Fase 10 · Brief 06: mascota de la barra de contacto · Fase 10 · Rediseño · Brief 14: calma, 42 px; y la del onboarding (hola, 140 px) */
 document.getElementById('genAv').innerHTML=mascotaSVG('calma', 42);
+document.querySelector('#PROC .proc-m').innerHTML=mascotaSVG('piensa', 112); /* Fase 11 · Brief 12 */
 document.querySelector('.ob-hero .ob-m').innerHTML=mascotaSVG('hola', 140);
 mascotHd.addEventListener('keydown', function(e){ if((e.key==='Enter'||e.key===' ') && cur==='A1'){ e.preventDefault(); openThread('gen'); } });
 /* Fase 10 · Rediseño · Brief 11: ícono de "En curso", calendario con check (lienzo 42) */
@@ -680,10 +682,10 @@ function renderInicio(){
     /* Fase 10 · Brief 15: sin documentos, en las cuatro historias. Con el correo ya revisado (propia) no se ofrece buscar otra vez */
     var revisado = mailConnected && !esPropia(); /* Fase 10 · Brief 16: en la propia historia la bandeja sí trae la orden */
     mascotSaludo(revisado ? 'Revisé tu correo y aún no encontré órdenes. Si tienes una en papel, tómale una foto.' /* Fase 11 · Brief 03: no hay aviso que cumpla "te aviso" */
-      : 'Aún no tengo tus documentos. Si busco en tu correo, te organizo lo que encuentre.'); /* Fase 11 · Brief 04 (B): bandeja → correo en lo que se ve */
+      : 'Trae tus documentos con el botón +.'); /* Fase 11 · Brief 07: el mismo texto de la Bóveda vacía */
     mascotInicio('calma','calma'); /* Fase 10 · Brief 04 · Fase 10 · Rediseño · Brief 14: vacío → en calma */
     agendaPrimera=null; /* Fase 11 · Brief 03 */
-    A1.innerHTML=tour+(revisado ? '' : '<div class="empty"><button type="button" class="btn-p" data-tap="fabmail">Buscar en tu correo</button></div>'); /* el mismo flujo que "Conectar tu correo" del FAB */
+    A1.innerHTML=tour+(revisado ? '' : '<div class="empty"><button type="button" class="btn-p" data-tap="fabmail">Buscar en mi correo</button></div>'); /* el mismo flujo que el botón + · Fase 11 · Brief 07: mismo nombre que en el paso 4 */
     mascotAInicio(); /* Fase 10 · Brief 05 */
     renderNotif();
     return;
@@ -693,7 +695,8 @@ function renderInicio(){
   var okFam = function(c){ return personaVisible(c) && (bovPerson==='all' || fx(c.av)===bovPerson); };
   /* Fase 10 · Brief 06: regla de los 30 días (en30) — lo que vence o empieza más tarde vive en el Calendario, no aquí */
   var trab = CARDS.filter(function(c){return c.st==='trabado' && okFam(c) && en30(c);});
-  var acc  = CARDS.filter(function(c){return c.st==='accionable' && okFam(c) && en30(c);}).sort(function(a,b){return a.ord-b.ord;});
+  var conBorrador = function(c){ return !!(DRAFTS[c.k] && DRAFTS[c.k].slot); }; /* Fase 11 · Brief 14: un trámite con horario elegido a medias vuelve a «Por hacer» aunque esté lejos */
+  var acc  = CARDS.filter(function(c){return c.st==='accionable' && okFam(c) && (en30(c) || conBorrador(c));}).sort(function(a,b){return a.ord-b.ord;});
   /* Fase 10 · Brief 01: las citas en mañana / hoy / por confirmar suben a "Necesita tu atención"; esperando resultado va a en curso */
   var citaF = CARDS.filter(function(c){return c.st==='encurso' && FASE_ATN[c.fase] && okFam(c);});
   var enc  = CARDS.filter(function(c){return ((c.st==='encurso' && !FASE_ATN[c.fase]) || c.st==='esperando') && okFam(c);});
@@ -723,7 +726,9 @@ function renderInicio(){
   /* Fase 10 · Brief 04: la cara refleja urgencia, no cantidad — trabado → estancado; cita hoy/mañana/por confirmar o algo urgente por vencer → atento; lo demás → calma */
   var estado = trab.length ? 'estancado'
     : (citaF.length || acc.some(function(c){ return c.pc==='urgente'; })) ? 'atento' : 'calma'; /* Fase 10 · Brief 06: trab/acc ya vienen filtrados por en30 */
-  mascotInicio(estado, estado==='calma' ? 'hola' : 'atenta'); /* Fase 10 · Rediseño · Brief 14: al día saluda; atento o estancado → atenta */
+  /* Fase 11 · Brief 13: lejos (lo accionable fuera de los 30 días) se calcula aquí y lo reutiliza el vacío de abajo; con todo agendado, nada por organizar y nada más adelante, descansa */
+  var lejos = CARDS.filter(function(c){return c.st==='accionable' && okFam(c) && !en30(c) && !conBorrador(c);}).sort(function(a,b){ return (diasA(fechaLim(a))||0)-(diasA(fechaLim(b))||0) || a.ord-b.ord; })[0];
+  mascotInicio(estado, estado!=='calma' ? 'atenta' : (nPend===0 && !lejos && !DOCS_PEND.length) ? 'descansa' : 'hola'); /* Fase 10 · Rediseño · Brief 14: al día saluda; atento o estancado → atenta */
   /* Fase 11 · saludo de Inicio: sale el gancho aparte de estancado ("{eps} … lo de {p}. No es por algo que hiciste…"); la razón ya va en el saludo, pegada al trámite */
   /* Fase Móvil · burbuja de diálogo: el gancho se envuelve en .mascot-hook para resaltar frente al saludo/conteo (ver styles.css) */
   /* Fase 10 · Brief 07: línea 1 "Hola, {u}." (Outfit) y línea 2 en peso normal (ver mascotSaludo) */
@@ -734,7 +739,7 @@ function renderInicio(){
   if(pendingToast && /«En curso»/.test(pendingToast) && (!card(pendingToastKey) || card(pendingToastKey).st!=='encurso')){ pendingToast=null; pendingToastKey=null; }
   if(pendingToast && cur==='A1'){
     A1_ULT.toast=pendingToast; A1_ULT.toastKey=pendingToastKey;
-    h += '<div class="toast">'+pendingToast+' <button type="button" class="u" data-undo="1">Deshacer</button></div>';
+    h += '<div class="toast">'+pendingToast+(undoTipo(pendingToastKey) ? ' <button type="button" class="u" data-undo="1">Deshacer</button>' : '')+'</div>'; /* Fase 11 · Brief 10b */
     pendingToast=null;
   }
   /* Fase 8 · Brief 6.1: toast sin "Deshacer" — conectar correo desde el FAB no se puede deshacer */
@@ -743,20 +748,21 @@ function renderInicio(){
     h += '<div class="toast">'+pendingNote+'</div>';
     pendingNote=null;
   }
-  /* Fase 6 · #19: el trámite recién agendado se ve una vez como tarjeta propia, marcada "Confirmada ✓" — mismo patrón que bovFresh en la Bóveda.
-     Solo se consume cuando Inicio de verdad se muestra (cur==='A1'): confirmar dispara renderInicio() mientras el hilo sigue abierto, y esa
+  /* Fase 6 · #19: lo recién resuelto se ve una vez como «Lo último que resolviste» — mismo patrón que bovFresh en la Bóveda.
+     Fase 11 · Brief 14: agendar ya no pinta «Confirmada ✓» (lo dicen el aviso y «En curso»).
+     Solo se consume cuando Inicio de verdad se muestra (cur==='A1'): resolver dispara renderInicio() mientras el hilo sigue abierto, y esa
      pasada no la debe gastar, o nadie llega a verla al volver. */
   var freshCard = null;
   if(freshConfirmKey && cur==='A1'){
     A1_ULT.fresh=freshConfirmKey;
     freshCard = card(freshConfirmKey);
-    if(!freshCard || (freshCard.st!=='encurso' && freshCard.st!=='resuelto')) freshCard=null; /* Fase 10 · Brief 01: también "Resuelto ✓" */
+    if(!freshCard || freshCard.st!=='resuelto') freshCard=null; /* Fase 11 · Brief 14: solo «Lo último que resolviste» */
     /* Fase 8 · Esqueleto 2: la tarjeta recién confirmada respeta el filtro de persona igual que el resto */
     if(freshCard && !okFam(freshCard)) freshCard=null;
     freshConfirmKey=null;
   }
   /* Fase 10 · Brief 39: la fila fresca usa la misma fila que "Por hacer" (todoRowHTML, con tinte y sin franja); resuelto → "Lo último que resolviste" (la pill ya dice Resuelto) */
-  if(freshCard){ h += '<div class="fresh-h"><span class="fdot"></span><span>'+(freshCard.st==='resuelto'?'Lo último que resolviste':'Confirmada ✓')+'</span></div><div class="todo-list">'+todoRowHTML(freshCard)+'</div>'; }
+  if(freshCard){ h += '<div class="fresh-h"><span class="fdot"></span><span>Lo último que resolviste</span></div><div class="todo-list">'+todoRowHTML(freshCard)+'</div>'; }
   /* Fase 10 · Brief 06: "Necesita tu atención" (tarjetas + hero) pasa a la lista "Por hacer": una tarjeta blanca, una fila por trámite, mismo orden de la agenda */
   h += docPendHTML(); /* Fase 10 · Brief 40: arriba de "Por hacer" o del vacío */
   if(nPend>0){
@@ -767,9 +773,9 @@ function renderInicio(){
   if(nPend===0){
     /* Fase 10 · Brief 06: con un filtro activo, el vacío nombra a la persona */
     /* Fase 10 · Brief 08d: si quedó algo accionable fuera por en30(), el vacío nombra el próximo y lleva al Calendario */
-    var lejos = CARDS.filter(function(c){return c.st==='accionable' && okFam(c) && !en30(c);}).sort(function(a,b){ return (diasA(fechaLim(a))||0)-(diasA(fechaLim(b))||0) || a.ord-b.ord; })[0];
-    if(lejos) h += '<div class="empty"><p>Nada urgente por ahora. Lo próximo es '+(lejos.frase||lejos.t)+', en el Calendario.</p><button type="button" class="link-u" data-go="F1">Ver en el Calendario</button></div>';
-    else if(!(DOCS_PEND.length && bovPerson==='all')) h += '<div class="empty">'+mascotaSVG('calma', 112)+'<p>'+(bovPerson!=='all' ? 'Nada por hacer para '+PNAME[bovPerson]+'. Yo sigo pendiente de las fechas.' : 'Todo lo de esta semana está resuelto o en curso.')+'</p></div>';
+    /* Fase 11 · Brief 14b: lo próximo vive en el Calendario; Inicio solo lleva el enlace */
+    if(lejos) h += '<button type="button" class="link-u todo-more" data-go="F1">Ver todo lo próximo</button>'; /* Fase 11 · Brief 14b: sale «Más adelante»; vuelve el enlace de la agenda */
+    else if(!(DOCS_PEND.length && bovPerson==='all')) h += (bovPerson!=='all' ? '<div class="empty"><p>Nada por hacer para '+PNAME[bovPerson]+'. Yo sigo pendiente de las fechas.</p></div>' : ''); /* Fase 11 · Brief 13: sin la segunda mascota ni «Todo lo de esta semana…» */
   }
   /* Fase 10 · Brief 06: "En curso" como archivo plegado al final (reemplaza la entrada a Procesos en curso) */
   if(enc.length){
@@ -814,8 +820,7 @@ var DOCS=[
   {ep:'ort', t:'Exámenes previos a la {t2x}', s:'Resultado · 16 de octubre',        p:'{wort}', ty:'resultado', pag:1, cat:'res', lab:true,
    rel:'Lo pidió el {doc3} en la misma consulta, como examen previo a la {t2x}.', relth:'cir'},
   {ep:'ctr', t:'Orden de {t1l}',   s:'{docms} · 8 de octubre',     p:'{wctr}', ty:'orden', cat:'ord', pill:['Vigente','espera'], th:'ped'},
-  /* Fase 10 · Brief 01: la orden del laboratorio no existía en DOCS y "Para mostrar" necesita abrirla en #viewer */
-  {ep:'hta', t:'Orden de {labl}',  s:'Medicina general · 9 de octubre', p:'{wlab}', ty:'orden', pag:1, cat:'ord', th:'lip'}, /* Fase 10 · Brief 05: faltaba pag. Fase 11 · Brief 01b: sale del control de hipertensión */
+  /* Fase 11 · Brief 14b: la orden de {labl} es de papel; ya no está en DOCS, nace al escanearla (ver lipDoc en el guardado del escaneo) */
   {ep:'hta', t:'Fórmula médica {t3}',  s:'3 entregas · la última en diciembre', p:'{whta}', ty:'orden', cat:'med', pill:['En curso','espera'], th:'med'},
   {ep:'fon', t:'Orden de {tvl}', s:'{docv} · 18 de junio',   p:'{wfon}', ty:'orden', cat:'ord', pill:['Por agendar','pendiente'], go:'G2'}, /* Fase 10 · Brief 06: "Por agendar" */
   {ep:'mg',  t:'Historia clínica, 13 de octubre', s:'13 de octubre · 1 hoja', p:'SO', ty:'soporte', pag:1,
@@ -1346,7 +1351,7 @@ function renderBoveda(){
       '</div><h4>Tu Bóveda está vacía por ahora</h4>'+
       /* Fase 10 · Brief 17 (ajuste): en la propia historia no se escanea (Próximamente); se ofrece la bandeja, con el mismo botón de Inicio */
       (esPropia() ? '<p>Si busco en tu correo, guardo aquí lo que encuentre.</p>'+(mailConnected ? '' : '<button type="button" class="btn-p" data-tap="fabmail">Buscar en tu correo</button>')
-        : '<p>Conecta tu correo o escanea un documento para empezar a guardar aquí lo tuyo.</p>')+'</div>';
+        : '<p>Trae tus documentos con el botón +.</p>')+'</div>';
     G1el.setAttribute('data-sub',''); /* Fase 10 · Brief 07: la portada de la Bóveda no lleva subtítulo */
     if(cur==='G1') tSub.textContent='';
     updateChip();
@@ -1396,7 +1401,7 @@ function renderBovPortada(){
   });
   si.addEventListener('click', function(e){ e.stopPropagation(); });
   /* Fase 10 · Brief 05: sin contador en la portada (las carpetas ya muestran el suyo) */
-  var sub = ''; /* Fase 10 · Brief 07: sin "Tus documentos, por persona" */
+  var sub = ''; /* Fase 11 · Brief 07b: sin subtítulo, como Inicio y Calendario (revierte el cambio 6 del Brief 07) */
   G1el.setAttribute('data-title','Bóveda'); /* Fase 10 · Brief 07: "Bóveda de salud" no cabía junto al filtro a 320 px; igual que la pestaña */
   G1el.setAttribute('data-sub', sub);
   G1el.setAttribute('data-back', bovFrom||'');
@@ -1485,7 +1490,7 @@ function renderFamMenu(){
   SLOTS.filter(function(k){ return !personaFuera(k); }).forEach(function(k){
     h+=opt(k,'<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>',PNAME[k]);
   });
-  h+='<div class="pop-div" role="separator"></div><button type="button" role="menuitem" class="pop-i pop-more" data-go="FAM"><span class="pop-nm">Administrar perfiles</span><span class="chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
+  h+='<div class="pop-div" role="separator"></div><button type="button" role="menuitem" class="pop-i pop-more" data-go="FAM"><span class="pop-nm">Administrar familia</span><span class="chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
   var m=document.getElementById('famMenu'); m.innerHTML=h; paintAvatars(m);
 }
 function renderBovResults(){
@@ -1672,7 +1677,8 @@ var PASOS_OK='<div class="stepper"><div class="sd done">'+OK_IC+'</div><div clas
 var PASOS_FIN=PASOS_OK+'<div class="step-lbl"><span>Orden</span><span>Autorización</span><span>Cita</span><span class="on">Resuelto</span></div>';
 /* Fase 11 · Brief 04 (B): el cierre de las citas lleva sus etiquetas, como el de la autorización. A (ped, ctl, ter, sig) y B (lip); cir sigue con PASOS_FIN */
 var PASOS_A=PASOS_OK+'<div class="step-lbl"><span>Orden</span><span>Cita</span><span>¿Cómo<br>te fue?</span><span class="on">Resuelto</span></div>'; /* Fase 11 · stepper: «¿Cómo te fue?» en dos líneas, para que quepa bajo su círculo */
-var PASOS_B=PASOS_OK+'<div class="step-lbl"><span>Orden</span><span>Toma</span><span>Resultado</span><span class="on">Resuelto</span></div>';
+var PASOS_B_L=['Orden','Toma','Resultado']; /* Fase 11 · Brief 14: el examen tiene tres pasos (sale «Resuelto») */
+var PASOS_B=pasosHTML(PASOS_B_L, 2).replace('<div class="sd now">3</div>','<div class="sd done">'+OK_IC+'</div>'); /* los tres con check y «Resultado» en negrilla */
 function pasosCierre(k){ return (CITA[k]&&CITA[k].pasos) ? PASOS_FIN : (CITA[k]&&CITA[k].tipo==='B') ? PASOS_B : PASOS_A; }
 /* Fase 11 · stepper en cada cambio de paso: el mismo .stepper + .step-lbl de la autorización. cur = índice del paso actual (.now/.on);
    los anteriores llevan check y los siguientes su número. Solo va en el mensaje del cambio de paso, nunca fijo arriba del hilo */
@@ -1686,7 +1692,7 @@ function pasosHTML(labels, cur){
   return '<div class="stepper">'+d+'</div><div class="step-lbl">'+l+'</div>';
 }
 /* al agendar: la orden ya está y la cita (o la toma) es el paso actual. cir no: su comprobante sigue con el de la autorización */
-function pasosAgendar(k){ if(!CITA[k] || CITA[k].pasos) return ''; return pasosHTML(CITA[k].tipo==='B' ? ['Orden','Toma','Resultado','Resuelto'] : ['Orden','Cita','¿Cómo<br>te fue?','Resuelto'], 1); }
+function pasosAgendar(k){ if(!CITA[k] || CITA[k].pasos) return ''; return pasosHTML(CITA[k].tipo==='B' ? PASOS_B_L : ['Orden','Cita','¿Cómo<br>te fue?','Resuelto'], 1); }
 /* medicamento: n = la entrega actual (1-3) o 4 = renovar. Sale del subtítulo de la tarjeta ("Reclamar entrega 2 de 3");
    si el subtítulo ya no la dice (p. ej. después de la queja), es la 2, la que nombran los textos del hilo. Sin fx(): corre al cargar THREADS */
 function medEntregaN(){ var c=card('med'), m=c && /entrega (\d+)/i.exec(c.sub||''); return m ? +m[1] : 2; }
@@ -2063,7 +2069,8 @@ function horasWgt(d){
 var PROB_L={ninguna:'Ninguna fecha me sirve', nonecesito:'Ya no la necesito', noir:'No puedo ir', nollegan:'Los resultados no llegan',
   farmacia:'No hay en la farmacia', notomo:'Ya no la tomo', falta:'No entiendo qué falta', otravez:'Lo necesito otra vez', otra:'Otra cosa'};
 /* lo que se escribe en el hilo y equivale a una opción del estado (ver textReply) */
-var PROB_RE={noir:/no puedo ir|no voy a poder ir|no alcanzo a ir/, nonecesito:/ya no (la|lo) necesito/, farmacia:/no hay/,
+/* Fase 11 · Brief 10: «cambiar el horario» cuenta como «No puedo ir» */
+var PROB_RE={noir:/no puedo ir|no voy a poder ir|no alcanzo a ir|cambiar (el horario|la cita|la hora|la fecha)|reprogramar/, nonecesito:/ya no (la|lo) necesito/, farmacia:/no hay/,
   nollegan:/no (han )?lleg(an|ado)/, ninguna:/no me sirve|otra fecha|ninguna fecha/, notomo:/ya no (la|lo) tomo/,
   otravez:/(la|lo) necesito otra vez/, falta:/qu[eé] falta/};
 /* la autorización aprobada ya es una cita (D → A): su estado en la Bóveda quedó "Completado" */
@@ -2082,6 +2089,12 @@ function probOpts(k){
     return ['otra']; /* ¿Cómo te fue? y esperando orden nueva (Solicitada) */
   }
   return c.st==='accionable' ? ['nonecesito','otra'] : ['otra']; /* sig: la EPS aún no abre agenda, no hay fechas que rechazar */
+}
+/* Fase 11 · Brief 10b: "Deshacer" solo sale si hay algo que ofrecer: cita agendada (opciones de probOpts) o autorización radicada/apelada/escalada */
+function undoTipo(k){
+  var c=card(k); if(!c) return '';
+  if(k==='cir' && !cirEsCita(c) && c.st==='encurso') return 'radicada';
+  return conCita(c) && probOpts(k).some(function(o){ return o!=='otra'; }) ? 'cita' : '';
 }
 /* la orden que respalda el trámite (la última, así que la orden nueva manda) y su fecha */
 function ordenDoc(k){ for(var i=DOCS.length-1;i>=0;i--){ var d=DOCS[i]; if(d.ty==='orden' && (d.th===k || (k==='ter' && d.ep==='fon'))) return d; } return null; }
@@ -2165,7 +2178,7 @@ function ordenSolicitada(k){
 function probNinguna(k, pre){
   var c=card(k);
   if(c.sinCupo){
-    play(k, pre.concat([{who:'t', think:1, text:'No hay cupo antes del '+c.vence+', cuando vence la orden. Le pedí a {eps} una orden nueva. Te aviso apenas llegue.'}, /* Fase 11 · Brief 04 (C) */
+    play(k, pre.concat([{who:'t', think:1, text:'No hay cupo antes del '+c.vence+', cuando vence la orden. Le pedí a {eps}, por su portal, una orden nueva. Te aviso apenas llegue.'}, /* Fase 11 · Brief 04 (C) */
       {who:'t', wgt:simChip('ped.llegoOrden','Simular: llegó la orden nueva')}]));
     ordenSolicitada(k);
   } else play(k, pre.concat([{who:'t', wgt:calWgt(k)}]));
@@ -2173,8 +2186,8 @@ function probNinguna(k, pre){
 function probConfirmaCierre(k){
   var c=card(k);
   return '<div class="wgt-t">Entiendo. ¿La cierro?</div><div class="wgt-d">'+
-    (conCita(c) ? 'Cancelo la cita del '+fechaCita(c)+' y dejo de recordártela. La orden queda guardada en la Bóveda por si cambias de opinión.'
-                : 'Dejo de recordártela. La orden queda guardada en la Bóveda.')+'</div>'+ /* Fase 11 · Brief 04 (C) */
+    (conCita(c) ? 'Cancelo la cita del '+fechaCita(c)+' y dejo de recordártela. La orden sigue en la Bóveda por si cambias de opinión.'
+                : 'Dejo de recordártela. La orden sigue en la Bóveda.')+'</div>'+ /* Fase 11 · Brief 04 (C) */
     '<button type="button" class="btn-s" data-act="ped.cerrar">Sí, ciérrala</button><button type="button" class="btn-s exit" data-act="ped.salir">No, sigamos</button>';
 }
 /* cierra el trámite con "Reabrir" (Brief 20). pre = mensajes antes del cierre */
@@ -2192,7 +2205,7 @@ var PROB_H={
   nonecesito:function(k){ play(k,[{who:'t', wgt:probConfirmaCierre(k)}]); },
   nollegan:function(k){ play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'Cada laboratorio tiene su tiempo. Los resultados pueden quedar listos sin llegar al correo.' /* Fase 11 · Brief 01: sin "a veces" */+' Si en dos semanas no han llegado, te aviso y te digo cómo pedirlos.'},
     {who:'t', wgt:simChip('cita.resultados','Simular: llegaron los resultados')}]); },
-  farmacia:function(k){ play(k,[{who:'t', think:1, comp:{t:'Dejé constancia de que hoy no había', s:'{eps} tiene 48 horas para llevártelo a casa.', time:'Hoy · 9:41 a.m.'}},
+  farmacia:function(k){ play(k,[{who:'t', cara:'atenta', think:1, comp:{t:'Dejé constancia de que hoy no había', s:'{eps} tiene 48 horas para llevártelo a casa.', time:'Hoy · 9:41 a.m.'}},
     {who:'t', wgt:'<div class="chipwrap">'+ /* Fase 11 · Brief 04b (B): también puede no llegar */
       '<button type="button" class="chip-o chip-sim" data-act="med.domicilio">'+SIM_IC+'Simular: llegó a domicilio</button>'+
       '<button type="button" class="chip-o chip-sim" data-act="med.noLlego">'+SIM_IC+'Simular: no llegó</button></div>'}]); },
@@ -2252,10 +2265,10 @@ function msgEl0(m0){
   if(m0.voice) m.voice={t:m0.voice.t, tx:fx(m0.voice.tx)};
   var d=document.createElement('div');
   if(m.sep){ d.className='sep'; d.innerHTML='<span>'+m.sep+'</span>'; return d; }
-  if(m.toast){ d.className='toast'; d.innerHTML=m.toast+' <button type="button" class="u" data-undo="hilo">Deshacer</button>'; return d; }
+  if(m.toast){ d.className='toast'; d.innerHTML=m.toast+(undoTipo(curThread) ? ' <button type="button" class="u" data-undo="hilo">Deshacer</button>' : ''); return d; /* Fase 11 · Brief 10b */ }
   if(m.comp){
     d.className='row';
-    d.innerHTML=tAv(m.comp.fin ? 'celebra' : 'calma')+'<div class="comp'+(m.comp.cancel?' cancel':'')+'">'+ /* Fase 10 · Rediseño · Brief 14: comp.fin = cierre a "Resuelto". Fase 11 · Brief 04b: cancel = X sobre blanco */
+    d.innerHTML=tAv(m.cara || (m.comp.fin ? 'celebra' : 'calma'))+'<div class="comp'+(m.comp.cancel?' cancel':'')+'">'+ /* Fase 10 · Rediseño · Brief 14: comp.fin = cierre a "Resuelto". Fase 11 · Brief 04b: cancel = X sobre blanco */
       '<span class="comp-ck">'+(m.comp.cancel ? X_IC : '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>')+'</span>'+
       '<span class="comp-b"><span class="comp-t">'+m.comp.t+'</span>'+
       (m.comp.s?'<span class="comp-s">'+m.comp.s+'</span>':'')+
@@ -2291,7 +2304,7 @@ function msgEl0(m0){
   if(m.wgtCls && /\bfull\b/.test(m.wgtCls)) d.className += ' full'; /* Fase 10 · Rediseño · Brief 11: herramienta a ancho completo, sin la sangría del chat */
   var inner = m.wgt ? '<div class="wgt'+(m.wgtCls?' '+m.wgtCls:'')+'">'+m.wgt+'</div>' : (m.raw ? m.raw : '<div class="bub t">'+m.text+'</div>');
   /* Fase 10 · Rediseño · Brief 14: una fila de error (.wgt.err o .crit) va atenta */
-  d.innerHTML=tAv((m.wgtCls && /\berr\b/.test(m.wgtCls)) || (m.raw && /class="crit"/.test(m.raw)) ? 'atenta' : 'calma')+inner;
+  d.innerHTML=tAv(m.cara || ((m.wgtCls && /\berr\b/.test(m.wgtCls)) || (m.raw && /class="crit"/.test(m.raw)) ? 'atenta' : 'calma'))+inner; /* Fase 11 · Brief 13: m.cara elige el gesto del avatar */
   /* Fase 10 · Brief 03b: m.lk = widget ya bloqueado fuera del hilo (ver pegBloqueaAgendar); se vuelve a bloquear cada vez que se pinta */
   var lb=m0.lk && d.querySelector('.wgt button'); if(lb) lock(lb);
   return d;
@@ -2387,7 +2400,7 @@ function genHello(){
   var hist = THREADS.gen.msgs.length>0;
   var d=document.createElement('div'); d.innerHTML=fx(genHelloHTML());
   var h=d.firstChild;
-  h.querySelector('.gen-hello-m').innerHTML=mascotaSVG('hola', 150); /* Fase 10 · Rediseño · Brief 14 */
+  h.querySelector('.gen-hello-m').innerHTML=mascotaSVG('hola', hist ? 120 : 150); /* Fase 10 · Rediseño · Brief 14. Fase 11 · Brief 14c: con historial, más chica */
   TH.appendChild(h); genHi=true;
   hdrHilo.style.display = hist ? 'block' : 'none';
   chips.style.display='none'; fab.classList.remove('fab-chips');
@@ -2516,7 +2529,7 @@ var SIM_IC='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" 
 function simChip(act, txt){ return '<div class="chipwrap"><button type="button" class="chip-o chip-sim" data-act="'+act+'">'+SIM_IC+txt+'</button></div>'; }
 function citaFase(k, fase, pill, pc, accion, hsub){
   var c=card(k);
-  if(freshConfirmKey===k) freshConfirmKey=null; /* la tarjeta "Confirmada ✓" ya pasó: no se duplica con la de la agenda */
+  if(freshConfirmKey===k) freshConfirmKey=null; /* Fase 11 · Brief 14: si había una tarjeta fresca pendiente, no se duplica con la de la agenda */
   if(pendingToastKey===k){ pendingToast=null; pendingToastKey=null; undoSnap=null; } /* deshacer el agendamiento ya no aplica */
   c.fase=fase; c.pill=pill; c.pc=pc; c.sub=THREADS[k].p+' · '+accion;
   THREADS[k].sub=THREADS[k].p+' · '+hsub; refreshHilo(k);
@@ -2681,7 +2694,7 @@ function citaAgendada(k,label,doc,sede,extra){
   DRAFTS[k]=null;
   /* Fase 10 · Brief 02: cómo estaba antes de agendar, para "No hubo cita" */
   var c=card(k); c.antes={sub:c.sub, pill:c.pill, pc:c.pc, th:THREADS[k].sub};
-  var confMsgs=[{who:'t', comp:{
+  var confMsgs=[{who:'t', cara:'celebra', comp:{
     /* Fase 10 · Brief 03b: toLowerCase() después de fx() — antes bajaba "{t1}" y salía "Control pediátrico" */
     t: esTuyo(k) ? 'Agendé tu '+fx(THREADS[k].title).toLowerCase() : 'Agendé la cita de '+fx(THREADS[k].title||'control').toLowerCase()+' de '+THREADS[k].p,
     s:label.replace(' · ',', ')+'<br>'+doc+' · '+sede, canal:'Por el portal de {eps}', /* Fase 11 · Brief 03: el canal. Fase 11 · comprobantes: deja de ser línea propia, va con la hora */
@@ -2697,8 +2710,7 @@ function citaAgendada(k,label,doc,sede,extra){
   setCard(k,{st:'encurso', sub:THREADS[k].p+' · '+label.replace(' · ',' a las '), pill:'Agendada', pc:'espera',
     when:label, doc:doc, sede:sede, fase:'agendada', checks:{}, tachadas:{}, alarma:false, llegar:extra.llegar}, THREADS[k].title+' ya está en «En curso»') /* Fase 10 · Rediseño · Brief 10 */;
   refreshHilo(k);
-  freshConfirmKey=k;
-  renderInicio();
+  renderInicio(); /* Fase 11 · Brief 14: sin freshConfirmKey; agendar ya no pinta «Confirmada ✓» */
   return confMsgs;
 }
 /* Fase 10 · Brief 20: vuelve a como estaba (c.antesCierre), entra otra vez a Inicio y a los avisos, y el hilo retoma con los botones de su intro.
@@ -2715,7 +2727,7 @@ function tramReabrir(k, desdeBov){
   var vd=diasA(fx(c.vence||''));
   if(vd!==null && vd<0){
     /* la orden ya venció (no pasa con HOY_SIM, pero la regla queda): en vez de agendar, una orden nueva */
-    msgs=[{who:'t', text:'La orden venció el '+fx(c.vence)+'. Te ayudo a pedir una nueva.'},
+    msgs=[{who:'t', cara:'atenta', text:'La orden venció el '+fx(c.vence)+'. Te ayudo a pedir una nueva.'},
       {who:'t', wgt:'<button type="button" class="btn-p" data-act="ped.nueva">Solicitar orden nueva</button>'}];
   } else if(a.st==='accionable' || a.st==='trabado'){
     /* los mismos botones de acción de su intro ("Agendar cita" / "Radicar autorización" / "Marcar como reclamada") */
@@ -2733,6 +2745,10 @@ var ACT = {
     var k=curThread||'cir';
     commit(k,{who:'s', text:'Pide que la retiren'});
     play(k,[{who:'t', think:1, text:'Le pedí a {eps}, por su portal, que retire la solicitud.'}]); /* Fase 11 · Brief 03: sin plazo ni promesa: no hay chip que lo confirme */
+  },
+  'undo.prob': function(el){ /* Fase 11 · Brief 10: igual que elegirla en "Tengo un problema" */
+    lock(el);
+    probRun(curThread, el.getAttribute('data-o'));
   },
   'undo.corregir': function(el){
     lock(el);
@@ -2982,14 +2998,14 @@ var ACT = {
     lock(el);
     commit('cir',{who:'s', text:'Todavía no'});
     play('cir',[{who:'t', wgt:'<div class="wgt-t">Sin problema, no radiqué nada</div>'+ /* Fase 8 · Yifrah #6 */
-      '<div class="wgt-d">La orden sigue guardada. La radicamos cuando quieras.</div><div class="wgt-d">Los 5 días cuentan desde que se radique.</div>'+ /* Fase 11 · Brief 04 (C) */
+      '<div class="wgt-d">La orden sigue guardada. La radico cuando me digas.</div><div class="wgt-d">Los 5 días cuentan desde que se radique.</div>'+ /* Fase 11 · Brief 04 (C) */
       '<button type="button" class="btn-p" data-act="cir.radicar">Radicar ahora</button>'}]);
   },
   'net.later': function(el){
     lock(el); var k=K();
     commit(k,{who:'s', text:'Guárdala para después'});
     play(k,[{who:'t', wgt:'<div class="wgt-t">Queda lista</div>'+
-      '<div class="wgt-d">La dejo armada con sus soportes. Cuando haya conexión, la enviamos con un toque.</div>'}]); /* Fase 11 · Brief 03: sin "te aviso", no hay aviso de conexión */
+      '<div class="wgt-d">La dejo lista. Cuando vuelva la conexión, me confirmas y la envío.</div>'}]); /* Fase 11 · Brief 03: sin "te aviso", no hay aviso de conexión */
     if(k==='cir') setCard('cir',{sub:'{p3} · lista para radicar', pill:'Sin enviar', pc:'pendiente',
       bov:['{p3} · lista para radicar, sin enviar','Sin enviar','pendiente']});
     renderInicio();
@@ -3002,7 +3018,7 @@ var ACT = {
     play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Radicado ante {eps} ✓</div>'+
       '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd now">2</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
       '<div class="step-lbl"><span>Orden</span><span class="on">Autorización</span><span>Cita</span><span>Resuelto</span></div>'+
-      '<div class="wgt-d">Radiqué la solicitud en el portal de {eps}. Envié la orden médica y la historia clínica del 7 de octubre.</div><div class="wgt-d">Responden a más tardar el <b>13 de noviembre</b>.</div>'+ /* Fase 11 · Brief 04 (C): una idea por frase */
+      '<div class="wgt-d">Radiqué la solicitud en el portal de {eps}. Envié la orden médica y la historia clínica del 7 de octubre.</div><div class="wgt-d">Responde a más tardar el <b>13 de noviembre</b>.</div>'+ /* Fase 11 · Brief 04 (C): una idea por frase */
       '<div class="log"><div class="log-r"><div class="log-d"></div><p><b>Radicado #45892</b>Hoy, 9:38 a.m.</p></div>'+
       '<div class="log-r"><div class="log-d"></div><p><b>Adjunté la orden del {doc3}</b>Hoy, 9:37 a.m.</p></div></div>'+
       '<button type="button" class="link-u" data-go="DOCS">Ver qué se envió</button>'}, /* Fase 11 · Brief 04 (C): un solo acuse; salen el comprobante "Radiqué la solicitud…" y el toast "Solicitud radicada" */
@@ -3011,8 +3027,8 @@ var ACT = {
         '<button type="button" class="chip-o chip-sim" data-act="cir.simEstancado">'+SIM_IC+'Simular: se estancó</button>'+
         '<button type="button" class="chip-o chip-sim" data-act="cir.simNegado">'+SIM_IC+'Simular: negaron la autorización</button>'+
         '</div>'}]);
-    THREADS.cir.sub='{p3} · responden a más tardar el 13 de noviembre'; refreshHilo('cir'); /* Fase 11 · Brief 03: sale "día 1 de 5" */
-    setCard('cir',{st:'encurso', sub:'{p3} · responden a más tardar el 13 de noviembre', pill:'Radicado', pc:'espera',
+    THREADS.cir.sub='{p3} · respuesta a más tardar el 13 de noviembre'; refreshHilo('cir'); /* Fase 11 · Brief 03: sale "día 1 de 5" */
+    setCard('cir',{st:'encurso', sub:'{p3} · respuesta a más tardar el 13 de noviembre', pill:'Radicado', pc:'espera',
       bov:['{p3} · radicada, esperando respuesta de {eps}','En trámite','espera']}, '{t2} ya está en «En curso»') /* Fase 10 · Rediseño · Brief 10 */;
     renderInicio();
   },
@@ -3078,10 +3094,10 @@ var ACT = {
     [].forEach.call(el.parentNode.querySelectorAll('.chip-sim'), simUsar); /* los dos chips de la reconsideración se excluyen */
     var c=card('cir'); if(!c || c.st!=='encurso') return;
     var queja=c.pill==='Escalado';
-    play('cir',[{who:'t', wgt:'<div class="wgt-t">¡Llegó la autorización!</div>'+
+    play('cir',[{who:'t', cara:'celebra', wgt:'<div class="wgt-t">¡Llegó la autorización!</div>'+
       '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd now">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
       '<div class="step-lbl"><span>Orden</span><span>Autorización</span><span class="on">Cita</span><span>Resuelto</span></div>'+
-      '<div class="wgt-d">'+(queja?'Fueron 8 días y una queja, pero quedó.':'{eps} aprobó la reconsideración.')+' Ahora sí podemos agendar la {t2x} de {p3}.</div>'+
+      '<div class="wgt-d">'+(queja?'Fueron 8 días y una queja, pero quedó.':'{eps} aprobó la reconsideración.')+' Ya puedes agendar la {t2x} de {p3}.</div>'+
       '<button type="button" class="btn-p" data-act="ped.agendar">Agendar la {t2x}</button>'+
       '<button type="button" class="btn-s" data-go="G1">Ver la autorización</button>'}], function(){
       THREADS.cir.sub='{p3} · autorizada'; refreshHilo('cir');
@@ -3096,7 +3112,7 @@ var ACT = {
     var c=card('cir'); if(!c || c.st!=='encurso') return;
     commit('cir',{sep:'10 días hábiles después'});
     play('cir',[{who:'t', raw:'<div class="crit"><div class="crit-h">'+WARN+'TRÁMITE ESTANCADO</div><div class="crit-b">'+
-      '<p>{eps} incumplió el plazo: venció el plazo de la reconsideración.</p>'+
+      '<p>{eps} incumplió el plazo. Tenía 10 días hábiles para responder la reconsideración.</p>'+
       '<button type="button" class="btn-p" data-act="cir.escalar">Escalar ante Supersalud</button>'+
       '<button type="button" class="btn-danger" data-act="cir.llamar">Llamar a {eps}</button></div></div>'}]);
     THREADS.cir.sub='{p3} · <em>trabado</em>'; refreshHilo('cir');
@@ -3124,7 +3140,7 @@ var ACT = {
     commit('cir',{who:'s', text:'Confirmo, pide que reconsideren'});
     if(netBlocked()){ netErr('cir','cir.apelar','{eps}'); return; }
     play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Solicitud de reconsideración radicada ✓</div>'+
-      '<div class="wgt-d">Pedí la reconsideración en el portal de {eps}. Envié la justificación médica de la historia clínica.</div><div class="wgt-d">Tienen 10 días hábiles para responder.</div>'+ /* Fase 11 · Brief 03: canal y qué envié. Fase 11 · Brief 04 (C): sale "Si no lo hacen…", lo dice el chip */
+      '<div class="wgt-d">Pedí la reconsideración en el portal de {eps}. Envié la justificación médica de la historia clínica.</div><div class="wgt-d">Tiene 10 días hábiles para responder.</div>'+ /* Fase 11 · Brief 03: canal y qué envié. Fase 11 · Brief 04 (C): sale "Si no lo hacen…", lo dice el chip */
       '<div class="log"><div class="log-r"><div class="log-d"></div><p><b>Radicado RC-2026-3391</b>Hoy, 11:04 a.m.</p></div></div>'},
       /* Fase 11 · Brief 03: el tiempo solo pasa con un chip */
       {who:'t', wgt:'<div class="chipwrap">'+
@@ -3147,7 +3163,7 @@ var ACT = {
   'cir.llamar': function(el){ lock(el);
     commit('cir',{who:'s', text:'Voy a llamar a {eps}'});
     play('cir',[{who:'t', wgt:'<div class="wgt-t">Te dejo lo que te van a pedir</div>'+
-      '<div class="wgt-d">'+telLinea('<b>Línea:</b> {tel} opción 2')+'<br><b>Radicado:</b> AUT-2026-11938<br><b>Paciente:</b> {f3} · CC 41.678.902</div><div class="wgt-d">Si no te resuelven, vuelve y escalamos.</div>'+
+      '<div class="wgt-d">'+telLinea('<b>Línea:</b> {tel} opción 2')+'<br><b>Radicado:</b> AUT-2026-11938<br><b>Paciente:</b> {f3} · CC 41.678.902</div><div class="wgt-d">Si no te resuelven, vuelve y lo escalo.</div>'+
       '<button type="button" class="btn-s" data-act="cir.escalar">No me resolvieron, escalar</button>'}]);
   },
 
@@ -3163,7 +3179,7 @@ var ACT = {
     commit(k,{who:'s', text:'Ver mis documentos'});
     /* Fase 10 · Brief 16b: con la Bóveda vacía (cualquier historia) no digo que "están todos"; sin correo, ofrezco buscar */
     if(appVacia || !DOCS.length){ play(k,[{who:'t', text:'Todavía no tengo documentos guardados. Cuando llegue alguno, lo organizo en la Bóveda por persona.'}]
-      .concat(mailConnected ? [] : [{who:'t', wgt:'<button type="button" class="btn-p" data-tap="fabmail">Buscar en tu correo</button>'}])); return; }
+      .concat(mailConnected ? [] : [{who:'t', wgt:'<button type="button" class="btn-p" data-tap="fabmail">Buscar en mi correo</button>'}])); return; }
     play(k,[{who:'t', wgt:'<div class="wgt-t">Están todos en la Bóveda</div>'+
       '<div class="wgt-d">Están ordenados por tipo, y puedes filtrarlos por persona.</div>'+
       '<button type="button" class="btn-p" data-go="G1">Abrir la Bóveda</button>'}]);
@@ -3187,7 +3203,7 @@ var ACT = {
     [].forEach.call(el.parentNode.querySelectorAll('.chip-sim'), simUsar); /* «llegó» y «no llegó» se excluyen */
     var c=card('med'); if(!c || c.st==='descartado') return;
     commit('med',{sep:'2 días después'});
-    play('med',[{who:'t', text:'Pasaron las 48 horas y no llegó. Puedo poner una queja ante Supersalud.'}, quejaRevision('med')]);
+    play('med',[{who:'t', cara:'atenta', text:'Pasaron las 48 horas y no llegó. Puedo poner una queja ante Supersalud.'}, quejaRevision('med')]);
   },
   'med.domicilio': function(el){
     if(el.parentNode.querySelectorAll('.chip-sim').length>1) [].forEach.call(el.parentNode.querySelectorAll('.chip-sim'), simUsar); /* Fase 11 · Brief 04b */
@@ -3286,7 +3302,7 @@ var VOICES = {
     {k:'med', t:'0:04', tx:'¿Cuántas pastillas de {t3n} le quedan a {p3}?', /* Fase 11 · Brief 01b */
      r:'Le quedan {dmed} días. Ya puedes reclamar la entrega 2 de 3 en {far1} o en {far2}.', go:'med'}, /* Fase 11 · Brief 03: días calculados */
     {k:'ped', p:'SF', t:'0:08', tx:'Anota que {p1} estuvo con fiebre anoche, para contarlo en el control.',
-     r:'Lo anoté en tus preguntas para el control de {p1}.', q:'{p1} estuvo con fiebre anoche.'} /* Fase 11 · Brief 03: q = lo que llega a «Tus preguntas» del control */
+     r:'Lo anoté para el control de {p1}. Si la fiebre vuelve o te preocupa, consulta sin esperar.', q:'{p1} estuvo con fiebre anoche.'} /* Fase 11 · Brief 03: q = lo que llega a «Tus preguntas» del control */
   ],
   ped:[
     {k:'ped', t:'0:05', tx:'¿Qué tengo que llevar al control de {p1}?',
@@ -3298,11 +3314,11 @@ var VOICES = {
     {k:'cir', t:'0:06', tx:'¿Cuánto llevamos esperando esta autorización?',
      r:'{eps} recibió la solicitud hace 6 días hábiles. El plazo era de 5, así que ya lo incumplió.'},
     {k:'cir', t:'0:05', tx:'¿Y si mejor pago la {t2x} por particular?',
-     r:'Puedes, pero pierdes lo ya radicado y el antecedente si después reclamas. Escalar son dos toques y no cierra ninguna puerta.'} /* Fase 11 · Brief 04 (C) */
+     r:'Puedes, pero pagarías algo que le toca a {eps}. Escalar no te cierra esa opción.'} /* Fase 11 · Brief 04 (C) */
   ],
   med:[
     {k:'med', t:'0:05', tx:'¿Puedo reclamar la fórmula de mi mamá si ella no puede ir?', /* Fase 11 · Brief 01b: la fórmula es de {p3} */
-     r:'Sí. Lleva su documento o una copia, y el tuyo. Te preparo la autorización escrita si quieres llevarla.'},
+     r:'Sí. Lleva su documento o una copia, y el tuyo. Algunas farmacias piden también una carta firmada por ella.'},
     {k:'med', t:'0:04', tx:'¿En cuál farmacia hay menos fila?',
      r:'Eso no lo sé, no tengo ese dato. Lo que sí sé es que las dos tienen existencias hoy: {far1} y {far2}.'}
   ]
@@ -3420,9 +3436,9 @@ function textReply(txt){
       else if(ac.st==='trabado') r='{eps} se pasó del plazo para responder la autorización de {p3}. Te explico cómo escalar.'; /* Fase 11 · Brief 04 (C) */
       else if(ac.st==='resuelto' || /autorizada/.test(THREADS.cir.sub||'')) r='{eps} aprobó la autorización de la {t2x} de {p3}.';
       else if(ac.st==='encurso' && ac.pill==='Escalado') r='La queja de la {t2x} de {p3} ya está ante Supersalud. Te aviso cuando {eps} responda.'; /* Fase 11 · revisión de frases */
-      else if(ac.st==='encurso' && ac.pill==='Apelada') r='La reconsideración de la {t2x} de {p3} está radicada ante {eps}. Tienen 10 días hábiles para responder. Si se pasan, te aviso.'; /* Fase 11 · revisión de frases */ /* Fase 10 · Brief 14 (cierre): texto de Lida */
-      else if(ac.st==='encurso') r='La autorización de la {t2x} de {p3} está radicada ante {eps}. Responden a más tardar el 13 de noviembre. Si se pasan, te aviso.'; /* Fase 11 · revisión de frases */ /* Fase 11 · Brief 03: la fecha */
-      else r='La autorización de la {t2x} de {p3} todavía no está radicada ante {eps}. Si quieres, la radicamos ahora.';
+      else if(ac.st==='encurso' && ac.pill==='Apelada') r='La reconsideración de la {t2x} de {p3} está radicada ante {eps}. Tiene 10 días hábiles para responder. Si se pasa, te aviso.'; /* Fase 11 · revisión de frases */ /* Fase 10 · Brief 14 (cierre): texto de Lida */
+      else if(ac.st==='encurso') r='La autorización de la {t2x} de {p3} está radicada ante {eps}. Responde a más tardar el 13 de noviembre. Si se pasa, te aviso.'; /* Fase 11 · revisión de frases */ /* Fase 11 · Brief 03: la fecha */
+      else r='La autorización de la {t2x} de {p3} todavía no está radicada ante {eps}. Si quieres, la radico ahora.';
     }
   }
   else if(/losart|pastilla|medicament|reclam/.test(l)){
@@ -3438,7 +3454,7 @@ function textReply(txt){
     var pc=card('ped');
     /* Fase 10 · Brief 16: el nombre y la fecha salen de CITA.ped y de la tarjeta (en las historias dicen lo mismo que antes) */
     if(pc.st==='resuelto') r=cap1(CITA.ped.cierre)+' ya quedó resuelto.';
-    else if(pc.st==='encurso' && pc.when){ r=cap1(CITA.ped.cierre)+' es el '+fechaCita(pc)+' a las '+horaDe(pc)+'.'; go='ped'; }
+    else if(pc.st==='encurso' && pc.when){ r=cap1(CITA.ped.cierre)+' es el '+fechaCita(pc)+' a las '+horaDe(pc).replace(/\.$/,'')+'.'; go='ped'; /* Fase 11 · Brief 10: sin punto doble */ }
     else { r=cap1(CITA.ped.cierre)+' sigue sin agendar. La orden vence el '+pc.vence+'. ¿Lo miramos?'; go='ped'; } /* Fase 11 · revisión de frases: una idea por frase */
   }
   else if(/dónde|donde|busca|orden|documento|carné|carnet/.test(l)) r='Todo lo que hemos guardado está en la Bóveda, clasificado por persona. Si me dices el nombre del documento te lo abro directo.';
@@ -3566,7 +3582,6 @@ function scanRefresh(){
   cd.className = pend.length ? 'btn-s' : 'btn-p';
 }
 function resetCam(){ camAltCerrar(); /* Fase 11 · Brief 05 (B) */ shots=0; scanShots=[]; hoja2Mode=false; /* Fase 10 · Brief 08f */ document.getElementById('thumbs').innerHTML=''; document.getElementById('shotC').textContent='0 fotos';
-  document.getElementById('thumbsLbl').style.display='none';
   scanSay('', SCAN_IDLE);
   document.getElementById('retakeBtn').hidden=true; scanRefresh(); /* Fase 10 · Brief 08 */
   document.getElementById('camDone').setAttribute('disabled',''); }
@@ -3614,7 +3629,6 @@ function shutterTap(){
   [].forEach.call(box.querySelectorAll('.thumb'), function(x){ x.classList.remove('nueva'); });
   var t=scanThumb(shots-1); t.classList.add('nueva');
   box.appendChild(t);
-  document.getElementById('thumbsLbl').style.display='block';
   document.getElementById('shotC').textContent = shots+' foto'+(shots>1?'s':'');
   document.getElementById('camDone').removeAttribute('disabled');
   scanRefresh(); scanSay(d?d.w:'ok', fx(d?d.m:SCAN_DEF));
@@ -3671,8 +3685,9 @@ function guardarTap(){
     }
     renderBoveda();
   }
-  /* Fase 11 · Brief 01b: {lab} se revela al escanear su orden y también por el correo (obFinish, docPendFin y el FAB) */
+  /* Fase 11 · Brief 14b: {lab} se revela solo al escanear su orden (ya no por el correo) */
   var lipDoc = scanDoc(function(d){ return d.ep==='hta' && d.ty==='orden' && d.th==='lip'; }); /* Fase 11 · Brief 01b */
+  if(!lipDoc && detView.has[3] && !obMailActive && !fabMailActive){ lipDoc={ep:'hta', t:'Orden de {labl}', s:'Medicina general · 9 de octubre', p:'{wlab}', ty:'orden', pag:1, cat:'ord', th:'lip'}; DOCS.push(lipDoc); } /* Fase 11 · Brief 14b: se crea al escanear, como la fórmula */
   /* Fase 10 · Brief 47: lo escaneado de quien no está en la familia queda en DOCS_PEND (no se pierde); SCAN_IDS = quién aparece en lo escaneado */
   if(!obMailActive && !fabMailActive){
     var escan=[detView.has[0] && hcDoc, detView.has[1] && ordDoc, detView.has[2] && fDoc, detView.has[3] && lipDoc].filter(Boolean);
@@ -3720,7 +3735,7 @@ function guardarTap(){
     // revela ped/cir/med solo si siguen ocultas — no pisar un estado más avanzado
     // si el panel ya las movió a trabado/encurso en algún momento de la demo
     /* Fase 10 · Brief 45: y solo si su persona es visible, como revela() en obFinish() */
-    ['ped','cir','med','ter','lip'].forEach(function(k){ var c=card(k); if(c && c.st==='oculto' && personaVisible(c)) c.st='accionable'; }); /* Fase 11 · Brief 01b: ter y lip, como en obFinish() */
+    ['ped','cir','med','ter'].forEach(function(k){ var c=card(k); if(c && c.st==='oculto' && personaVisible(c)) c.st='accionable'; }); /* Fase 11 · Brief 14b: sale lip (solo nace al escanear) */
     appVacia=false;
     bovMarcarNuevos(DOCS.slice()); /* Fase 10 · Brief 19: lo que trajo el correo queda como nuevo */
     renderInicio();
@@ -3875,6 +3890,19 @@ document.addEventListener('input', function(e){ if(e.target && (e.target.id==='m
 /* ============================================================
    NAVEGACIÓN
    ============================================================ */
+/* Fase 11 · Brief 14b: degradados de desplazamiento; .fade-t / .fade-b en .content según haya más contenido arriba o abajo */
+function fadeContent(){
+  var arriba = content.scrollTop > 2, abajo = content.scrollHeight - content.clientHeight - content.scrollTop > 2;
+  content.classList.toggle('fade-t', arriba);
+  content.classList.toggle('fade-b', abajo);
+}
+(function(){
+  var raf=0, tick=function(){ if(raf) return; raf=requestAnimationFrame(function(){ raf=0; fadeContent(); }); };
+  content.addEventListener('scroll', tick, {passive:true});
+  window.addEventListener('resize', tick);
+  if(window.ResizeObserver) new ResizeObserver(tick).observe(content);
+  if(window.MutationObserver) new MutationObserver(tick).observe(content, {childList:true, subtree:true}); /* tras pintar Inicio o un hilo */
+})();
 function show(id){
   /* Fase 10 · Brief 01: si sale de la captura sin guardar, las órdenes de la cita no quedan pendientes */
   if(ordScanKey && ['CAM','GAL','PROC','DET','CONF','FIN','NOTIF'].indexOf(id)<0) ordScanKey=null; /* Fase 10 · Rediseño · Brief 12 (corrección): mirar los avisos no suelta la cita */
@@ -3926,6 +3954,7 @@ function show(id){
   }
   /* Fase 10 · Brief 01b: solo .content se desplaza (ver down()); al cambiar a otra pantalla que no sea el chat, vuelve arriba */
   if(id!=='TH'){ content.scrollTop=0; }
+  fadeContent(); /* Fase 11 · Brief 14b */
 
   var isHilo = s.getAttribute('data-hdr')==='hilo';
   /* Fase 6 · durante escaneo/subida/correo disparados desde el onboarding, el header superior tampoco tiene sentido: no hay familia armada ni menú/ayuda utilizables a medio onboarding */
@@ -4232,22 +4261,18 @@ document.addEventListener('click', function(e){
     /* H06 unificado: ya no hay Deshacer instantáneo. Toda acción salió de la app, así que "Deshacer"
        siempre abre la conversación del trámite — con un mensaje genérico desde el toast de Inicio,
        y con el flujo específico de radicar cuando el toast vive dentro del hilo mismo. */
-    if(undo.getAttribute('data-undo')==='hilo'){
-      pendingToast=null;
-      var k=curThread||'cir';
-      commit(k,{who:'s', text:'Espera, necesito cambiar algo de lo que radicaste'});
-      play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ wgt:'<div class="wgt-t">Ya está radicada ante {eps}, así que no puedo deshacerla yo solo.</div>'+
-        '<div class="wgt-d">Pero sí puedo pedir que la retiren o corregir lo que haga falta. ¿Qué necesitas?</div>'+
-        '<button type="button" class="btn-s" data-act="undo.retirar">Pedir que la retiren</button>'+
-        '<button type="button" class="btn-s" data-act="undo.corregir">Corregir un documento</button>'}]);
-      return;
-    }
-    /* toast de Inicio: abre el hilo del trámite con un mensaje genérico, igual para las 5 acciones que lo disparan */
-    var k=pendingToastKey||curThread||'cir';
-    pendingToast=null; pendingToastKey=null;
-    openThread(k, 'inicio');
-    commit(k,{who:'s', text:'Espera, necesito cambiar algo de esto'});
-    play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'Esto ya salió de la app: no puedo deshacerlo. Dime qué necesitas y vemos qué hacer.'} /* Fase 11 · Brief 04 (C) */]);
+    /* Fase 11 · Brief 10b: un solo camino para el aviso de Inicio y el del hilo; el texto va en burbuja normal y los botones aparte */
+    var enHilo=undo.getAttribute('data-undo')==='hilo';
+    var k=enHilo ? (curThread||'cir') : (pendingToastKey||curThread||'cir');
+    pendingToast=null; if(!enHilo) pendingToastKey=null;
+    var tipo=undoTipo(k);
+    if(!enHilo) openThread(k, 'inicio');
+    commit(k,{who:'s', text: tipo==='radicada' && enHilo ? 'Espera, necesito cambiar algo de lo que radicaste' : 'Espera, necesito cambiar algo de esto'});
+    var btns = tipo==='radicada'
+      ? '<button type="button" class="btn-s" data-act="undo.retirar">Pedir que la retiren</button><button type="button" class="btn-s" data-act="undo.corregir">Corregir un documento</button>'
+      : probOpts(k).filter(function(o){ return o!=='otra'; }).map(function(o){ return '<button type="button" class="btn-s" data-act="undo.prob" data-o="'+o+'">'+PROB_L[o]+'</button>'; }).join('');
+    play(k, btns ? [{who:'t', text: tipo==='radicada' ? 'Claro. ¿Qué quieres hacer?' : 'Claro. ¿Qué cambió?'}, {who:'t', wgt:btns}]
+      : [{who:'t', text:'Esto ya salió de la app y no puedo deshacerlo.'}]); /* respaldo: no debería verse */
     return;
   }
 
@@ -4546,7 +4571,7 @@ function renderPegRes(){
   var box=document.getElementById('pegRes'); if(!box) return;
   var h='';
   if(peg.res==='nada'){
-    h='<div class="row">'+tAv()+'<div class="bub t">No encontré una fecha ni una hora en ese texto. ¿Me cuentas qué es, o pegas el mensaje completo?</div></div>';
+    h='<div class="row">'+tAv('atenta')+'<div class="bub t">No encontré una fecha ni una hora en ese texto. ¿Me cuentas qué es, o pegas el mensaje completo?</div></div>';
   } else if(peg.res==='ok'){
     var ok='<span class="ok-chip" aria-label="Lo dice el mensaje">'+OK_IC+'</span>';
     var fila=function(k,v){ return '<div class="exrow"><span><span class="ex-k">'+k+'</span><span class="ex-v">'+v+'</span></span>'+ok+'</div>'; };
@@ -4706,11 +4731,11 @@ function obShow(n){
   [].forEach.call(document.querySelectorAll('.ob-step'), function(s){ s.classList.toggle('on', s.getAttribute('data-step')===key); });
   document.getElementById('obBack').classList.toggle('hide', n===0);
   var nb=document.getElementById('obNext'), sk=document.getElementById('obSkip');
-  nb.textContent = n===0 ? 'Empezar' : (n===OBN-1 ? 'Ir a Inicio' : 'Continuar'); /* Fase 11 · Brief 02 */
+  nb.textContent = n===0 ? 'Empezar' : 'Continuar'; /* Fase 11 · Brief 02 · Brief 09: el último paso ya no promete llegar a Inicio */
   /* Fase 11 · Brief 02: sale "Saltar la configuración". "Ahora no" solo en traer documentos (mientras no se trajo nada), la bandeja y la detección */
   var traido = !!document.getElementById('obMail').getAttribute('data-done') || obScanDone;
   sk.style.display = ((n===4 && (obBandeja || !traido)) || n===5) ? 'block' : 'none';
-  sk.textContent = 'Ahora no';
+  sk.textContent = (n===4 && obBandeja) ? 'Ahora no' : 'Lo hago después'; /* Fase 11 · Brief 07: un texto por pantalla; «Ahora no» solo en la bandeja */
   if(obReabre && n===OBN-1) nb.textContent='Listo'; /* Fase 10 · Brief 40 (ajuste): ya se está en la app */
   nb.style.display = (n===4 && !obBandeja && !traido) ? 'none' : ''; /* Fase 11 · Brief 02: "Continuar" sale cuando ya se trajo algo */
   nb.removeAttribute('disabled');
@@ -4770,13 +4795,19 @@ function obFamSlotRow(k){
 }
 function renderObFamSum(){
   var box=document.getElementById('obFamSum'); if(!box) return;
-  document.getElementById('obListoTitle').textContent=fx('Listo, {u}');
   var rows=obFamSlotRow('SO')+SLOTS.filter(function(k){ return k!=='SO' && !personaFuera(k); }).map(obFamSlotRow).join('');
   /* Fase 10 · Rediseño · Brief 13 (corrección 9): también las personas nuevas que la detección dejó en la familia. Sin lápiz: no tienen ranura en PICON */
   detExtrasIn().forEach(function(id){
     rows+=obFamRow('<span class="av" style="background:'+detCol(id)+'">'+detInitials(detNm(id)) /* Fase 11 · Brief 04 */+'</span>', detNm(id));
   });
   box.innerHTML='<div class="det-grp">'+rows+'</div>';
+  /* Fase 11 · Brief 08: con solo Sonia, la frase no habla de una familia que no hay */
+  var solo=SLOTS.every(function(k){ return k==='SO' || personaFuera(k); }) && !detExtrasIn().length, ld=document.getElementById('obListoDesc');
+  /* Fase 11 · Brief 09: «Así quedó…» pasa al título (reemplaza los textos de los Briefs 07 y 08); reabierto conserva «Listo» */
+  var lt=document.getElementById('obListoTitle');
+  if(lt) lt.textContent = obReabre ? fx('Listo, {u}') : (solo ? 'Así quedó tu cuenta' : 'Así quedó tu familia');
+  if(ld) ld.textContent = obReabre ? (solo ? 'Así quedó tu cuenta. En Familia puedes agregar a alguien cuando quieras.' : 'Así quedó tu familia. En Familia puedes editar los datos de cada persona.')
+    : (solo ? 'En Familia puedes agregar a alguien cuando quieras.' : 'En Familia puedes editar los datos de cada persona.');
   paintAvatars(box);
 }
 function obFinish(){
@@ -4796,7 +4827,7 @@ function obFinish(){
   if(esPropia()){} /* Fase 10 · Brief 16: proGuardar() ya reveló el control; cir, med y ter no existen aquí */
   /* Fase 11 · Brief 04b (A): con «Ahora no» en "Leí tus documentos" (sin detOk) no se revela nada: nadie organizó esos documentos */
   else if(!detOk){}
-  else if(mailDone){ revela('ped'); revela('cir'); revela('med'); revela('ter'); revela('lip'); } /* Fase 11 · Brief 01b: también lip */ /* Fase 10 · Brief 06: ter existe desde el inicio (en Inicio no sale por en30) */
+  else if(mailDone){ revela('ped'); revela('cir'); revela('med'); revela('ter'); } /* Fase 11 · Brief 14b: sale lip */ /* Fase 10 · Brief 06: ter existe desde el inicio (en Inicio no sale por en30) */
   else if(obScanDone){ revela('cir'); }
   /* Fase 10 · Brief 03: "No es de mi familia" saca sus documentos de la Bóveda (el reinicio los devuelve desde DOCS0) */
   /* Fase 10 · Rediseño · Brief 13c: corre siempre, no solo con detOk
@@ -4864,7 +4895,7 @@ function docPendFin(){
   obHecho=true; obScanActive=false; obMailActive=false; /* Fase 10 · Brief 45b */
   var revela=function(k){ var c=card(k); if(c.st==='oculto' && personaVisible(c)) c.st='accionable'; };
   var mailDone = !!document.getElementById('obMail').getAttribute('data-done');
-  if(mailDone || mailConnected){ revela('ped'); revela('cir'); revela('med'); revela('ter'); revela('lip'); } /* Fase 11 · Brief 01b: también lip */ /* Fase 10 · Brief 45: también si el correo se conectó desde la app */
+  if(mailDone || mailConnected){ revela('ped'); revela('cir'); revela('med'); revela('ter'); } /* Fase 11 · Brief 14b: sale lip */ /* Fase 10 · Brief 45: también si el correo se conectó desde la app */
   else if(obScanDone){ revela('cir'); }
   var pegK=null;
   if(pegPend){ pegPend=false; pegK=peg.doc.p; DOCS_PEND=DOCS_PEND.filter(function(d){ return d!==peg.doc; }); } /* Fase 10 · Brief 47b: la cita no entra como pendiente: la decide pegElegir() al volver */
@@ -5249,6 +5280,7 @@ function obEpsApply(e, set){
   var base = (/\s+EPS$/i.test(e) && !/^nueva eps$/i.test(e)) ? e.replace(/\s+EPS$/i,'') : e;
   set('sede1', igual ? o.sede1 : base+' Centro'); set('sede2', igual ? o.sede2 : base+' Norte');
 }
+var obFamQuito=false; /* Fase 11 · Brief 08: true si la persona quitó a alguien (el botón pasa a "Agregar a alguien") */
 function obFamInit(){
   /* Fase 10 · Brief 15: "Tu EPS" llega prellenada con la de la historia (V.eps); en la propia historia, vacía */
   var ep=V.eps||'', enLista=OB_EPS.indexOf(ep)>=0;
@@ -5256,8 +5288,8 @@ function obFamInit(){
   obPeople=[{k:'SO', me:true, nm:(esPropia() ? fx('{u} {ape}') : nombreCompleto('SO')).trim(), nac:OB_NAC.SO||'', nacErr:'', eps:enLista ? ep : (ep ? 'Otra' : ''), epsOtro:enLista ? '' : ep}];
   ['SF','MT','MA'].filter(function(k){ return SLOTS.indexOf(k)>=0; }).forEach(function(k){ obPeople.push(obPersonaDe(k)); }); /* Fase 10 · Brief 30: sale a obPersonaDe() */
   obEditIx=-1; obEpsMenu=false;
-  /* Fase 11 · Brief 02: en la demo, el paso 3 llega con toda la familia de la historia; se puede editar el nombre, quitar y agregar */
-  obAgregados=['SF','MT','MA'].filter(function(k){ return SLOTS.indexOf(k)>=0; });
+  /* Fase 11 · Brief 08: la familia ya no llega puesta; se agrega con un toque o sale de los documentos */
+  obAgregados=[]; obFamQuito=false;
 }
 /* Fase 10 · Brief 30: la tarjeta de una persona de la historia, prellenada; la usan el paso 3 (obFamInit) y «Agregar familiar» (#I1) */
 function obPersonaDe(k){
@@ -5322,6 +5354,7 @@ function obFamTuHTML(p){
     /* Fase 10 · Brief 15: "Tu EPS", obligatoria. Abre #obRelSheet en modo EPS */
     '<div class="field"><label>Tu EPS</label><div class="sel-wrap">'+
     '<button type="button" class="box'+(eL?' filled':'')+'" data-obeps="1"><span>'+(eL||'Elige tu EPS')+'</span><span class="chev">'+CHEV_D+'</span></button></div></div>'+
+    '<p class="ob-gnote">Con tu nombre y tu EPS reconozco tus documentos.</p>'+ /* Fase 11 · Brief 08: la razón, en lugar del subtítulo */
     '</div></div>';
 }
 function obFamFilaHTML(p, i){
@@ -5341,7 +5374,8 @@ function renderObFam(){
   h+='<div class="ob-fam-g"><div class="wgt-lbl">Tu familia <span class="ob-opc">Opcional</span></div></div>';
   if(filas) h+='<div class="det-grp ob-fam-grp">'+filas+'</div>';
   /* Fase 10 · Rediseño · Brief 13c: cada toque agrega a la siguiente persona de la historia; sin nadie más, desaparece */
-  if(obSiguiente()) h+='<button type="button" class="btn-s ob-add-b" data-obadd="1">'+OB_PLUS+'Agregar a alguien</button>';
+  if(!obAgregados.length && !obFamQuito) h+='<p class="ob-gnote">Así sé de quién es cada documento que traigas.</p>'; /* Fase 11 · Brief 08b: el motivo, solo con el botón "Agregar a mi familia" */
+  if(obSiguiente()) h+='<button type="button" class="btn-s ob-add-b" data-obadd="1">'+OB_PLUS+(obFamQuito ? 'Agregar a alguien' : 'Agregar a mi familia')+'</button>'; /* Fase 11 · Brief 08 */
   box.innerHTML=h;
   var btn=document.getElementById('obNext');
   if(btn && obStep===3) btn.toggleAttribute('disabled', !obReady());
@@ -5384,14 +5418,15 @@ ob.addEventListener('click', function(e){
   /* Fase 10 · Rediseño · Brief 13c: agregar a la siguiente persona de la historia / quitarla (vuelve a "no agregada") */
   /* Fase 11 · Brief 02: la fila nueva llega con su campo "Nombre" abierto */
   if(e.target.closest('[data-obadd]')){
+    /* Fase 11 · Brief 08: el primer toque agrega a toda la historia; tras "Quitar", agrega a la siguiente */
     var sg=obSiguiente(); if(!sg) return;
-    obAgregados.push(sg.k); obEditIx=obPeople.indexOf(sg); renderObFam();
-    var ni=document.getElementById('obNm'+obEditIx); if(ni) ni.focus();
+    if(obFamQuito){ obAgregados.push(sg.k); obEditIx=obPeople.indexOf(sg); renderObFam(); var ni=document.getElementById('obNm'+obEditIx); if(ni) ni.focus(); }
+    else{ var nx; while((nx=obSiguiente())) obAgregados.push(nx.k); obEditIx=-1; renderObFam(); var lp=document.querySelector('[data-obedit]'); if(lp) lp.focus(); }
     return;
   }
   var qb=e.target.closest('[data-obquitar]');
   if(qb){
-    obAgregados=obAgregados.filter(function(k){ return k!==qb.getAttribute('data-obquitar'); }); obEditIx=-1; renderObFam();
+    obAgregados=obAgregados.filter(function(k){ return k!==qb.getAttribute('data-obquitar'); }); obEditIx=-1; obFamQuito=true; renderObFam(); /* Fase 11 · Brief 08 */
     var ab=document.querySelector('[data-obadd]'); if(ab) ab.focus();
     return;
   }
@@ -5572,7 +5607,7 @@ function resetObCards(){
     /* Fase 11 · Brief 02: textos de las fichas, sin "No la comparto con nadie" */
     ['obMail','obMailTxt','<h5>Buscar en mi correo</h5><p>Encuentro lo que tu EPS te ha enviado.</p>'], /* Fase 10 · Rediseño · Brief 13 */
     ['obScanCard','obScanTxt','<h5>Escanear una orden</h5><p>Le tomas una foto al papel.</p>'], /* Fase 10 · Brief 39: sin «cifrada» */
-    ['obUploadCard','obUploadTxt','<h5>Subir un PDF</h5><p>Si ya lo tienes en el celular.</p>']
+    ['obUploadCard','obUploadTxt','<h5>Subir un PDF o una foto</h5><p>Si ya lo tienes en el celular.</p>']
   ];
   defs.forEach(function(d){
     var card=document.getElementById(d[0]), txt=document.getElementById(d[1]);
@@ -5669,7 +5704,7 @@ function applyProfile(key){
   /* Fase 8 · Brief 6.3: "Familia" decía "4 perfiles" fijo en cualquier perfil — ahora usa el conteo real de SLOTS */
   var famSec=document.getElementById('FAM');
   if(famSec){
-    var nfam='Quiénes son y cómo les ayudas'; /* Fase 10 · Brief 03b: sin contar personas, igual en las tres historias */
+    var nfam='Toca a alguien para editar sus datos.'; /* Fase 10 · Brief 03b: sin contar personas, igual en las tres historias */
     famSec.setAttribute('data-sub', nfam);
     if(cur==='FAM') tSub.textContent=nfam;
   }
