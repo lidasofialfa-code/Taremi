@@ -42,4 +42,5 @@ HTML, CSS y JavaScript, sin dependencias. Para verlo en local, abre `index.html`
 
 ## Contacto
 
-Lida Alfonso · [LinkedIn](https://www.linkedin.com/in/lida-alfonso-ux-designer) · Portafolio: [enlace]
+Lida Alfonso · [LinkedIn](https://www.linkedin.com/in/lida-alfonso-ux-designer) 
+
