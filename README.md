@@ -4,7 +4,7 @@
 
 Proyecto de diseño UX/UI hecho por **Lida Alfonso** en el bootcamp de BIT (Bogotá Institute of Technology), 2026. Sigue en desarrollo.
 
-**Probar el prototipo:** [enlace al prototipo]
+**Probar el prototipo:** https://taremi.vercel.app/
 
 ## Qué es
 
