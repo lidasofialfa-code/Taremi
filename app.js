@@ -10,7 +10,6 @@ var byId = {}; screens.forEach(function(s){ byId[s.id]=s; });
 var hdrGlobal=document.getElementById('hdrGlobal'), hdrHilo=document.getElementById('hdrHilo'),
     hiloStack=document.getElementById('hiloStack'), hiloTitle=document.getElementById('hiloTitle'),
     hiloSub=document.getElementById('hiloSub'), hiloAv=document.getElementById('hiloAv'),
-    hiloConfirmBadge=document.getElementById('hiloConfirmBadge'),
     scrTitle=document.getElementById('scrTitle'), tTitle=document.getElementById('tTitle'),
     tSub=document.getElementById('tSub'),
     /* Fase Móvil · header fijo de la mascota de Inicio (2.2), alterna con stRow en show() */
@@ -20,7 +19,7 @@ var hdrGlobal=document.getElementById('hdrGlobal'), hdrHilo=document.getElementB
     micBtn=document.getElementById('micBtn'), editBar=document.getElementById('editBar'),
     fab=document.getElementById('fab'), nav=document.getElementById('nav'), content=document.getElementById('content'),
     TH=document.getElementById('TH'), A1=document.getElementById('A1'), /* Fase 11 · Brief 04 (B): sale H1 (Procesos en curso) */
-    topMenu=document.getElementById('topMenu'), topBack=document.getElementById('topBack'), stBack=document.getElementById('stBack'),
+    topBack=document.getElementById('topBack'), stBack=document.getElementById('stBack'),
     scrimExit=document.getElementById('scrimExit'), exitTitle=document.getElementById('exitTitle'),
     exitBody=document.getElementById('exitBody'), exitNeutralBtn=document.getElementById('exitNeutralBtn'),
     exitDangerBtn=document.getElementById('exitDangerBtn');
@@ -43,9 +42,9 @@ var PICON={}, ANIMALS=['🦝','🦊','🐱','🐶','🐼','🐨','🦁','🐧','
    sin importar a quién se tocara en Familia). PROFILE_EDITS guarda la edición por código de persona
    (SO/MT/SF/MA), de sesión (se pierde con "Reiniciar demo"). Fase 8 · Estructura 1: propagateI3Edit() la
    refleja también en V/PNAME/INIT al guardar, así que sí se ve en el resto de la app. */
-var i3Key=null, i3Editing=false, i3Edit=null, i3EditOrig=null, PROFILE_EDITS={};
+var i3Key=null, i3Edit=null, i3EditOrig=null, i3Toast=null, PROFILE_EDITS={}; /* Fase 12 · Brief 02: sale i3Editing, Perfil siempre se edita */
 /* Fase 10 · Rediseño · Brief 13b: fechas de nacimiento escritas en "Tú y tu familia" para quien la historia no trae
-   (todas menos {p2}, que usa V.nac2raw). Crudas en dd/mm/aaaa; las leen i3DateRow() e i3EnterEdit(). El reinicio las limpia */
+   (todas menos {p2}, que usa V.nac2raw). Crudas en dd/mm/aaaa; las lee i3Load(). El reinicio las limpia */
 var OB_NAC={};
 var OB_APROX={}; /* Fase 10 · Brief 18: edad aproximada escrita en el paso 3 ("No sé la fecha exacta"), en años, por persona */
 var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -75,11 +74,43 @@ function relEdad(k, rel, resto){ var e=edadDe(k); return [rel, e || resto].filte
 /* Fase 10 · Ajuste: si se sale del hilo mientras play() sigue en curso, lo que faltaba se guarda de una vez
    en el hilo (antes se perdía, y con ello los chips "Simular:" para seguir la demo) */
 var PLAYS=[];
+/* Fase 12 · Brief 04b (A): si falta una foto (img[data-fb]), se esconde y queda lo dibujado de antes */
+document.addEventListener('error', function(e){ var t=e.target; if(t && t.tagName==='IMG' && t.hasAttribute('data-fb')) t.hidden=true; }, true);
 function clearTimers(){
   timers.forEach(clearTimeout); timers=[];
   var q=PLAYS; PLAYS=[];
   q.forEach(function(p){ if(p.ty) p.ty.remove(); while(p.i<p.list.length) commit(p.key, p.list[p.i++]); p.done(); });
 }
+/* Fase 12 · Brief 09D: «Leyendo las hojas» como L1–L4. Sale la lista con checks y la barra a saltos (12 → 45 → 80 → 100 %).
+   La barra se llena de forma continua (scaleX, lineal) en todo el tiempo de la pantalla (data-automs, 1800) y una sola frase
+   cambia con fundido a un tercio y a dos tercios. aria-valuenow y la frase del lector cambian solo en esos tres puntos.
+   Con movimiento reducido la barra salta a los mismos tres puntos. */
+function procPasos(s){
+  var bar=s.querySelector('.proc-bar'), fill=bar.querySelector('.progress-fill'), fr=s.querySelectorAll('.proc-frase'),
+      vivo=s.querySelector('.proc-vivo'), ms=parseInt(s.getAttribute('data-automs')||'1800',10), quieto=menosMov();
+  function frase(i){
+    [].forEach.call(fr, function(x,j){ x.classList.toggle('on', j===i); });
+    vivo.textContent=fr[i].textContent;
+  }
+  function paso(i){ /* i = 0, 1, 2: la frase i y la barra al final de su tercio */
+    frase(i); bar.setAttribute('aria-valuenow', [33,66,100][i]);
+    if(quieto) fill.style.transform='scaleX('+((i+1)/3)+')';
+  }
+  bar.classList.remove('llena'); fill.style.transform=quieto ? 'scaleX(0)' : '';
+  fill.style.transitionDuration=ms+'ms';
+  void fill.offsetWidth; /* que el 0 se pinte antes de arrancar la transición */
+  paso(0); if(!quieto) bar.classList.add('llena');
+  T(function(){ paso(1); }, ms/3); T(function(){ paso(2); }, ms*2/3);
+  if(quieto) T(function(){ fill.style.transform='scaleX(1)'; }, ms-1);
+}
+/* Fase 12 · Brief 09D: movimiento reducido del sistema */
+/* Fase 12 · Brief 09D: un elemento que cambia de estado en su mismo lugar entra con fundido de 200 ms (clase .fundir o la que se pase).
+   Se quita al terminar, así no se repite al volver a mostrarse */
+function fundir(el, cls){
+  cls=cls||'fundir'; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  el.addEventListener('animationend', function fin(e){ if(e.target!==el) return; el.classList.remove(cls); el.removeEventListener('animationend', fin); });
+}
+function menosMov(){ return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; }
 function T(fn,ms){ var id=setTimeout(fn,ms); timers.push(id); return id; }
 /* Fase 10 · Brief 01b: #app ahora tiene alto fijo, así que el único que se desplaza es .content (ya no la página).
    instant=true salta sin animación (al abrir el hilo, para que se vea el último mensaje). */
@@ -126,16 +157,17 @@ var PROFILES = {
       /* Fase 10 · Brief 03: pista de "Para quién" en Pegar texto */
       pistaPeg:'Por ser pediatría, ¿es de {p2} o de {p1}?', pegCand:['MT','SF'], /* Fase 10 · Brief 47b: las personas que nombra la pista */
       t2:'Cirugía de cataratas', t2x:'cirugía de cataratas', /* Fase 11 · Brief 01b */
-      t3:'Losartán 50mg', t3n:'Losartán',
+      t3:'Losartán 50 mg', /* Fase 12 · Brief 08A */ t3n:'Losartán',
       lab:'Perfil lipídico', labl:'perfil lipídico',
       /* Fase 10 · Brief 02: valores del visor del resultado de {lab} (examen|valor|hi = fuera de rango, separados por ;) */
       labv:'Colesterol total|168 mg/dL;Triglicéridos|142 mg/dL|hi;HDL|52 mg/dL;LDL|98 mg/dL', labn:'Triglicéridos por encima del rango esperado.',
-      tv:'Terapias de lenguaje', tvl:'terapias de lenguaje',
+      tv:'Terapias de lenguaje', tvl:'terapias de lenguaje', tvc:'terapia de lenguaje', /* Fase 12 · Brief 08Ad: la cita, en singular, para «Hoy es…» */
       /* Fase 10 · Brief 06: trámite que nace de "Me dieron órdenes nuevas" en ped; sigd = desde cuándo se puede agendar */
       tsig:'Vacuna de los 12 meses', tsigl:'vacuna de los 12 meses', sigd:'24 de noviembre', /* Fase 11 · Brief 01b */
       docm:'Dra. Alejandra Mendoza', docms:'Dra. Mendoza', doc1:'Dra. Paula López',
       doc2:'Dr. Andrés Gil', doc3:'Dr. Ramírez', docv:'Dr. Camilo Vargas', /* Fase 11 · Brief 01b */ docu:'Dr. De las Salas',
       sede1:'Compensar Centro', sede2:'Compensar Calle 127', dir1:'Cra 13 #52-30',
+      sede3:'Instituto de Ojos del Parque', cc3:'CC 41.678.902', /* Fase 12 · Brief 05 (A): la sede de la cirugía y la cédula de Marta (la de la orden escaneada) */
       hosp:'Hospital Simón Bolívar', hosp2:'Méderi',
       far1:'Cruz Verde Calle 80', far2:'Farmatodo Chapinero',
       ep2t:'Consulta de oftalmología', /* Fase 11 · Brief 01b */ ep4t:'Control de hipertensión', ep5t:'Consulta de pediatría',
@@ -171,11 +203,16 @@ function telLinea(conNumero){ return V.tel ? conNumero : 'Llama a la línea de '
 function epsNombre(e){ e=(e||'').trim(); return /\bEPS\b/i.test(e) ? e : (e ? e+' EPS' : ''); }
 var PROF='sonia', V=PROFILES.sonia.v;
 var FULL_K={fu:'SO', f1:'SF', f2:'MT', f3:'MA'}; /* Fase 10 · Brief 19 (corrección): token → persona, para fx() */
+/* Fase 12 · Brief 06 (B): las horas no se parten: espacio duro entre el número, «a.»/«p.» y «m.» («9:41 a. m.», «3:00 p.m.»).
+   \s de JS ya incluye el espacio duro, así que horaMas() y las demás lecturas de horas siguen igual */
+var NBSP='\u00a0';
+/* Fase 12 · Brief 09C: siempre con el formato de la guía («9:00 a. m.»), aunque el dato diga «9:00 a.m.» */
+function horaDura(t){ return t.replace(/(\d)\s+([ap])\.\s?m\./g, function(m,d,ap){ return d+NBSP+ap+'.'+NBSP+'m.'; }); }
 function fx(t){
   if(typeof t!=='string') return t;
   /* Fase 10 · Brief 19 (corrección): {fu}/{f1}/{f2}/{f3} pasan por nombreCompleto(), que sigue lo editado en el paso 3
      y en la propia historia (sin nombres completos) devuelve solo el nombre */
-  return t.replace(/\{(\w+)\}/g, function(m,k){ if(FULL_K[k]) return nombreCompleto(FULL_K[k]); if(k==='dmed') return String(diasMed()); /* Fase 11 · Brief 03 */ return (k in V) ? (/\{\w+\}/.test(V[k]) ? fx(V[k]) : V[k]) : m; }); /* Fase 11 · Brief 01b: un token puede traer otro adentro ({qmed} = {p3}) */
+  return horaDura(t.replace(/\{(\w+)\}/g, function(m,k){ if(FULL_K[k]) return nombreCompleto(FULL_K[k]); if(k==='dmed') return String(diasMed()); /* Fase 11 · Brief 03 */ return (k in V) ? (/\{\w+\}/.test(V[k]) ? fx(V[k]) : V[k]) : m; })); /* Fase 11 · Brief 01b: un token puede traer otro adentro ({qmed} = {p3}) */
 }
 /* Fase Móvil · saludo de Inicio/tour. Fase 10 · Rediseño · Brief 13: siempre hay historia, así que siempre hay nombre */
 function saludoHola(){ return 'Hola, '+fx('{u}'); }
@@ -184,34 +221,44 @@ function buildPeople(){
   V.epsn=epsNombre(V.eps); /* Fase 10 · Brief 15: token derivado de {eps} */
   PNAME={MT:V.p2, SF:V.p1, SO:V.ru, MA:V.p3};
   INIT ={MT:V.i2, SF:V.i1, SO:V.iu, MA:V.i3};
-  PCOL ={MT:pr.col.MT, SF:pr.col.SF, SO:pr.col.SO, MA:pr.col.MA};
-  PEOPLE={MT:[V.p2,pr.col.MT],SF:[V.p1,pr.col.SF],SO:[V.ru,pr.col.SO],MA:[V.p3,pr.col.MA]};
+  /* Fase 12 · Brief 02: el color elegido en la hoja (PROFILE_EDITS.color) gana sobre el de PROFILES; el reinicio lo borra */
+  var ce=PROFILE_EDITS.color||{}, col=function(k){ return ce[k] ? ce[k].col : pr.col[k]; };
+  PCOL ={MT:col('MT'), SF:col('SF'), SO:col('SO'), MA:col('MA')};
+  PEOPLE={MT:[V.p2,PCOL.MT],SF:[V.p1,PCOL.SF],SO:[V.ru,PCOL.SO],MA:[V.p3,PCOL.MA]};
   var r=document.documentElement.style;
-  r.setProperty('--mateo',pr.col.MT); r.setProperty('--sofia',pr.col.SF); r.setProperty('--sonia',pr.col.SO);
+  r.setProperty('--mateo',PCOL.MT); r.setProperty('--sofia',PCOL.SF); r.setProperty('--sonia',PCOL.SO);
   /* Fase 10 · Rediseño · Brief 09: sin variantes -av; se escriben --marta y los tintes (--x-t) desde PROFILES, la única fuente */
-  r.setProperty('--marta',pr.col.MA);
+  r.setProperty('--marta',PCOL.MA);
   pintarTintes(); /* Fase 10 · Brief 49: los tintes dependen del tema */
   /* quién existe de verdad en esta familia: sin duplicados */
-  SLOTS=['SO','MT','SF','MA'].filter(function(k){ return pr.hide.indexOf(k)<0; });
+  SLOTS=['SO','SF','MT','MA'].filter( /* Fase 12 · Brief 09A: Sofía antes que Mateo en toda la app, como el Figma */function(k){ return pr.hide.indexOf(k)<0; });
 }
-var SLOTS=['SO','MT','SF','MA'];
+var SLOTS=['SO','SF','MT','MA']; /* Fase 12 · Brief 09A */
 /* Fase 10 · Brief 49 · Modo oscuro. Los tintes (--x-t) van en línea en <html>, así que en oscuro también se escriben desde aquí:
    el color de la persona al 18 % sobre la superficie (marta, que es gris, al 14 %). En claro, los de PROFILES */
 function pintarTintes(){
   var pr=PROFILES[PROF], r=document.documentElement.style, osc=document.documentElement.getAttribute('data-tema')==='oscuro';
   var T={MT:'mateo', SF:'sofia', SO:'sonia', MA:'marta'};
-  for(var k in T) r.setProperty('--'+T[k]+'-t', osc ? 'color-mix(in srgb, var(--'+T[k]+') 18%, var(--r-superficie))' : pr.tint[k]); /* Fase 11 · Brief 01b: Marta pasa a rosa (18 %); la niebla (14 %) queda en --extra-t */
+  var ce=PROFILE_EDITS.color||{}; /* Fase 12 · Brief 02: el tinte del color elegido */
+  for(var k in T) r.setProperty('--'+T[k]+'-t', osc ? 'color-mix(in srgb, var(--'+T[k]+') 18%, var(--r-superficie))' : (ce[k] ? ce[k].tint : pr.tint[k])); /* Fase 11 · Brief 01b: Marta pasa a rosa (18 %); la niebla (14 %) queda en --extra-t */
 }
 /* Fase 10 · Brief 49 · Apariencia: 'claro' | 'oscuro' | 'sistema'. Arranca en Claro; se recuerda en localStorage.
    Es preferencia de quien presenta: resetDemo() no la toca */
 var TEMA='claro', temaMQ=window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 try{ var temaGuardado=localStorage.getItem('taremi-tema'); if(['claro','oscuro','sistema'].indexOf(temaGuardado)>=0) TEMA=temaGuardado; }catch(e){}
-function aplicarTema(valor){
+/* Fase 12 · Brief 07 (A): alto contraste ('normal' | 'alto') y tamaño de letra ('normal' | 'grande' | 'muy-grande'), con la misma memoria que el tema */
+var CONTRASTE='normal', LETRA='normal';
+try{ if(localStorage.getItem('taremi-contraste')==='alto') CONTRASTE='alto'; var letraGuardada=localStorage.getItem('taremi-letra'); if(['grande','muy-grande'].indexOf(letraGuardada)>=0) LETRA=letraGuardada; }catch(e){}
+function aplicarTema(valor, contraste, letra){
   if(valor) TEMA=valor;
-  var osc = TEMA==='oscuro' || (TEMA==='sistema' && temaMQ && temaMQ.matches);
-  if(osc) document.documentElement.setAttribute('data-tema','oscuro'); else document.documentElement.removeAttribute('data-tema');
+  if(contraste) CONTRASTE=contraste;
+  if(letra) LETRA=letra;
+  var osc = TEMA==='oscuro' || (TEMA==='sistema' && temaMQ && temaMQ.matches), d=document.documentElement;
+  if(osc) d.setAttribute('data-tema','oscuro'); else d.removeAttribute('data-tema');
+  if(CONTRASTE==='alto') d.setAttribute('data-contraste','alto'); else d.removeAttribute('data-contraste');
+  if(LETRA!=='normal') d.setAttribute('data-letra',LETRA); else d.removeAttribute('data-letra');
   pintarTintes();
-  try{ localStorage.setItem('taremi-tema', TEMA); }catch(e){}
+  try{ localStorage.setItem('taremi-tema', TEMA); localStorage.setItem('taremi-contraste', CONTRASTE); localStorage.setItem('taremi-letra', LETRA); }catch(e){}
 }
 if(temaMQ){ var temaCambio=function(){ if(TEMA==='sistema') aplicarTema(); }; if(temaMQ.addEventListener) temaMQ.addEventListener('change', temaCambio); else if(temaMQ.addListener) temaMQ.addListener(temaCambio); }
 aplicarTema();
@@ -230,52 +277,67 @@ function paintAvatars(root){
     }
   });
 }
-/* Fase 6 · avatares elegibles: hoja de selección, reusa el color de la persona como anillo */
-function openIconSheet(k){
-  iconPickKey=k;
-  /* "para Tú" no es gramatical en español — con preposición es "para ti" */
-  document.getElementById('iconSheetTitle').textContent='Elige un ícono para '+(k==='SO'?'ti':PNAME[k]);
-  /* Fase 10 · Rediseño · Brief 13b (corrección 2): opciones rellenas con el color de la persona (--ic-ring en la grilla) y brillo
-     blanco al centro, como el avatar con ícono. La primera son sus iniciales, para volver a ellas (data-iconopt vacío) */
-  document.getElementById('iconSheetSub').textContent = k==='SO' ? 'Tu color no cambia, solo el dibujo.' : 'Su color no cambia, solo el dibujo.';
-  var grid=document.getElementById('iconGrid');
-  grid.style.setProperty('--ic-ring', PCOL[k]||'var(--r-borde)');
-  var h='<button type="button" class="ic-opt ic-ini'+(PICON[k]?'':' sel')+'" data-iconopt="" aria-label="Iniciales">'+INIT[k]+'</button>';
-  ANIMALS.forEach(function(a){
-    h+='<button type="button" class="ic-opt'+(PICON[k]===a?' sel':'')+'" data-iconopt="'+a+'">'+a+'</button>';
+/* Fase 12 · Brief 02: hoja «Elige cómo se ve…» con color e ícono. Los colores son los de la historia más menta y arena;
+   los que usa otra persona de la familia salen con sus iniciales y desactivados. «Listo» aplica los dos juntos */
+var iconPickCol=null, iconPickIc='';
+function colorPool(){
+  var pr=PROFILES[PROF];
+  return ['SO','SF','MT','MA'].map(function(k){ return {col:pr.col[k], tint:pr.tint[k]}; })
+    .concat([{col:'var(--menta)', tint:'var(--menta-t)'}, {col:'var(--arena)', tint:'var(--arena-t)'}]);
+}
+function renderIconCols(){
+  var k=iconPickKey, otros=SLOTS.filter(function(o){ return o!==k && !personaFuera(o); });
+  var usados=[], libres=[];
+  colorPool().forEach(function(c, i){
+    var duena=otros.filter(function(o){ return PCOL[o]===c.col; })[0];
+    if(duena) usados.push('<button type="button" class="ic-col" style="background:'+c.col+'" aria-disabled="true" aria-label="Color de '+(duena==='SO'?V.u:PNAME[duena])+', en uso">'+INIT[duena]+'</button>');
+    else { var on=iconPickCol.col===c.col;
+      libres.push('<button type="button" class="ic-col'+(on?' sel':'')+'" style="background:'+c.col+'" role="radio" aria-checked="'+on+'" aria-label="Color libre" data-iccol="'+i+'"></button>'); }
   });
-  grid.innerHTML=h;
+  document.getElementById('iconCols').innerHTML=usados.join('')+libres.join('');
+  document.getElementById('iconGrid').style.setProperty('--ic-ring', iconPickCol.col); /* la grilla se pinta con el color elegido en la hoja */
+}
+function openIconSheet(k){
+  iconPickKey=k; iconPickIc=PICON[k]||'';
+  iconPickCol={col:PCOL[k], tint:null};
+  document.getElementById('iconSheetTitle').textContent = k==='SO' ? 'Elige cómo te ves' : 'Elige cómo se ve '+PNAME[k];
+  /* Fase 10 · Rediseño · Brief 13b (corrección 2): opciones rellenas con el color (--ic-ring) y brillo blanco al centro.
+     La primera son sus iniciales, para volver a ellas (data-iconopt vacío) */
+  var h='<button type="button" class="ic-opt ic-ini'+(iconPickIc?'':' sel')+'" data-iconopt="" aria-label="Iniciales">'+INIT[k]+'</button>';
+  ANIMALS.forEach(function(a){
+    h+='<button type="button" class="ic-opt'+(iconPickIc===a?' sel':'')+'" data-iconopt="'+a+'">'+a+'</button>';
+  });
+  document.getElementById('iconGrid').innerHTML=h;
+  renderIconCols();
   closeSheets();
-  document.getElementById('scrimIcon').style.display='flex';
+  abrirHoja('scrimIcon');
 }
 
 var CARDS0 = [
   /* Fase 10 · Brief 01: sinCupo es una regla fija por trámite para "No hubo cita" (true → ped.nueva, false → slotsWgt()).
      Queda en la tarjeta para cambiarla después por el cálculo real con la vigencia. vence = la fecha que ya usa el prototipo. */
-  {k:'ped', t:'{t1}', frase:'el control de {p1}', fraseCorta:'el control', /* Fase 10 · Brief 07: frase = cómo lo nombra el saludo; 08f: fraseCorta = sin la persona, solo al agrupar */ av:'SF', c:'var(--sofia)', st:'oculto', ord:1,
-   sub:'{p1} · Agendar la cita', pill:'Urgente', pc:'urgente', sinCupo:true, vence:'10 de noviembre'}, /* Fase 11 · Brief 01b */
-  {k:'cir', t:'{t2}', frase:'la autorización de {p3}', fraseCorta:'la autorización', av:'MA', c:'var(--marta)', st:'oculto', ord:2, /* Fase 11 · Brief 01b */
-   sub:'{p3} · Radicar autorización', pill:'Pendiente', pc:'pendiente'},
-  {k:'med', t:'{t3}', frase:'la entrega del {t3n} de {p3}', fraseCorta:'la entrega del {t3n}', av:'MA', c:'var(--marta)', st:'oculto', ord:3, /* Fase 11 · Brief 01b */ /* Fase 8 · Coherencia: med solo se revela al conectar correo en obFinish(), como ped/cir */
-   sub:'{qmed} · Reclamar entrega 2 de 3', pill:'Pendiente', pc:'pendiente', lim:'18 de noviembre',
+  {k:'ped', t:'{t1}', frase:'el control de {p1}', fraseCorta:'el control', /* Fase 10 · Brief 07: frase = cómo lo nombra el saludo; 08f: fraseCorta = sin la persona, solo al agrupar */ av:'SF', c:'var(--sofia)', st:'oculto', ord:3,
+   sub:'{p1} · Agendar la cita', pill:'Pendiente', pc:'pendiente', sinCupo:true, vence:'10 de noviembre'}, /* Fase 11 · Brief 01b */ /* Fase 12 · Brief 08A: sale «Urgente»; lo urgente es la cirugía */
+  {k:'cir', t:'{t2}', frase:'la autorización de {p3}', fraseCorta:'la autorización', av:'MA', c:'var(--marta)', st:'oculto', ord:1, /* Fase 11 · Brief 01b */
+   sub:'{p3} · Radicar la autorización', /* Fase 12 · Brief 07c: la misma línea del hilo y del lienzo */ pill:'Urgente', pc:'urgente'}, /* Fase 12 · Brief 08A: primera y urgente (marco F01) */
+  {k:'med', t:'{t3}', frase:'la entrega del {t3n} de {p3}', fraseCorta:'la entrega del {t3n}', av:'MA', c:'var(--marta)', st:'oculto', ord:2, /* Fase 11 · Brief 01b */ /* Fase 8 · Coherencia: med solo se revela al conectar correo en obFinish(), como ped/cir */
+   sub:'{qmed} · Reclamar la entrega 2 de 3', /* Fase 12 · Brief 08A */ pill:'Pendiente', pc:'pendiente', lim:'18 de noviembre',
    ultEntrega:'9 de octubre', diasEntrega:30}, /* Fase 11 · Brief 03: datos de la ficha para calcular los días de pastillas (diasMed) */ /* Fase 10 · Brief 06: lim = fecha límite para en30() y «Sin agendar» (Fase 11 · Brief 05) */
   {k:'lip', t:'{lab}', frase:'la toma del {labl} de {p3}', fraseCorta:'la toma del {labl}', av:'MA', c:'var(--marta)', st:'oculto', ord:4,
    sub:'{p3} · Agendar la toma', pill:'Pendiente', pc:'pendiente', sinCupo:false, vence:'8 de diciembre'}, /* Fase 11 · Brief 01b: de Marta; vigencia de 60 días desde el 9 oct */
-  {k:'ter', t:'{tv}', frase:'la orden de {tvl} de {p2}', fraseCorta:'la orden de {tvl}', av:'MT', c:'var(--mateo)', st:'oculto', ord:5, /* Fase 11 · Brief 01b: de Mateo */
+  {k:'ter', t:'{tv}', frase:'la orden de {tvl} de {p2}', fraseCorta:'la orden de {tvl}', fraseCita:'la {tvc} de {p2}', /* Fase 12 · Brief 08Ad: fraseCita = cómo se nombra con cita hoy, mañana o por confirmar */ av:'MT', c:'var(--mateo)', st:'oculto', ord:5, /* Fase 11 · Brief 01b: de Mateo */
    sub:'{p2} · Agendar antes del 18 dic', pill:'Pendiente', pc:'pendiente', lim:'18 de diciembre'}, /* Fase 10 · Brief 06: se revela en obFinish() como ped */
   /* Fase 10 · Brief 02: control A que nace de med.control (arquetipo C → crea una cita A). Oculto hasta entonces */
   {k:'ctl', t:'Control para renovar {t3n}', frase:'el control de {p3} para renovar el {t3n}', fraseCorta:'el control para renovar el {t3n}', av:'MA', c:'var(--marta)', st:'oculto', ord:6, /* Fase 11 · Brief 01b */
    sub:'{qmed} · Agendar el control', pill:'Pendiente', pc:'pendiente'},
   /* Fase 10 · Brief 06: la orden de seguimiento que sale del control de {p1} ("Me dieron órdenes nuevas"). desde = se puede agendar a partir de esa fecha */
-  {k:'sig', t:'{tsig}', frase:'la cita de {tsigl} de {p1}', fraseCorta:'la cita de {tsigl}', av:'SF', c:'var(--sofia)', st:'oculto', ord:7,
+  {k:'sig', t:'{tsig}', frase:'la cita de {tsigl} de {p1}', fraseCorta:'la cita de {tsigl}', fraseCita:'la {tsigl} de {p1}', /* Fase 12 · Brief 08Ad */ av:'SF', c:'var(--sofia)', st:'oculto', ord:7,
    sub:'{p1} · Agendar desde el {sigd}', pill:'Pendiente', pc:'pendiente', desde:'{sigd}'}
 ];
 var CARDS = JSON.parse(JSON.stringify(CARDS0));
 /* Fase 8 · Coherencia: appVacia reemplaza a inicioEmptyOnce/bovEmptyOnce. No es de un solo uso: se
    mantiene en true hasta que algo real se guarde, para que el estado vacío sobreviva a navegar entre pantallas */
 var appVacia=false;
-/* Fase 6 · tour de orientación: aparece una sola vez, la primera vez que se entra a Inicio */
-var tourSeen=false;
 /* Fase 10 · Rediseño · Brief 13: salen obFamChosen y obSkipped ("Saltar" solo aparece después de elegir historia y crear la cuenta) */
 function card(k){ for(var i=0;i<CARDS.length;i++) if(CARDS[i].k===k) return CARDS[i]; return null; }
 /* Fase 10 · Brief 06 · regla de los 30 días: Inicio, la mascota y los avisos solo muestran lo que vence (lim/vence) o se puede
@@ -326,7 +388,7 @@ var CARD_CHEV='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="c
 var CHEV_D='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 var X_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 var ALERT_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
-/* OK_IC sube aquí (antes ≈2230) para que PASOS_OK lo encuentre al cargar; los atributos ceden ante el CSS de cada contenedor */
+/* OK_IC sube aquí (antes ≈2230) para que lo encuentre lo que se arma al cargar; los atributos ceden ante el CSS de cada contenedor */
 var OK_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
 /* Fase Móvil · separa la acción del prefijo de persona en un sub tipo '{p1} · Agendar la cita' → 'Agendar la cita', reusado por el saludo de la mascota (2.3 del brief) para no repetir el regex ni parsear el string a mano en cada lugar */
 function actionOnly(sub){ return sub.replace(/^\{\w+\}\s*·\s*/,'').replace(/<\/?em>/g,''); }
@@ -335,7 +397,7 @@ function actionOnly(sub){ return sub.replace(/^\{\w+\}\s*·\s*/,'').replace(/<\/
 /* Fase 6 · H04: Avisos deja de escribir su propio texto y lee el mismo estado que la tarjeta.
    Fase 10 · Rediseño · Brief 12: es pantalla propia (#NOTIF); los mismos avisos se reparten en dos grupos
    ("Necesita tu atención" / "Para que sepas") y el círculo del ícono toma su color de una clase (.r/.a/.v) */
-var notifHay=false;
+var notifN=0; /* Fase 12 · Brief 02: cuántas notificaciones piden atención (el número de la campana) */
 /* Fase 10 · Brief 48: Configuración. Cuatro grupos (.wgt-lbl + .det-grp) y "Solo en esta demo" al final.
    Permisos y avisos solo informan (sin interruptores). Los avisos son los que existen en renderNotif():
    cita mañana, la EPS niega o incumple el plazo, llegan resultados (el de medicamentos todavía no existe). */
@@ -358,7 +420,8 @@ function renderConfig(cerrar){
      estado corto a la derecha (.cfg-est); "Permitido" y "Conectado" llevan un check en --r-exito-texto */
   var SV='<svg class="cfg-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
   var IC={
-    user:SV+'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+    users:SV+'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9.5" r="2.5"/><path d="M15.5 14.6A4.5 4.5 0 0 1 21 19"/></svg>', /* Fase 12 · Brief 02: el de Familia */
+    contrast:SV+'<circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>', /* Fase 12 · Brief 02: Apariencia (Lucide contrast) */
     mail:SV+'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>',
     camera:SV+'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>',
     mic:SV+'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>',
@@ -388,15 +451,32 @@ function renderConfig(cerrar){
       '<div class="cfg-plb" data-revb="'+key+'"'+(on?'':' style="display:none;"')+'>'+cuerpo+'</div>';
   }
   var h = cfgToast ? '<div class="toast" role="status">'+cfgToast+'</div>' : ''; cfgToast=null;
-  /* Fase 10 · Brief 49 · Brief 48c: Apariencia arriba, en un control segmentado de una fila (.cfg-seg) */
-  h+='<div class="wgt-lbl" id="cfgTemaLbl">Apariencia</div><div class="cfg-seg" role="radiogroup" aria-labelledby="cfgTemaLbl">'+
-    [['claro','Claro'],['oscuro','Oscuro'],['sistema','Como mi celular']].map(function(o){ var on=TEMA===o[0];
-      return '<button type="button" class="'+(on?'sel':'')+'" role="radio" aria-checked="'+on+'" data-tema="'+o[0]+'">'+o[1]+'</button>'; }).join('')+'</div>';
-  h+=grupo('Tu cuenta', '<div class="fam-r"><span class="av" data-p="SO" style="background:'+PCOL.SO+'">'+INIT.SO+'</span>'+
-    '<span class="card-main"><span class="card-title cfg-t">'+V.u+'</span><span class="card-sub">'+mail+' · '+(cuentaGoogle?'Con Google':'Con tu correo')+'</span></span></div>');
+  /* Fase 12 · Brief 02: caja 1 = Sonia (sin «· Con Google») y, debajo, Familia con los nombres; salen el título «Tu cuenta» y la fila suelta */
+  var fam=['SF','MT','MA'].filter(function(k){ return !personaFuera(k); }).map(function(k){ return PNAME[k]; });
+  var famRes = !fam.length ? 'Solo tú' : fam.length===1 ? fam[0] : fam.slice(0,-1).join(', ')+' y '+fam[fam.length-1];
+  h+='<div class="det-grp"><div class="fam-r"><span class="av" data-p="SO" style="background:'+PCOL.SO+'">'+INIT.SO+'</span>'+
+    '<span class="card-main"><span class="card-title cfg-t">'+V.u+'</span><span class="card-sub">'+mail+'</span></span></div>'+
+    '<button type="button" class="fam-r cfg-pl" data-go="FAM">'+IC.users+'<span class="card-main"><span class="card-title cfg-t">Familia</span><span class="card-sub">'+famRes+'</span></span>'+
+    '<span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button></div>';
   var perm=[mailConnected&&'correo', camUsada&&'cámara', micUsado&&'micrófono'].filter(Boolean);
   var permRes = !perm.length ? 'Ninguno todavía' : cap1(perm.length===1 ? perm[0] : perm.slice(0,-1).join(', ')+' y '+perm[perm.length-1]);
+  var TEMAS=[['claro','Claro'],['oscuro','Oscuro'],['sistema','Como mi celular']];
+  var LETRAS=[['normal','Normal'],['grande','Grande'],['muy-grande','Muy grande']]; /* Fase 12 · Brief 07 (A) */
+  var altoOn=CONTRASTE==='alto';
+  /* Fase 12 · Brief 07 (A): la segunda línea suma solo lo que no es normal */
+  var apaRes=[TEMAS.filter(function(o){ return TEMA===o[0]; }).map(function(o){ return o[1]; })[0]||'', altoOn&&'Alto contraste',
+    LETRA==='grande'&&'Letra grande', LETRA==='muy-grande'&&'Letra muy grande'].filter(Boolean).join(' · ');
   h+='<div class="det-grp cfg-secs">'+ /* sin título de grupo: cada fila ya dice qué es */
+    /* Fase 12 · Brief 02: Apariencia pasa a ser el primer plegable; adentro, el control Claro · Oscuro · Como mi celular */
+    pleg('cfg-tema', 'contrast', 'Apariencia', apaRes, '',
+      '<div class="cfg-seg" role="radiogroup" aria-label="Apariencia">'+TEMAS.map(function(o){ var on=TEMA===o[0];
+        return '<button type="button" class="'+(on?'sel':'')+'" role="radio" aria-checked="'+on+'" data-tema="'+o[0]+'">'+o[1]+'</button>'; }).join('')+'</div>'+
+      /* Fase 12 · Brief 07 (A): Alto contraste (el interruptor de las notificaciones) y Tamaño de letra (el mismo .cfg-seg) */
+      '<div class="fam-r cfg-fila-sw"><span class="card-main"><span class="card-title cfg-t">Alto contraste</span></span>'+
+        '<button type="button" class="cfg-sw'+(altoOn?' on':'')+'" role="switch" aria-checked="'+altoOn+'" aria-label="Alto contraste" data-contraste="1"><span class="cfg-sw-k"></span></button></div>'+
+      '<div class="wgt-lbl">Tamaño de letra</div>'+
+      '<div class="cfg-seg" role="radiogroup" aria-label="Tamaño de letra">'+LETRAS.map(function(o){ var on=LETRA===o[0];
+        return '<button type="button" class="'+(on?'sel':'')+'" role="radio" aria-checked="'+on+'" data-letra="'+o[0]+'">'+o[1]+'</button>'; }).join('')+'</div>')+
     pleg('cfg-mail', 'mail', 'Correo', '', mailConnected?'Conectado':'Sin conectar', mailConnected
       ? '<p class="cfg-intro">'+mail+'<br>Lo revisé '+cfgHace(mailRevisado)+'</p>'+
         '<div class="cfg-acc"><button type="button" class="btn-s" data-cfgrevisar="1">Revisar ahora</button>'+
@@ -407,17 +487,19 @@ function renderConfig(cerrar){
       fila('camera', 'Cámara', 'Para escanear tus documentos.', camUsada?'Permitido':'Aún no')+
       fila('mic', 'Micrófono', 'Para dictarme y resumir la consulta.', micUsado?'Permitido':'Aún no')+
       '<p class="cfg-intro">Te pido cada permiso la primera vez que lo necesito. Para cambiarlos, ve a los ajustes de tu celular.</p>')+
-    pleg('cfg-avisos', 'bell', 'Avisos', 'Citas, medicamentos, tu EPS y resultados' /* Fase 11 · Brief 04 (B) */, '',
+    pleg('cfg-notif', 'bell', 'Notificaciones', 'Citas, medicamentos, tu EPS y resultados' /* Fase 12 · Brief 02: sale «Avisos» */, '',
       '<p class="cfg-intro">Te aviso solo cuando hay algo que hacer.</p>'+
-      filaSw('citas', 'Citas', 'Un día antes, con lo que hay que llevar.', 'Avisos de citas')+
-      filaSw('med', 'Medicamentos', 'Cuando puedes reclamar una entrega.', 'Avisos de medicamentos')+ /* Fase 11 · Brief 06b */
-      filaSw('eps', 'Tu EPS', 'Si niega o se pasa del plazo, con el siguiente paso.', 'Avisos de tu EPS')+
-      filaSw('res', 'Resultados', 'Cuando llegan.', 'Avisos de resultados'))+
+      filaSw('citas', 'Citas', 'Un día antes, con lo que hay que llevar.', 'Notificaciones de citas')+
+      filaSw('med', 'Medicamentos', 'Cuando puedes reclamar una entrega.', 'Notificaciones de medicamentos')+ /* Fase 11 · Brief 06b */
+      filaSw('eps', 'Tu EPS', 'Si niega o se pasa del plazo, con el siguiente paso.', 'Notificaciones de tu EPS')+
+      filaSw('res', 'Resultados', 'Cuando llegan.', 'Notificaciones de resultados'))+
     /* Fase 11 · Brief 06 (A): la promesa «descargarlos o borrarlos» tiene dónde cumplirse; los dos botones solo abren hojas */
     pleg('cfg-datos', 'folder', 'Tus datos', 'Descargarlos o borrarlos', '',
       '<p class="cfg-intro">Son los documentos y trámites tuyos y de tu familia.</p>'+
-      '<div class="cfg-acc"><button type="button" class="btn-s" data-datosdl="1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar mi carpeta</button>'+
+      '<div class="cfg-acc"><button type="button" class="btn-s" data-datosdl="1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar mis datos</button>'+
       '<button type="button" class="btn-danger" data-datosbor="1">Borrar mis datos</button></div>')+'</div>';
+  /* Fase 12 · Brief 03: «Cerrar sesión», una fila-botón en su propia caja, entre los plegables y «Solo en esta demo» */
+  h+='<div class="det-grp"><button type="button" class="menu-i" id="cfgSalir"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión</button></div>';
   h+=grupo('Solo en esta demo', /* Fase 11 · Brief 01: sale "Cambiar de historia" */
     '<button type="button" class="menu-i" id="cfgReset"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reiniciar el prototipo</button>');
   box.innerHTML=fx(h); paintAvatars(box);
@@ -431,167 +513,81 @@ function renderNotif(){
   };
   function item(tono,ic,t,d,when){ return '<div class="notif"><span class="notif-ic '+tono+'">'+IC[ic]+'</span><div class="notif-tx"><span class="notif-when">'+when+'</span><h5>'+t+'</h5><p>'+d+'</p></div></div>'; } /* Fase 11 · Brief 06f: la hora arriba */
   var aten='', sepas='';
+  /* Fase 12 · Brief 02: cada notificación con su hora (tabla del brief); salen «Hoy» y «Hace 2 horas» */
+  var AM=' a. m.', PM=' p. m.';
+  var H={eps:'8:15'+AM, med:'7:00'+AM, ayer:'Ayer', orden:'9:00'+AM, manana:'6:00'+PM, res:'10:30'+AM, ahora:'Ahora'};
   function on(k,x){ return AVISOS_ON[k] ? x : ''; } /* Fase 11 · Brief 06e: apagado, el aviso no se agrega */
   var cc=card('cir');
   if(cc && !personaVisible(cc)) cc=null; /* Fase 10 · Brief 03: "No es de mi familia" no avisa */
   if(cc && cc.st==='trabado' && cc.pill==='Negada')
-    aten+=on('eps', item('r','alerta','{eps} negó la autorización','{t2} de {p3} · puedes pedir que reconsideren','Hace 2 horas'));
+    aten+=on('eps', item('r','alerta','{eps} negó la autorización','{t2} de {p3} · puedes pedir que reconsideren',H.eps));
   else if(cc && cc.st==='trabado')
-    aten+=on('eps', item('r','alerta','{eps} incumplió el plazo','{t2} de {p3} · venció ayer','Hace 2 horas'));
+    aten+=on('eps', item('r','alerta','{eps} incumplió el plazo','{t2} de {p3} · venció ayer',H.eps));
   else if(cc && cc.st==='accionable' && cc.aprobada) /* Fase 11 · Brief 03: la aprobación, por cualquier camino */
-    aten+=on('eps', item('v','ok','{eps} aprobó la autorización','{t2} de {p3} · ya puedes agendar','Hoy'));
+    aten+=on('eps', item('v','ok','{eps} aprobó la autorización','{t2} de {p3} · ya puedes agendar',H.eps));
   var mc=card('med'); /* Fase 11 · Brief 03: el aviso de medicamentos que faltaba */
   if(mc && mc.st==='accionable' && personaVisible(mc))
-    aten+=on('med', item('a','alerta','Ya puedes reclamar el {t3n} de {p3}','Le quedan {dmed} días · {far1} o {far2}','Hoy'));
+    aten+=on('med', item('a','alerta','Ya puedes reclamar el {t3n} de {p3}','Le quedan {dmed} días · {far1} o {far2}',H.med));
   /* Fase 10 · Brief 02: los avisos salen del estado de CARDS — resuelto y descartado no avisan (salvo los resultados que llegaron),
      las citas del día siguiente dicen "Tu cita es mañana" */
   CARDS.forEach(function(x){
     if(!CITA[x.k] || x.st==='descartado' || x.st==='oculto' || !personaVisible(x)) return; /* Fase 10 · Brief 03 */
     var nom=THREADS[x.k].title, per=THREADS[x.k].p, dePer=esTuyo(x.k)?'':' de '+per;
     if(x.st==='encurso' && x.fase==='manana')
-      sepas+=on('citas', item('a','cal','Tu cita es mañana',nom+dePer+' · '+x.when.replace(' · ',', ')+' · revisa qué llevar','Hoy'));
+      sepas+=on('citas', item('a','cal','Tu cita es mañana',nom+dePer+' · '+x.when.replace(' · ',', ')+' · revisa qué llevar',H.manana));
     else if(x.k==='ped' && x.st==='encurso' && x.fase==='agendada')
-      sepas+=on('citas', item('v','ok',esTuyo(x.k)?'Agendé tu cita':'Agendé la cita de '+per,x.when.replace(' · ',', ')+' · lleva la orden'+(QLLEVAR.ped.cel.some(function(i){ return i.doc==='carne'; })?' y el carné':''),'Hoy')); /* Fase 10 · Brief 16: sin "de Tú" y sin carné si el control no lo pide */
+      sepas+=on('citas', item('v','ok',esTuyo(x.k)?'Agendé tu cita':'Agendé la cita de '+per,x.when.replace(' · ',', ')+' · lleva la orden'+(QLLEVAR.ped.cel.some(function(i){ return i.doc==='carne'; })?' y el carné':''),H.ahora)); /* Fase 10 · Brief 16: sin "de Tú" y sin carné si el control no lo pide */
     else if(x.st==='accionable' && x.ordenNueva) /* Fase 11 · Brief 03: cumple el "te aviso apenas llegue" de la orden nueva */
-      aten+=on('citas', item('v','doc','Llegó la orden nueva'+dePer,nom+' · vence el '+x.vence+' · ya puedes agendar','Hoy'));
+      aten+=on('citas', item('v','doc','Llegó la orden nueva'+dePer,nom+' · vence el '+x.vence+' · ya puedes agendar',H.orden));
     else if(x.k==='ped' && x.st==='accionable' && x.sub.indexOf('orden nueva')<0 && en30(x)) /* Fase 10 · Brief 06: regla de los 30 días */
-      aten+=on('citas', item('a','cal',(esTuyo(x.k)?'Tu cita':'La cita de '+per)+' sigue sin agendar', /* Fase 10 · Brief 16 */'Vence el '+x.vence+' · te busco horarios','Hoy'));
+      aten+=on('citas', item('a','cal',(esTuyo(x.k)?'Tu cita':'La cita de '+per)+' sigue sin agendar', /* Fase 10 · Brief 16 */'Vence el '+x.vence+' · te busco horarios',H.ayer));
     else if(x.k==='lip' && x.st==='resuelto')
-      sepas+=on('res', item('v','doc','Llegaron los resultados · {lab} de {p3}','Ya están en la Bóveda','Hoy')); /* Fase 11 · Brief 01b */
+      sepas+=on('res', item('v','doc','Llegaron los resultados · {lab} de {p3}','Ya están en la Bóveda',H.res)); /* Fase 11 · Brief 01b */
   });
   /* Fase 10 · Brief 19: lo último que guardé, con enlace a la portada de la Bóveda (bovMarcarNuevos lo reemplaza en cada guardado) */
   /* solo cuenta lo que sigue en la Bóveda (la detección puede sacar documentos de quien no es de la familia) */
   var an=(bovAviso||[]).filter(function(d){ return DOCS.indexOf(d)>=0; }).map(function(d){ return d.t; });
   if(an.length){
     var ad = an.length===1 ? an[0] : an.length===2 ? an[0]+' y '+an[1] : an[0]+', '+an[1]+' y '+(an.length-2)+' más';
-    sepas+='<div class="notif"><span class="notif-ic v">'+IC.doc+'</span><div class="notif-tx"><span class="notif-when">Hoy</span><h5>Guardé '+an.length+' documento'+(an.length===1?'':'s')+' en la Bóveda</h5>'+
+    sepas+='<div class="notif"><span class="notif-ic v">'+IC.doc+'</span><div class="notif-tx"><span class="notif-when">'+H.ahora+'</span><h5>Guardé '+an.length+' documento'+(an.length===1?'':'s')+' en la Bóveda</h5>'+
       '<p>'+ad+'</p><button type="button" class="link-u notif-link" data-go="G1">Ver en la Bóveda</button></div></div>'; /* Fase 11 · Brief 06f */
   }
-  /* Fase 8 · el badge pasa de número fijo a punto: presente si hay algo, ausente si no hay nada (Yifrah) */
-  notifHay = !!(aten || sepas); /* Fase 10 · Brief 02: el badge sale de los avisos reales */
+  notifN = (aten.match(/class="notif"/g)||[]).length; /* Fase 12 · Brief 02: la campana cuenta «Necesita tu atención»; sale el punto */
   var box=document.getElementById('notifList');
   if(box){
     var h='';
     if(aten) h+='<p class="notif-grp">Necesita tu atención</p>'+aten;
     if(sepas) h+='<p class="notif-grp">Para que sepas</p>'+sepas;
-    if(!h) h='<p class="notif-empty">No tengo avisos nuevos. Te escribo aquí cuando algo cambie.</p>';
+    if(!h) h='<p class="notif-empty">No tengo notificaciones nuevas. Te escribo aquí cuando algo cambie.</p>';
     box.innerHTML=fx(h); paintAvatars(box);
   }
   paintNotifDot();
 }
-/* Fase 10 · Rediseño · Brief 12: el punto de la campana y el de "Avisos" en el menú usan la misma condición;
-   estando en la pantalla de avisos, la campana no lo muestra */
+/* Fase 12 · Brief 02: la campana muestra cuántas piden atención; con 0 o dentro de Notificaciones, no se ve */
 function paintNotifDot(){
-  var badge=document.getElementById('notifBadge');
-  if(badge) badge.style.display = (notifHay && cur!=='NOTIF') ? 'flex' : 'none';
-  var sd=document.getElementById('sideDot'); if(sd) sd.hidden=!notifHay;
+  var badge=document.getElementById('notifBadge'), btn=document.getElementById('notifBtn');
+  if(btn) btn.setAttribute('aria-label', notifN ? 'Notificaciones, '+notifN+' por atender' : 'Notificaciones');
+  if(badge){ badge.textContent=notifN; badge.style.display = (notifN && cur!=='NOTIF') ? 'flex' : 'none'; }
 }
-/* Fase 10 · Brief 08e · recorrido por la barra: reemplaza la tarjeta "todo pasa por estos tres lugares".
-   Velo sobre todo menos la barra, anillo turquesa en la pestaña del paso y burbuja con pico que la señala. */
-var TOUR_STEPS=[
-  /* Fase 10 · Brief 17: scr = la pantalla que se ve detrás del velo en cada paso ('gen' = la conversación general, en su bienvenida) */
-  /* Fase 11 · Brief 04b (A): vuelven las paradas de Inicio y Calendario, con sus textos de antes del Brief 02 */
-  {nav:'inicio', scr:'A1', t:'Inicio', p:'Aquí te muestro solo lo que vence en el próximo mes. Empieza por lo urgente.', /* Fase 11 · Brief 05 (B): el mismo texto de Ayuda › Inicio */
-    pVacia:'Cuando tenga tus documentos, aquí te muestro solo lo que vence en el próximo mes.'} /* Fase 10 · Brief 39: con Inicio vacío */,
-  {nav:'taremi', scr:'gen', t:'Taremi', p:'Pregúntame lo que quieras o cuéntame algo nuevo. Si es de un trámite, te llevo a él.'},
-  {nav:'cal',    scr:'F1', t:'Calendario', p:'Tus citas y lo que falta agendar, aunque venza más adelante.'},
-  {nav:'bov',    scr:'G1', t:'Bóveda', p:'Todos tus documentos, por persona.'}
-];
-var tourStep=-1; /* -1 = cerrado */
-/* Fase 10 · Brief 17: el recorrido no cambia el estado de la app. A1_ULT = los avisos de un solo uso que gastó el último Inicio
-   (el que abrió el recorrido); tourGuard los guarda junto con lo que tocan las pantallas del recorrido y tourClose() los devuelve */
-var A1_ULT={}, tourGuard=null;
-var tourVeil=document.getElementById('tourVeil'), tourBub=document.getElementById('tourBub');
-function tourOpen(n){
-  sideClose(true); popClose(true); /* Fase 10 · Rediseño · Brief 12 (corrección): el recorrido nunca queda encima de la barra lateral ni de un menú abierto */
-  tourStep=n;
-  if(!tourGuard){ /* Fase 10 · Brief 17 */
-    var seen={}, started={}; for(var k in THREADS){ seen[k]=THREADS[k].seen; started[k]=THREADS[k].started; }
-    tourGuard={ult:JSON.parse(JSON.stringify(A1_ULT)), seen:seen, started:started, bovFolder:bovFolder, calDaySel:calDaySel};
-  }
-  tourVeil.hidden=false; tourBub.hidden=false;
-  tourPaint();
-  tourBub.focus();
-}
-function tourPaint(){
-  var st=TOUR_STEPS[tourStep], last=tourStep===TOUR_STEPS.length-1;
-  document.getElementById('tourT').textContent=st.t;
-  document.getElementById('tourP').textContent=(appVacia && st.pVacia) || st.p; /* Fase 10 · Brief 39 · Fase 11 · Brief 04b (A): vuelve pVacia */
-  document.getElementById('tourNext').textContent=last?'Listo':'Siguiente';
-  tourBub.style.setProperty('--bt-p', ((tourStep+1)/TOUR_STEPS.length*100)+'%');
-  /* Fase 10 · Brief 17: detrás del velo, la pantalla del paso (show() pone la pestaña activa y el scroll arriba). La Bóveda, en la portada */
-  if(st.scr==='gen'){ if(!(cur==='TH' && curThread==='gen')) openThread('gen'); }
-  else if(cur!==st.scr){ if(st.scr==='G1') bovFolder=null; show(st.scr); }
-  content.scrollTop=0;
-  [].forEach.call(document.querySelectorAll('#nav .nav-item'), function(b){ b.classList.toggle('bt-ring', b.getAttribute('data-nav')===st.nav); });
-  tourPlace();
-}
-/* la burbuja se corre hacia adentro (16 px de margen) y el pico sigue apuntando al centro de la pestaña */
-/* Fase 10 · Brief 44 · marco fiel: en escritorio (768 px o más) #app mide 390 × 844 y, si la ventana es más baja, se reduce
-   entero con zoom. MARCO es esa escala (1 en celular). getBoundingClientRect() devuelve medidas ya escaladas y los left/top que
-   se escriben dentro de #app no lo están: quien mezcle los dos divide la diferencia por MARCO */
-var MARCO=1;
-function marcoEscala(){
-  var esc=matchMedia('(min-width:768px)').matches;
-  MARCO=esc ? Math.min(1, (window.innerHeight-48)/844) : 1;
-  document.documentElement.style.setProperty('--marco-escala', MARCO);
-}
-marcoEscala();
-window.addEventListener('resize', marcoEscala);
-function tourPlace(){
-  if(tourStep<0) return;
-  var app=document.getElementById('app').getBoundingClientRect();
-  var tab=document.querySelector('#nav .nav-item[data-nav="'+TOUR_STEPS[tourStep].nav+'"]').getBoundingClientRect();
-  var w=tourBub.offsetWidth, cx=(tab.left+tab.width/2-app.left)/MARCO; /* Fase 10 · Brief 44 */
-  var left=Math.max(16, Math.min(cx-w/2, app.width/MARCO-16-w));
-  tourBub.style.left=left+'px';
-  tourBub.style.setProperty('--bt-x', Math.max(20, Math.min(cx-left, w-20))+'px');
-}
-/* Fase 10 · Brief 17: al cerrar se devuelve lo guardado y se vuelve a Inicio. tourSeen va antes de show('A1') (renderInicio abre el
-   recorrido si !tourSeen). sinVolver: el reinicio, que ya dejó todo limpio y va a la bienvenida */
-function tourClose(sinVolver){
-  tourStep=-1; tourSeen=true;
-  tourVeil.hidden=true; tourBub.hidden=true;
-  [].forEach.call(document.querySelectorAll('#nav .bt-ring'), function(b){ b.classList.remove('bt-ring'); });
-  var g=tourGuard; tourGuard=null;
-  if(sinVolver===true || !g) return;
-  if(cur==='TH') curThread=null; /* que salir del chat no lo marque como visto */
-  for(var k in g.seen){ if(THREADS[k]){ THREADS[k].seen=g.seen[k]; THREADS[k].started=g.started[k]; } }
-  bovFolder=g.bovFolder; calDaySel=g.calDaySel;
-  if(g.ult.toast){ pendingToast=g.ult.toast; pendingToastKey=g.ult.toastKey; }
-  if(g.ult.note) pendingNote=g.ult.note;
-  if(g.ult.fresh) freshConfirmKey=g.ult.fresh;
-  show('A1');
-}
-document.getElementById('tourSkip').addEventListener('click', function(){ tourClose(); });
-document.getElementById('tourNext').addEventListener('click', function(){
-  if(tourStep<TOUR_STEPS.length-1){ tourStep++; tourPaint(); } else tourClose();
-});
-/* mientras dura, el foco no sale de la burbuja */
-tourBub.addEventListener('keydown', function(e){
-  if(e.key==='Escape'){ e.preventDefault(); tourClose(); return; } /* Fase 10 · Brief 17 */
-  if(e.key!=='Tab') return;
-  var f=[document.getElementById('tourSkip'), document.getElementById('tourNext')];
-  if(e.shiftKey && (document.activeElement===f[0] || document.activeElement===tourBub)){ e.preventDefault(); f[1].focus(); }
-  else if(!e.shiftKey && document.activeElement===f[1]){ e.preventDefault(); f[0].focus(); }
-});
-window.addEventListener('resize', tourPlace);
 /* Fase 10 · Rediseño · Brief 14 · mascota (RV_Taremi, brazos de trazo). Un solo dibujo para todos los lugares.
-   TM_BASE/TM_M son la tabla M de la referencia. Degradado, recorte y grano viven en svg.tm-defs (index.html): ninguna mascota repite ids.
+   TM_BASE/TM_M son la tabla M de la referencia. El degradado vive en svg.tm-defs (index.html): ninguna mascota repite ids.
+   Fase 11 · Brief 18: sin recorte ni grano; brazos detrás del cuerpo; mejillas calculadas desde los ojos.
    Colores en tokens --tm-* (styles.css). El halo solo desde 84 px. "descansa" sale en Inicio cuando todo está agendado (Fase 11 · Brief 13). */
 var TM_CUERPO='M100 26C130 24 166 48 170 86C174 130 148 172 104 178C60 184 26 154 20 110C15 64 52 30 100 26Z';
-var TM_BASE={ armL:'M34 118C18 126 14 142 24 150', armR:'M164 112C180 120 186 136 176 146', browL:'M68 80L88 78', browR:'M112 78L132 80', cejas:0,
+var TM_BASE={ armL:'M34 118C18 126 14 142 24 150', armR:'M155 115.4C171 123.4 177 139.4 167 149.4', /* Fase 11 · Brief 18 */ browL:'M68 80L88 78', browR:'M112 78L132 80', cejas:0,
   arco:0, eLx:80, eRx:120, eY:97, arcL:'M72 100C76 92 86 92 90 100', arcR:'M110 100C114 92 124 92 128 100',
   mouth:'M84 119C93 126 107 126 116 119', llena:0, wave:0, chispas:0, zz:0, burbujas:0 };
 var TM_M={
-  hola: { armR:'M164 104C180 94 188 78 184 60', mouth:'M82 116C90 130 110 130 118 116', wave:1 },
+  hola: { armR:'M164 104C180 94 188 78 184 60', wave:1 }, /* Fase 11 · Brief 18: boca de Calma */
   calma: {},
-  piensa: { eLx:86, eRx:126, eY:92, armR:'M164 124C150 142 128 150 116 140', cejas:1, browL:'M72 80L90 80', browR:'M114 74L132 70', mouth:'M94 122C100 124 106 123 110 119', burbujas:1 },
-  celebra: { armL:'M36 104C20 92 14 74 20 56', armR:'M164 100C180 88 188 70 182 52', arco:1, mouth:'M80 114C86 134 114 134 120 114Z', llena:1, chispas:1 },
-  atenta: { armR:'M164 108C178 106 190 98 196 84', cejas:1, browL:'M72 81C79 80 86 77 92 71', browR:'M116 71C122 77 129 80 136 81', eLx:84, eRx:124, eY:98, mouth:'M95 121L111 121' }, /* Fase 11 · Brief 12: cejas oblicuas y boca recta; preocupada, no triste ni alarmada */
+  piensa: { eLx:86, eRx:126, eY:92, armR:'M175 112C161 130 139 138 127 128', cejas:1, browL:'M73.5 79.5L91.5 79.5', browR:'M114.6 76L132.6 72', /* Fase 11 · Brief 18 */ mouth:'M94 122C100 124 106 123 110 119', burbujas:1 },
+  celebra: { armL:'M31 117C15 105 9 87 15 69', armR:'M164 104C180 92 188 74 182 56', arco:1, arcL:'M72.3 101C76.8 93 86.8 94 90.3 102', arcR:'M110 102C113.4 94 123.4 93 128 101', mouth:'M81.6 114.3C87.6 134.3 115.6 134.3 121.6 114.3Z', llena:1, chispas:1 }, /* Fase 11 · Brief 18 */
+  atenta: { armR:'M157.5 112C171.5 110 183.5 102 189.5 88', /* Fase 11 · Brief 18 */ cejas:1, browL:'M72 81C79 80 86 77 92 71', browR:'M116 71C122 77 129 80 136 81', eLx:84, eRx:124, eY:98, mouth:'M95 121L111 121' }, /* Fase 11 · Brief 12: cejas oblicuas y boca recta; preocupada, no triste ni alarmada */
   descansa: { arco:1, arcL:'M72 98C77 104 85 104 90 98', arcR:'M110 98C115 104 123 104 128 98', mouth:'M92 121C97 124 103 124 108 121', zz:1 }
 };
-function mascotaSVG(gesto, px){
+/* Fase 12 · Brief 09B: borde=true (solo Inicio, lienzo F01) pinta debajo el mismo cuerpo y los mismos brazos de la pose en trazo
+   blanco (cuerpo 14, brazos 29) y quita el halo; el borde sale de la pose que se muestra, así siempre calza (el brazo que saluda también se mueve) */
+function mascotaSVG(gesto, px, borde){
   if(!TM_M[gesto]) gesto='calma';
   var o=Object.assign({}, TM_BASE, TM_M[gesto]);
   var ch = px<=42; /* Fase 11 · Brief 12: trazo grueso a 36 y 42 px */
@@ -599,19 +595,19 @@ function mascotaSVG(gesto, px){
     ? '<path class="tm-trazo tm-arco" d="'+o.arcL+'"/><path class="tm-trazo tm-arco" d="'+o.arcR+'"/>'
     : '<circle class="tm-ojo" cx="'+o.eLx+'" cy="'+o.eY+'" r="'+(ch?9:7.5)+'"/><circle class="tm-ojo" cx="'+o.eRx+'" cy="'+o.eY+'" r="'+(ch?9:7.5)+'"/>'+
       '<circle class="tm-ojo-b" cx="'+(o.eLx+2.6)+'" cy="'+(o.eY-2.6)+'" r="'+(ch?3:2.4)+'"/><circle class="tm-ojo-b" cx="'+(o.eRx+2.6)+'" cy="'+(o.eY-2.6)+'" r="'+(ch?3:2.4)+'"/>';
-  return '<span class="tm tm-'+gesto+(ch?' tm-s':'')+'" aria-hidden="true">'+(px>=84 ? '<span class="tm-halo"></span>' : '')+
+  return '<span class="tm tm-'+gesto+(ch?' tm-s':'')+'" aria-hidden="true">'+(px>=84 && !borde ? '<span class="tm-halo"></span>' : '')+
     '<svg viewBox="0 0 200 200" width="'+px+'" height="'+px+'" focusable="false" aria-hidden="true">'+
     (px>=84 ? '<ellipse class="tm-piso" cx="98" cy="190" rx="52" ry="7"/>' : '')+ /* Fase 10 · Brief 14 (corrección): sin piso a 36 y 42 px */
     '<g class="tmBob">'+
+      (borde ? '<g class="tm-borde"><path class="tm-borde-arm" d="'+o.armL+'"/><g'+(o.wave?' class="tmWave"':'')+'><path class="tm-borde-arm" d="'+o.armR+'"/></g><path class="tm-borde-cuerpo" d="'+TM_CUERPO+'"/></g>' : '')+
       '<path class="tm-arm" d="'+o.armL+'"/>'+
+      '<g'+(o.wave?' class="tmWave"':'')+'><path class="tm-arm" d="'+o.armR+'"/></g>'+ /* Fase 11 · Brief 18: brazos detrás del cuerpo */
       '<path class="tm-body" d="'+TM_CUERPO+'"/>'+
-      '<rect class="tm-grano" x="0" y="0" width="200" height="200" clip-path="url(#tmBodyClip)" filter="url(#tmGrain)"/>'+
       '<ellipse class="tm-luzb" cx="68" cy="56" rx="22" ry="12" transform="rotate(-24 68 56)"/>'+
-      '<ellipse class="tm-mejilla" cx="66" cy="116" rx="10" ry="6"/><ellipse class="tm-mejilla" cx="134" cy="116" rx="10" ry="6"/>'+
+      '<ellipse class="tm-mejilla" cx="'+(o.eLx-14)+'" cy="'+(o.eY+17)+'" rx="7.3" ry="4.7"/><ellipse class="tm-mejilla" cx="'+(o.eRx+14)+'" cy="'+(o.eY+17)+'" rx="7.3" ry="4.7"/>'+ /* Fase 11 · Brief 18: mejillas desde los ojos */
       (o.cejas ? '<path class="tm-trazo" d="'+o.browL+'"/><path class="tm-trazo" d="'+o.browR+'"/>' : '')+
       ojos+
       '<path class="tm-trazo'+(o.llena?' tm-boca-l':'')+'" d="'+o.mouth+'"/>'+
-      '<g'+(o.wave?' class="tmWave"':'')+'><path class="tm-arm" d="'+o.armR+'"/></g>'+
     '</g>'+
     (o.chispas ? '<g class="tm-chispa"><path d="M28 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M176 30l2.4 6 6 2.4-6 2.4-2.4 6-2.4-6-6-2.4 6-2.4z"/><path d="M184 150l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>' : '')+
     (o.burbujas ? '<g class="tm-chispa"><circle cx="160" cy="40" r="5"/><circle cx="176" cy="26" r="7"/><circle cx="194" cy="8" r="9"/></g>' : '')+
@@ -625,7 +621,7 @@ function mascotInicio(estado, gesto){
   mascotWrap.setAttribute('data-estado', estado);
   if(mascotWrap.getAttribute('data-gesto')===gesto) return;
   mascotWrap.setAttribute('data-gesto', gesto);
-  mascotWrap.innerHTML='<div class="mascot-glow"></div>'+mascotaSVG(gesto, 84);
+  mascotWrap.innerHTML='<div class="mascot-glow"></div>'+mascotaSVG(gesto, 120, true); /* Fase 12 · Brief 07b: 84 → 120. Fase 12 · Brief 09B: con borde blanco, sin halo */
 }
 /* Fase 10 · Brief 05: la mascota baja al contenido como tarjeta, debajo del título. Se reinserta después de
    cada A1.innerHTML (el nodo se conserva, así mascotGreet/mascotWrap siguen apuntando a él). */
@@ -633,32 +629,25 @@ function mascotAInicio(){ A1.insertBefore(mascotHd, A1.firstChild); mascotHd.sty
   /* Fase 10 · Brief 06: la tarjeta abre la pestaña Taremi (ver el clic en #mascotHd) */
   mascotHd.setAttribute('role','button'); mascotHd.setAttribute('tabindex','0'); mascotHd.setAttribute('aria-label','Hablar con Taremi'); }
 /* Fase 10 · Brief 06 · fila de "Por hacer" / "En curso": toda la fila abre el hilo.
-   Vista previa = último mensaje de Taremi en el hilo (sin HTML); si aún no hay, el sub de la tarjeta.
+   Debajo, el sub de la tarjeta (Fase 12 · Brief 08A).
    Punto "sin revisar": el hilo nunca se abrió o tiene mensajes después de la última vez (THREADS[k].seen). gris = En curso */
 var cursoOpen=false;
 /* Fase 10 · Brief 06: mascota de la barra de contacto · Fase 10 · Rediseño · Brief 14: calma, 42 px; y la del onboarding (hola, 140 px) */
-document.getElementById('genAv').innerHTML=mascotaSVG('calma', 42);
-document.querySelector('#PROC .proc-m').innerHTML=mascotaSVG('piensa', 112); /* Fase 11 · Brief 12 */
+document.getElementById('genAv').innerHTML=mascotaSVG('calma', 40); /* Fase 12 · Brief 07b: 40, como el avatar */
+document.querySelector('#PROC .proc-m').innerHTML=mascotaSVG('piensa', 120); /* Fase 11 · Brief 12 · Fase 12 · Brief 09D: de 120, como L1–L4 */
 document.querySelector('.ob-hero .ob-m').innerHTML=mascotaSVG('hola', 140);
 mascotHd.addEventListener('keydown', function(e){ if((e.key==='Enter'||e.key===' ') && cur==='A1'){ e.preventDefault(); openThread('gen'); } });
 /* Fase 10 · Rediseño · Brief 11: ícono de "En curso", calendario con check (lienzo 42) */
 var CURSO_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 15l2 2 4-4"/></svg>';
-function ultimoT(k){
-  var ms=(THREADS[k]||{}).msgs||[];
-  for(var i=ms.length-1;i>=0;i--){ var m=ms[i]; if(m.who!=='t') continue;
-    var t = m.text || (m.comp && m.comp.t) || '';
-    if(!t && m.wgt){ var mt=m.wgt.match(/class="wgt-t">([\s\S]*?)<\/div>/); t = mt ? mt[1] : ''; }
-    t=fx(t).replace(/<[^>]+>/g,'').trim(); if(t) return t; }
-  return '';
-}
+/* Fase 12 · Brief 08A: sale ultimoT(); toda fila usa su propia línea (c.sub), no el último mensaje del hilo */
 function todoRowHTML(c, gris){
-  var av=fx(c.av), th=THREADS[c.k]||{}, last=c.st==='resuelto' ? '' : ultimoT(c.k); /* Fase 10 · Brief 39: resuelto → abajo va c.sub («Sofía · Cita del…»), no el último mensaje */
-  var prev = last ? fx(th.p)+' · '+last : fx(c.sub).replace(/<[^>]+>/g,'');
-  /* Fase 10 · Brief 25: el borrador vuelve a la fila (H05), con el mismo marcado que tenía cardHTML(): persona · Borrador: fecha */
+  var av=fx(c.av);
+  /* Fase 11 · Brief 19: sale el nombre de la persona (ya está el avatar); c.sub sin su prefijo «{p} · » */
+  var prev = fx(c.sub).replace(/<[^>]+>/g,'').replace(/^[^·]*·\s*/,'');
+  /* Fase 10 · Brief 25: el borrador vuelve a la fila (H05). Fase 11 · Brief 19: sin el nombre, solo «Borrador: fecha» */
   var d=DRAFTS[c.k];
   if(d && d.slot && !gris && c.st!=='trabado'){
-    var wm=c.sub.match(/^(\{\w+\})\s*·\s*/), quien=fx(th.p || (wm ? wm[1] : ''));
-    prev = (quien ? quien+' · ' : '')+'<span class="draft">'+DRAFT_IC+'Borrador:</span> <span style="color:var(--r-pendiente)">'+d.slot.replace(' · ',', ')+'</span>';
+    prev = '<span class="draft">'+DRAFT_IC+'Borrador:</span> <span style="color:var(--r-pendiente)">'+d.slot.replace(' · ',', ')+'</span>';
   }
   /* Fase 10 · Rediseño · Brief 11: cada fila es su propia tarjeta con el tinte de la persona (--tinte, desde TINTVAR); en curso, sin tinte */
   var tinte = (!gris && TINTVAR[av]) ? ' style="--tinte:var(--'+TINTVAR[av]+'-t)"' : '';
@@ -673,10 +662,16 @@ function todoRowHTML(c, gris){
 function mascotSaludo(linea){
   mascotGreet.innerHTML = fx('<span class="mascot-hola">'+saludoHola()+'.</span>'+(linea ? '<span class="mascot-line">'+linea+'</span>' : '')); /* Fase 11 · Brief 05 (B): sin línea vacía */
 }
+/* Fase 12 · Brief 05 (B): la línea de «En curso» cuando hay un solo trámite. La cirugía radicada espera a la EPS; agendada, dice cuándo */
+/* Fase 12 · Brief 09B: el nombre corto de un trámite en curso («Cirugía de Marta», «Control de Sofía»): primera palabra del título y la persona.
+   Lo usan la línea de uno solo y la de varios (los nombres unidos con « · ») */
+function cursoNombre(c){ return fx(c.t).split(' ')[0]+' de '+(PNAME[c.av]||''); }
+function cursoLinea(c){
+  if(c.k==='cir' && c.when){ var d=c.when.split(' · ')[0].split(' '); return cursoNombre(c)+' · '+d[0].toLowerCase()+' '+d[1]+' '+d[2]; }
+  if(c.k==='cir') return 'Te aviso cuando {eps} responda.';
+  return c.sub;
+}
 function renderInicio(){
-  /* Fase 10 · Brief 08e: la primera vez que se entra a Inicio (tras el onboarding o tras saltarlo) sale el recorrido por la barra */
-  if(!tourSeen && tourStep<0 && cur==='A1' && document.getElementById('ob').classList.contains('hidden')) setTimeout(function(){ if(!tourSeen && tourStep<0 && cur==='A1' && document.getElementById('ob').classList.contains('hidden')) tourOpen(0); }, 0);
-  var tour=''; /* Fase 10 · Brief 08e: ya no hay tarjeta de tour */
   if(appVacia){
     /* Fase Móvil · 2.6.2: la mascota reemplaza el ícono+título que tenía este estado, se mantiene el párrafo de copy existente debajo */
     /* Fase 10 · Brief 15: sin documentos, en las cuatro historias. Con el correo ya revisado (propia) no se ofrece buscar otra vez */
@@ -685,7 +680,7 @@ function renderInicio(){
       : 'Trae tus documentos con el botón +.'); /* Fase 11 · Brief 07: el mismo texto de la Bóveda vacía */
     mascotInicio('calma','calma'); /* Fase 10 · Brief 04 · Fase 10 · Rediseño · Brief 14: vacío → en calma */
     agendaPrimera=null; /* Fase 11 · Brief 03 */
-    A1.innerHTML=tour+(revisado ? '' : '<div class="empty"><button type="button" class="btn-p" data-tap="fabmail">Buscar en mi correo</button></div>'); /* el mismo flujo que el botón + · Fase 11 · Brief 07: mismo nombre que en el paso 4 */
+    A1.innerHTML=(revisado ? '' : '<div class="empty"><button type="button" class="btn-p" data-tap="fabmail">Buscar en mi correo</button></div>'); /* el mismo flujo que el botón + · Fase 11 · Brief 07: mismo nombre que en el paso 4 */
     mascotAInicio(); /* Fase 10 · Brief 05 */
     renderNotif();
     return;
@@ -707,18 +702,27 @@ function renderInicio(){
   agendaPrimera = heroKey; /* Fase 11 · Brief 03: «Lo más urgente» del chat abre esto */
   /* Fase Móvil · 2.3: saludo dinámico de la mascota, arma la frase con el mismo estado (trab/acc/heroKey) que ya calcula esta función, sin texto nuevo hardcodeado por fuera de estas piezas */
   var nPend = agenda.length; /* Fase 10 · Brief 01 */
+  /* Fase 12 · Brief 08A: ¿queda algo urgente en toda la demo? Cuentan accionables y trabadas, sin importar el filtro de persona */
+  var urgAhora = CARDS.some(function(c){ return c.pc==='urgente' && (c.st==='accionable' || c.st==='trabado'); });
+  if(urgAhora) huboUrgente=true;
   var greet = '', hook = '';
   if(nPend>0){
     /* Fase 10 · Brief 39: nombra solo el primero de la agenda (el más urgente); la lista de abajo ya trae el resto. Nunca cuenta */
-    var nom='<b>'+(agenda[0].frase||agenda[0].t)+'</b>';
+    var a0=agenda[0], nom='<b>'+((FASE_ATN[a0.fase] && a0.fraseCita) || a0.frase || a0.t)+'</b>'; /* Fase 12 · Brief 08Ad: con cita, el nombre de la cita */
     /* Fase 11 · saludo de Inicio: sale "Lo demás está en tu lista." (la lista está debajo). Si lo primero está trabado,
        la razón va pegada a lo que explica y no se suma "Toca cada uno…" */
     if(agenda[0].st==='trabado'){
       greet = 'Empieza por '+nom+'. {eps} '+(agenda[0].pc==='negada' ? 'la negó.' : 'no respondió a tiempo.'); /* negada: no dice "a tiempo" porque sí respondió */
       hook = 'No fue culpa tuya, y ya sé qué hacer.';
     } else {
-      greet = nPend>1 ? 'Empieza por '+nom+'.' : 'Hoy te toca '+nom+'.';
-      hook = nPend>1 ? 'Toca cada uno y te digo cómo.' : 'Tócalo y te digo cómo.';
+      /* Fase 12 · Brief 08A: sale «Toca cada uno y te digo cómo.» (la tarjeta de abajo ya lo dice). Marco F06: si en la demo
+         hubo algo urgente y ya no queda ninguna (urgAhora), «Ya no hay nada urgente. Sigue…» */
+      /* Fase 12 · Brief 08Ad: el saludo sigue el estado de lo primero: hoy → mañana → por confirmar → urgente → ya no hay nada urgente → lo demás */
+      greet = a0.fase==='hoy' ? 'Hoy es '+nom+'.'
+        : a0.fase==='manana' ? 'Mañana es '+nom+'.'
+        : a0.fase==='porconfirmar' ? (a0.av==='SO' ? 'Cuéntame cómo te fue.' : 'Cuéntame cómo le fue a <b>'+PNAME[a0.av]+'</b>.')
+        : a0.pc==='urgente' ? 'Empieza por '+nom+'.'
+        : (huboUrgente && !urgAhora) ? 'Ya no hay nada urgente. Sigue '+nom+'.' : nPend>1 ? 'Empieza por '+nom+'.' : 'Hoy te toca '+nom+'.';
     }
   } else {
     greet = DOCS_PEND.length ? '' : 'Ya estás al día.'; /* Fase 10 · Brief 47. Fase 11 · Brief 05 (B): con documentos sin organizar solo "Hola, {u}."; lo explica la tarjeta */
@@ -734,17 +738,14 @@ function renderInicio(){
   /* Fase 10 · Brief 07: línea 1 "Hola, {u}." (Outfit) y línea 2 en peso normal (ver mascotSaludo) */
   mascotSaludo(greet + (hook ? ' <span class="mascot-hook">'+hook+'</span>' : ''));
   var h='';
-  if(cur==='A1' && tourStep<0) A1_ULT={}; /* Fase 10 · Brief 17 */
   /* Fase 11 · toast desactualizado: "… ya está en «En curso»" solo sale si el trámite sigue en curso (cubre los cambios de estado que no pasan por setCard, como citaResolver o cita.muestras) */
   if(pendingToast && /«En curso»/.test(pendingToast) && (!card(pendingToastKey) || card(pendingToastKey).st!=='encurso')){ pendingToast=null; pendingToastKey=null; }
   if(pendingToast && cur==='A1'){
-    A1_ULT.toast=pendingToast; A1_ULT.toastKey=pendingToastKey;
     h += '<div class="toast">'+pendingToast+(undoTipo(pendingToastKey) ? ' <button type="button" class="u" data-undo="1">Deshacer</button>' : '')+'</div>'; /* Fase 11 · Brief 10b */
     pendingToast=null;
   }
   /* Fase 8 · Brief 6.1: toast sin "Deshacer" — conectar correo desde el FAB no se puede deshacer */
   if(pendingNote && cur==='A1'){
-    A1_ULT.note=pendingNote;
     h += '<div class="toast">'+pendingNote+'</div>';
     pendingNote=null;
   }
@@ -754,7 +755,6 @@ function renderInicio(){
      pasada no la debe gastar, o nadie llega a verla al volver. */
   var freshCard = null;
   if(freshConfirmKey && cur==='A1'){
-    A1_ULT.fresh=freshConfirmKey;
     freshCard = card(freshConfirmKey);
     if(!freshCard || freshCard.st!=='resuelto') freshCard=null; /* Fase 11 · Brief 14: solo «Lo último que resolviste» */
     /* Fase 8 · Esqueleto 2: la tarjeta recién confirmada respeta el filtro de persona igual que el resto */
@@ -781,11 +781,13 @@ function renderInicio(){
   if(enc.length){
     h += '<button type="button" class="curso-fold'+(cursoOpen?' open':'')+'" data-cursofold="1" aria-expanded="'+cursoOpen+'">'+
       '<span class="curso-fold-ic" aria-hidden="true">'+CURSO_IC+'</span>'+ /* Fase 10 · Rediseño · Brief 11 */
-      '<span class="card-main"><span class="todo-t">En curso</span><span class="todo-s">Ya están agendados. Te aviso cuando toque.</span></span>'+
+      /* Fase 12 · Brief 05 (B): «En curso · N» (F06, F10c). Con uno solo, su línea (cursoLinea).
+         Fase 12 · Brief 09B: con varios, sus nombres cortos unidos con « · » (sale «Ya están agendados…»); siempre una línea con «…» (.curso-fold .todo-s) */
+      '<span class="card-main"><span class="todo-t">En curso · '+enc.length+'</span><span class="todo-s">'+(enc.length===1 ? cursoLinea(enc[0]) : enc.map(cursoNombre).join(' · '))+'</span></span>'+
       '<span class="curso-fold-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
     if(cursoOpen){ h += '<div class="todo-list gris">'; enc.forEach(function(c){ h+=todoRowHTML(c, true); }); h += '</div>'; }
   }
-  A1.innerHTML=fx(tour+h); paintAvatars(A1);
+  A1.innerHTML=fx('<div class="ini-hoja">'+h+'</div>'); paintAvatars(A1); /* Fase 12 · Brief 07b: todo va en la hoja; la mascota queda encima */
   mascotAInicio(); /* Fase 10 · Brief 05 */
   /* Fase 10 · Brief 07: Inicio sin subtítulo (antes contaba pendientes) */
   renderNotif();
@@ -904,16 +906,27 @@ function docPend(d){
   var pill = d.dyn && !tramCerrado(d.dyn) ? (card(d.dyn).bov||[0,0,'pendiente']).slice(1) : docPill(d);
   return !!(pill && pill[1]==='pendiente');
 }
-/* Fase 10 · Brief 05 · Brief 34: cola de .epi-h plegable = contador de documentos + flecha, igual en «Lo que encontré» y en la Bóveda.
-   Sale el punto de pendiente; en la Bóveda la pill «Pendiente» pasa a la segunda línea (epiPendHTML) */
+/* Fase 10 · Brief 34: pill «Pendiente» de la consulta. Fase 11 · Brief 19: sube a la línea del título */
 function epiPendHTML(docs){ return docs.some(docPend) ? '<span class="pill pendiente epi-pend">Pendiente</span>' : ''; }
-/* Fase 10 · Brief 44b: fecha = ep.dcorta. Con fecha, la cola es una columna de dos pisos (fecha arriba; contador y flecha abajo)
-   alineada arriba con el título; sin fecha («Sin consulta asociada») queda solo el piso de abajo, centrado como antes */
-function epiColaHTML(docs, fecha){
-  var n=docs.length;
-  return '<span class="epi-cola'+(fecha?' con-fecha':'')+'">'+(fecha?'<span class="epi-fecha">'+fecha+'</span>':'')+
-    '<span class="epi-cola-fila"><span class="epi-n" role="img" aria-label="'+n+' documento'+(n===1?'':'s')+'">'+n+'</span>'+ /* Fase 10 · Brief 41b: vuelve al número solo */
-    '<svg class="epi-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></span>';
+/* Fase 11 · Brief 19: sale epiColaHTML (fecha y cuadrito del número); a la derecha solo queda la flecha que gira al abrir */
+var EPI_CHEV='<svg class="epi-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+/* Fase 11 · Brief 19: fecha corta «7 oct» (antes vivía dentro de bovTemasHTML) y «N documento(s)» */
+function fechaCorta(ep){ var m=(ep.d||'').match(/(\d{1,2}) de (\w+)/); return m ? m[1]+' '+MESCORTO[MESNUM[m[2]]] : ''; }
+function nDocs(n){ return n+' documento'+(n===1?'':'s'); }
+/* Fase 12 · Brief 09E: fecha corta y médico (o sede) de la fila de carpeta, ya pasados por fx().
+   Fecha: la del documento (d.fv, o «7 de octubre» en su subtítulo) y si no, la de su consulta. Médico: d.med o el de la consulta;
+   si la consulta no nombra médico («medicina general»), su sede o entidad. Lo que falte vuelve vacío */
+function docDetalle(d){
+  var ep=null; EPIS.forEach(function(e){ if(e.id===d.ep) ep=e; });
+  var f=d.fv||'', m=d.med||'';
+  if(!f){ var fm=/(\d{1,2}) de ([a-z]+)/.exec(fx(d.s||'')); if(fm && fm[2] in MESNUM) f=fm[1]+' '+MESCORTO[MESNUM[fm[2]]]; }
+  if(!f && ep) f=fechaCorta(ep);
+  if(!m && ep && ep.id!=='na' && !d.fscan){
+    var partes=fx(ep.s||'').split(' · ');
+    m = /^Dra?\. /.test(partes[1]||'') ? partes[1] : (d.ent||partes[0]||'');
+  }
+  if(!m && d.ent && !d.fscan) m=d.ent;
+  return {f:f, m:m};
 }
 /* Fase 10 · Rediseño · Brief 11: hilo=true (Bóveda · documentos, lienzo 49 opción D): sin ícono de documento; tarjeta blanca con
    título, pill y flecha, y un punto del color de la persona sobre la línea de la consulta (--pc, del contenedor) */
@@ -932,9 +945,24 @@ function docRowHTML(d, flat, hilo, quieta){ /* Fase 10 · Brief 46: quieta = lo 
   else if(!pill){ sub = tipoDoc(d)+(d.pag ? ' · '+d.pag+' página'+(d.pag===1?'':'s') : ''); } /* Fase 10 · Brief 05: sin pag, no se muestra (antes "undefined páginas") */
   var target = d.go ? ' data-go="'+d.go+'"' : ' data-docv="'+DOCS.indexOf(d)+'"';
   var icon;
-  if(flat){ var pcode=fx(d.p); icon='<span class="av" data-p="'+pcode+'" style="background:'+PCOL[pcode]+'">'+pcode+'</span>'; }
+  if(flat){
+    /* Fase 12 · Brief 09B (carpetas, opción A): la miniatura del documento (la hoja de cirDocRow, en 44 × 56) con el avatar de 24 en la esquina.
+       Es decorativa: la persona va en el texto («{persona} · …») para que el lector de pantalla la diga. Fondo: el degradado de la persona, como .todo-row.
+       Sale el avatar de 40 de la fila */
+    var pcode=fx(d.p);
+    icon='<span class="doc-mini" aria-hidden="true"><span class="t-hoja"><i></i><i></i><i></i><i></i></span><span class="av" data-p="'+pcode+'" style="background:'+PCOL[pcode]+'">'+pcode+'</span></span>';
+    /* Fase 12 · Brief 09E (opción B): la pastilla baja a la segunda línea, antes de «{fecha corta} · {médico o sede}».
+       Sale el nombre de la persona del texto visible (lo dice el avatar) y pasa al aria-label, junto con lo demás.
+       Sin pastilla, la línea empieza por la fecha; sin fecha o sin médico ni sede, no quedan « · » ni comas sueltas */
+    var det=docDetalle(d), linea=[det.f, det.m].filter(Boolean).join(' · ');
+    var aria=[fx(d.t), 'de '+(PNAME[pcode]||pcode), pill ? pill[0] : '', det.f, det.m].filter(Boolean).join(', ');
+    return '<button type="button" class="doc-fila doc-carp"'+(TINTVAR[pcode] ? ' style="--tinte:var(--'+TINTVAR[pcode]+'-t)"' : '')+target+' aria-label="'+aria.replace(/"/g,'&quot;')+'">'+icon+
+      '<span class="card-main"><span class="doc-t">'+d.t+'</span>'+
+      ((pill || linea) ? '<span class="doc-det">'+(pill ? '<span class="pill '+pill[1]+'">'+pill[0]+'</span>' : '')+(linea ? '<span class="doc-det-t">'+linea+'</span>' : '')+'</span>' : '')+
+      '</span><span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
+  }
   else icon=docIcon();
-  return '<button type="button" class="doc-fila"'+target+'>'+icon+ /* Fase 10 · Brief 29: Fila de documento (avatar 40 en carpetas) */
+  return '<button type="button" class="doc-fila"'+target+'>'+icon+ /* Fase 10 · Brief 29: Fila de documento */
      '<span class="card-main"><span class="doc-t">'+d.t+'</span><span class="doc-s">'+sub+'</span></span>'+
      (pill?'<span class="pill '+pill[1]+'">'+pill[0]+'</span>':'')+
      '<span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>'; /* Fase 10 · Brief 06: flecha, la fila es tocable */
@@ -976,20 +1004,13 @@ function bovCatDots(cat){
 }
 /* Fase 10 · Brief 16: la etiqueta "Solo en esta demo" en una fila; no es botón (Fase 11 · Brief 01: sale #obDemo) */
 var DEMO_TAG='<span class="chip-sim ob-demo en-fila"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg>Solo en esta demo</span>';
-/* Fase 10 · Brief 19: ¿la persona ya confirmó quién es esta persona? (la dueña, lo agregado en el paso 3 o lo confirmado en la detección) */
-function relConfirmada(code){
-  if(code==='SO') return true;
-  var id=detSlot(code);
-  return obAgregados.indexOf(id)>=0 || !!(detOk && DETECT[id] && DETECT[id].si && !DETECT[id].fuera); /* Fase 11 · Brief 02 */
-}
-/* Fase 10 · Brief 35: pend = pill «Pendiente» a 8 del nombre (solo en la Bóveda); bov = sin la etiqueta de demo, como antes en la Bóveda */
-function epiHeaderHTML(ep, pend, bov){
-  if(!ep.p) return '<span class="epi-t"><b>'+ep.t+'</b><small>'+ep.s+'</small></span>';
-  /* Fase 10 · Brief 19: la relación solo sale para ti y para quien agregaste en el paso 3 o confirmaste en la detección */
-  var par=relConfirmada(ep.p) ? parentescoDe(ep.p) : '';
-  /* Fase 6 · tarjeta menos cargada: sede y doctor ya viven con detalle en el visor del documento (#11) — aquí solo lo que ubica de un vistazo */
-  return '<span class="epi-t"><b>'+ep.t+'</b>'+ /* Fase 10 · Brief 44b: la fecha sube a la cola (epiColaHTML); el título usa todo el ancho */
-    (pend ? '<small class="epi-sub"><span>'+PNAME[ep.p]+(par?' · '+par:'')+'</span>'+pend+'</small>' : '<small>'+PNAME[ep.p]+(par?' · '+par:'')+'</small>')+
+/* Fase 11 · Brief 19: sale relConfirmada(); la consulta ya no muestra el parentesco */
+/* Fase 11 · Brief 19: un solo marcado para «Lo que encontré» y la Bóveda. Título (+ pill «Pendiente» a la derecha, como .todo-top de Inicio)
+   y debajo «Nombre · 7 oct · N documentos» («Tú» para la dueña). Sale el parentesco. «Sin consulta asociada»: solo «N documentos».
+   pend = la pill (solo en la Bóveda); bov = sin la etiqueta de demo, como antes en la Bóveda */
+function epiHeaderHTML(ep, docs, pend, bov){
+  var sub = ep.id==='na' || !ep.p ? nDocs(docs.length) : [ep.p==='SO' ? 'Tú' : PNAME[ep.p], fechaCorta(ep), nDocs(docs.length)].filter(Boolean).join(' · ');
+  return '<span class="epi-t"><span class="todo-top"><b>'+ep.t+'</b>'+(pend||'')+'</span><small>'+sub+'</small>'+
     (ep.demo && !bov ? DEMO_TAG : '')+'</span>'; /* Fase 10 · Brief 16 */
 }
 /* Fase 10 · Brief 35: un solo orden de consultas para la Bóveda y «Lo que encontré»: la fecha más reciente arriba (dcorta dd/mm/aa),
@@ -1025,10 +1046,7 @@ function famRows(attr, sub, editable, grouped){
        '<span class="card-sub">'+(grouped ? (k==='SO' ? ['Tú', edadDe('SO')].filter(Boolean).join(' · ') : rel) : (k==='SO'?V.u:rel))+(sub?' · '+cnt+' documento'+(cnt===1?'':'s'):'')+'</span></span>'+ /* y debajo la edad (con la relación, si se agregó) */
        (attr==='data-go'?'<span class="chev">'+CARD_CHEV+'</span>':'')+'</button>';
     if(editable){
-      h+='<div class="fam-r-row">'+row+
-        '<button type="button" class="av-badge av-badge-sm" data-iconpick="'+k+'" aria-label="Elegir ícono para '+nm+'">'+
-        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>'+
-        '</button></div>';
+      h+='<div class="fam-r-row">'+row+'</div>'; /* Fase 11 · Brief 16: sale el lápiz; la fila abre el perfil y ahí se elige el ícono */
     } else h+=row;
   });
   return h;
@@ -1075,17 +1093,6 @@ function i3Subtitle(k){
   }
   return ({MT:V.r2, SF:V.r1, MA:V.r3})[k];
 }
-function i3DateRow(k){
-  var e=PROFILE_EDITS[k];
-  if(e){
-    if(e.approx) return {label:'Edad aproximada', value:e.edadAprox+' años aprox.'};
-    if(e.nac) return {label:'Fecha de nacimiento', value:fechaLarga(e.nac)||e.nac}; /* Fase 10 · Rediseño · Brief 13b (corrección): mismo formato que la historia */
-  }
-  if(k==='MT' && V.nac2) return {label:'Fecha de nacimiento', value:V.nac2};
-  if(OB_APROX[k]) return {label:'Edad aproximada', value:OB_APROX[k]+' años aprox.'}; /* Fase 10 · Brief 18 */
-  if(OB_NAC[k]) return {label:'Fecha de nacimiento', value:fechaLarga(OB_NAC[k])}; /* Fase 10 · Rediseño · Brief 13b */
-  return null;
-}
 /* Fase 8 · Estructura 1: propaga nombre/parentesco/edad a V/PNAME/INIT — lo que ya
    lee el resto de la app vía fx()/PNAME[]/INIT[]. 'SO' no tiene parentesco (eres tú
    mismo) y sigue mostrándose como "Tú" en todas partes salvo {u}, mismo criterio ya
@@ -1112,27 +1119,11 @@ function i3DocCount(k){ return DOCS.filter(function(d){ return fx(d.p)===k; }).l
 var I3_PENCIL='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
 function i3AvatarHTML(k){
   return '<div style="display:flex;justify-content:center;padding:var(--esp-s) 0 var(--esp-xs);position:relative;">'+
-    '<span class="av av-ficha" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+ /* Fase 10 · Brief 27: medidas a .av-ficha */
-    '<button type="button" class="av-badge" data-iconpick="'+k+'" aria-label="Elegir ícono" style="position:absolute;left:50%;bottom:6px;transform:translateX(38px);">'+I3_PENCIL+'</button>'+
+    /* Fase 11 · Brief 16: el botón es la foto entera; el lápiz queda como adorno */
+    '<button type="button" class="i3-av-btn" data-iconpick="'+k+'" aria-label="'+(k==='SO'?'Cambiar cómo te ves':'Cambiar cómo se ve '+PNAME[k])+'">'+ /* Fase 12 · Brief 02 */
+      '<span class="av av-ficha" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+
+      '<span class="av-badge" aria-hidden="true">'+I3_PENCIL+'</span></button>'+
     '</div>';
-}
-/* Fase 10 · Brief 19 (corrección 3): "Nombre" = nombre (editado o no) + apellidos de la persona (nombreCompleto); en la propia historia, solo el nombre */
-function i3ViewHTML(k){
-  var dateRow=i3DateRow(k), cnt=i3DocCount(k), h='';
-  h+=i3AvatarHTML(k);
-  h+='<div class="doc-in"><span class="card-main"><span class="card-sub" style="margin:0">Nombre</span><span class="doc-t">'+nombreCompleto(k, ((PROFILE_EDITS[k]||{}).nm||'').trim() || i3Name(k))+'</span></span></div>';
-  if(dateRow){
-    h+='<div class="doc-in"><span class="card-main"><span class="card-sub" style="margin:0">'+dateRow.label+'</span><span class="doc-t">'+dateRow.value+'</span></span></div>';
-  } else {
-    h+='<div class="doc-in"><span class="card-main"><span class="card-sub" style="margin:0">Fecha de nacimiento</span><span class="doc-t" style="font-size:var(--fs-secundario);font-weight:var(--fw-regular);color:var(--r-texto-2);">Sin fecha registrada — puedes agregarla desde «Editar información»</span></span></div>';
-  }
-  h+='<button type="button" class="doc-in" data-bov="'+k+'"><span class="card-main"><span class="card-sub" style="margin:0">Documentos guardados</span><span class="doc-t">'+cnt+' en la Bóveda</span></span><span class="chev">'+CARD_CHEV+'</span></button>';
-  h+='<button type="button" class="btn-s" data-i3edit="1">Editar información</button>';
-  /* no tiene sentido eliminarte a ti mismo de tu propia familia */
-  /* Fase 8 · Estructura 1: "Eliminar perfil" no elimina nada de verdad — atenuado con "Próximamente",
-     mismo patrón que Configuración, en vez de fingir una confirmación destructiva que no ocurre */
-  if(k!=='SO') h+='<button type="button" class="btn-danger soon" disabled>Eliminar perfil<span class="tag-soon">Próximamente</span></button>';
-  return h;
 }
 /* Fase 11 · Brief 04b (A): el dato salió de los documentos (no lo escribió la persona): el nombre completo y la fecha de la historia */
 function i3DeDocs(k, campo){
@@ -1144,9 +1135,10 @@ function i3DeDocs(k, campo){
 }
 function i3EditHTML(k){
   var p=i3Edit, h='';
+  h+=(i3Toast ? '<div class="toast" role="status">'+i3Toast+'</div>' : ''); i3Toast=null; /* Fase 12 · Brief 02: el acuse de guardar */
   h+=i3AvatarHTML(k);
   h+='<div class="field"><label>Nombre</label><input class="ob-inp" type="text" id="i3fNm" placeholder="Nombre completo" value="'+p.nm.replace(/"/g,'&quot;')+'">'+
-     (i3DeDocs(k,'nm') ? '<p class="helper">Así aparece en sus documentos.</p>' : '')+'</div>'; /* Fase 11 · Brief 04b (A) */
+     '<p class="helper">Así aparece en '+(k==='SO'?'tus':'sus')+' documentos.</p></div>'; /* Fase 12 · Brief 02: la ayuda siempre, como en el lienzo */
   if(p.approx){
     h+='<div class="field"><label>Edad aproximada</label><input class="ob-inp'+(p.nacErr?' err':'')+'" type="text" inputmode="numeric" maxlength="3" id="i3fEdad" placeholder="Años" value="'+p.edadAprox.replace(/"/g,'&quot;')+'">'+
       (p.nacErr
@@ -1167,13 +1159,13 @@ function i3EditHTML(k){
        '<span>'+(p.rel ? i3RelLabel(p) : 'Seleccionar')+'</span><span class="chev">'+CHEV_D+'</span></button></div>'+
        '<p class="helper">Si la agregas, aparece junto a su nombre.</p></div>';
   }
+  /* Fase 12 · Brief 02: la fila de la Bóveda pasa de la vista de solo lectura (sale) al formulario */
+  var cnt=i3DocCount(k);
+  h+='<button type="button" class="doc-in" data-bov="'+k+'"><span class="card-main"><span class="doc-t">'+cnt+' documento'+(cnt===1?'':'s')+'</span><span class="card-sub" style="margin:0">en la Bóveda</span></span><span class="chev">'+CARD_CHEV+'</span></button>';
   var dirty = JSON.stringify(p) !== JSON.stringify(i3EditOrig);
   var ready = dirty && p.nm.trim() && (p.approx ? edadAproxValida(p.edadAprox).ok : fechaValida(p.nac).ok) && (k==='SO' || !p.rel || p.rel!=='Otro' || p.otro.trim()); /* Fase 11 · Brief 04b (A) */ /* la relación es opcional */
-  /* Fase 8 · Reauditoría Yifrah: el CTA nombra también a quién, y solo se habilita si de verdad hay
-     algo que guardar (ver i3EditOrig más abajo) */
-  var saveLabel = k==='SO' ? 'Guardar mis cambios' : 'Guardar cambios de '+i3Name(k);
-  h+='<button type="button" class="btn-p" data-i3save="1"'+(ready?'':' disabled')+'>'+saveLabel+'</button>';
-  h+='<button type="button" class="btn-s" data-i3cancel="1">Cancelar</button>';
+  /* Fase 8 · Reauditoría Yifrah: solo se habilita si de verdad hay algo que guardar (ver i3EditOrig). Fase 12 · Brief 02: «Guardar cambios», sin «Cancelar» */
+  h+='<button type="button" class="btn-p" data-i3save="1"'+(ready?'':' disabled')+'>Guardar cambios</button>';
   return h;
 }
 function renderI3(){
@@ -1187,11 +1179,11 @@ function renderI3(){
      del header quedaban con el valor viejo aunque el cuerpo de la pantalla sí se actualizara. */
   if(cur==='I3'){ tTitle.textContent=title; tSub.textContent=sub; }
   var body=document.getElementById('i3Body');
-  if(body) body.innerHTML = i3Editing ? i3EditHTML(k) : i3ViewHTML(k);
-  if(!i3Editing){ var rs=document.getElementById('i3RelSheet'); if(rs) rs.style.display='none'; }
+  if(!i3Edit) i3Load(k); /* Fase 12 · Brief 02: arranca directo en el formulario */
+  if(body) body.innerHTML = i3EditHTML(k);
   paintAvatars(el);
 }
-function i3EnterEdit(k){
+function i3Load(k){ /* Fase 12 · Brief 02: antes i3EnterEdit(); solo carga los valores, renderI3() pinta */
   var e=PROFILE_EDITS[k];
   if(e){
     i3Edit={nm:e.nm||i3Name(k), nac:e.nac||'', approx:!!e.approx, edadAprox:e.edadAprox||'', rel:e.rel||'', otro:e.otro||'', nacErr:''};
@@ -1201,14 +1193,12 @@ function i3EnterEdit(k){
   /* Fase 8 · Reauditoría Yifrah: copia de los valores al entrar, para saber si de verdad hubo
      cambios antes de habilitar "Guardar" — ver dirty en i3EditHTML() */
   i3EditOrig=JSON.parse(JSON.stringify(i3Edit));
-  i3Editing=true;
-  renderI3();
 }
 function renderI3RelSheet(){
   var sheet=document.getElementById('i3RelSheet'); if(!sheet || !i3Edit) return;
   document.getElementById('i3RelList').innerHTML=relPickerHTML(i3RelLabel(i3Edit), 'data-i3rel="{v}"', 'i3'); /* Fase 10 · Brief 43 */
 }
-function openI3RelSheet(){ renderI3RelSheet(); document.getElementById('i3RelSheet').style.display='flex'; }
+function openI3RelSheet(){ renderI3RelSheet(); abrirHoja('i3RelSheet'); }
 
 /* ===== Fase 6 · H01: visor de documento ===== */
 function openViewer(ix){
@@ -1223,6 +1213,7 @@ function openViewer(ix){
     entidad=fx(partes[0]||''); medico=fx(partes[1]||'');
     fecha=fx(ep.dcorta||''); fechaLarga=ep.d?fx(ep.d)+' de 2026':'';
   }
+  if(d.ent) entidad=d.ent; /* Fase 11 · Brief 17: lo que escribió la persona */
   if(d.fv) fecha=d.fv; /* Fase 10 · Brief 21 (corrección 2): la orden nueva trae su fecha, no la de la consulta */
   var falta = d.pill && FALTA_CAMPO[d.pill[0]]; /* Fase 10 · Brief 08f */
   if(d.med) medico=d.med; else if(d.fscan) medico=''; /* la fórmula escaneada solo muestra el médico que se escribió */
@@ -1233,7 +1224,7 @@ function openViewer(ix){
   document.getElementById('vTitle').textContent=fx(d.t);
   document.getElementById('vSub').textContent=fx(PNAME[d.p])+' · '+tipoDoc(d);
   /* Fase 8 · Yifrah #6: el certificado (Carné de vacunación) no viene de la EPS — su cabecera dice "Subido por ti", no el nombre de la EPS */
-  var origen = (d.ty==='certificado') ? 'Subido por ti' : fx('{epsn}').toUpperCase(); /* Fase 10 · Brief 16: sin "EPS EPS" (se había escapado del Brief 15) */
+  var origen = (d.ty==='certificado') ? 'Subido por ti' : (d.ent ? d.ent.toUpperCase() : fx('{epsn}').toUpperCase()); /* Fase 10 · Brief 16: sin "EPS EPS" (se había escapado del Brief 15) */
   var body=(d.demo ? DEMO_TAG : '')+'<div class="v-ph"><span>'+origen+'</span><span>'+fecha+'</span></div>'+
     '<p class="v-pn">'+nombre+'</p>';
   if(d.ty==='resultado' && d.lab){
@@ -1306,27 +1297,45 @@ function openDocSheet(ix){
      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:var(--esp-s);" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Ver documento</button>'+
      '<button type="button" class="btn-s" data-close="1">Cerrar</button>';
   document.getElementById('scrimDocBody').innerHTML=fx(h); paintAvatars(document.getElementById('scrimDocBody'));
-  document.getElementById('scrimDoc').style.display='flex';
+  abrirHoja('scrimDoc');
 }
 
-function openDocsSheet(){
-  var radicado = card('cir') && card('cir').st==='encurso';
-  document.getElementById('docsTitle').textContent = radicado ? 'Lo que envié' : 'Lo que voy a enviar';
-  document.getElementById('docsSub').textContent = fx('Dos documentos, ambos de {p3}.') /* Fase 11 · Brief 01b */;
-  document.getElementById('scrimDocs').style.display='flex';
+/* Fase 12 · Brief 05 (A): «Revisar documentos» (marco 4) y «Ver qué se envió» (marco 5). Ya radicada: Solicitud y Adjuntos, como en el lienzo */
+/* Fase 12 · Brief 06 (A): «Ver qué se envió» de D3 (cual='queja') y de E3 (cual='recon'): la misma hoja, con lo de cada envío */
+var DOCS_ENVIO={
+  queja:{t:'Lo que envié a la Supersalud', s:'Por su portal · radicado SNS-84417', sol:'Queja contra {eps}: no respondió la autorización a tiempo',
+    adj:function(){ return '<div class="sh-caja"><span class="sh-tx"><b>Radicado #45892</b> · autorización radicada el 6 de noviembre</span></div>'+
+      '<div class="sh-caja"><span class="sh-tx"><b>Plazo vencido</b> · {eps} tenía hasta el 13 de noviembre</span></div>'; }},
+  recon:{t:'Lo que envié a {eps}', s:'Por su portal · radicado RC-3391', sol:'Reconsideración de la autorización de {t2x} para {p3}',
+    adj:function(){ var h=cirAdj()[1]; return '<div class="exlist">'+cirDocRow(h.ix, 'Justificación médica', h.t, true)+'</div>'; }}
+};
+function openDocsSheet(cual){
+  var e=DOCS_ENVIO[cual];
+  if(e){
+    document.getElementById('docsTitle').textContent = fx(e.t);
+    var se=document.getElementById('docsSub'); se.textContent = e.s; se.hidden = false;
+    document.getElementById('docsBody').innerHTML = fx('<p class="wgt-lbl sh-rotulo">Solicitud</p><div class="sh-caja"><span class="sh-tx"><b>'+e.sol+'</b></span></div><p class="wgt-lbl sh-rotulo">Adjuntos</p>'+e.adj());
+    abrirHoja('scrimDocs');
+    return;
+  }
+  var c=card('cir'), radicado = !!c && c.st!=='accionable' && c.st!=='oculto' || cirEsCita(c);
+  document.getElementById('docsTitle').textContent = fx(radicado ? 'Lo que envié a {eps}' : 'Voy a enviar 3 documentos');
+  var sub=document.getElementById('docsSub'); sub.textContent = radicado ? 'Por su portal · radicado #45892' : ''; sub.hidden = !radicado;
+  document.getElementById('docsBody').innerHTML = fx((radicado ? '<p class="wgt-lbl sh-rotulo">Solicitud</p><div class="sh-caja"><span class="sh-tx"><b>Autorización de {t2x} para {p3}</b></span></div><p class="wgt-lbl sh-rotulo">Adjuntos</p>' : '')+cirAdjHTML());
+  abrirHoja('scrimDocs');
 }
 /* Fase 10 · Brief 07: la flecha del filtro apunta hacia abajo (abre un menú, no navega) */
 var CHIP_CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>';
+var PESTANAS=['A1','H2','F1','G1','CONFIG'], FILTRO_EN=['A1','H2','F1','G1']; /* Fase 12 · Brief 01: las cuatro pestañas (Inicio es A1 o H2) */
 function updateChip(){
   var chip=document.getElementById('famChip');
   /* Fase 8 · Esqueleto 2: sin nada guardado no hay nada que filtrar, el chip no se pinta */
-  var stRow=document.getElementById('stRow');
-  if(appVacia){ chip.style.display='none'; stRow.classList.remove('con-filtro'); return; }
-  /* Fase 10 · Brief 06: el filtro vive junto al título y solo en Inicio, Calendario y Bóveda */
-  chip.style.display = ['A1','F1','G1'].indexOf(cur)>=0 ? '' : 'none';
-  /* Fase 10 · Rediseño · Brief 13 (corrección 3): con el filtro al lado, el subtítulo baja a su propia línea a todo el ancho */
-  stRow.classList.toggle('con-filtro', chip.style.display!=='none');
-  if(bovPerson!=='all' && ['A1','F1','G1'].indexOf(cur)>=0){
+  /* Fase 12 · Brief 01: el filtro va en su propia fila (#stFiltro), centrado, en Inicio (A1/H2), Calendario y Bóveda */
+  var filtro=document.getElementById('stFiltro'), conFiltro=FILTRO_EN.indexOf(cur)>=0 && !(cur==='G1' && bovFolder==='all'); /* Fase 12 · Brief 02: en «Todos los documentos» filtra la hoja */
+  if(appVacia){ chip.style.display='none'; filtro.hidden=true; return; }
+  chip.style.display = conFiltro ? '' : 'none';
+  filtro.hidden=!conFiltro;
+  if(bovPerson!=='all' && conFiltro){
     chip.className='fam-top on';
     chip.innerHTML='<span class="av av-one" data-p="'+bovPerson+'" style="background:'+PCOL[bovPerson]+'">'+INIT[bovPerson]+'</span>'+
       '<span class="fam-label">Ver: '+PNAME[bovPerson]+'</span>'+CHIP_CHEV;
@@ -1343,6 +1352,7 @@ function updateChip(){
   paintAvatars(chip);
 }
 function renderBoveda(){
+  if(cur==='G1') document.getElementById('app').classList.toggle('con-sil', conSil('G1')); /* Fase 12 · Brief 08Ad: las carpetas y «Todos los documentos» van sin silueta */
   /* Fase 8 · Coherencia: appVacia (ver renderInicio) también cubre la primera Bóveda, sin tocar DOCS */
   if(appVacia){
     G1el.innerHTML='<div class="empty" style="padding-top:40px;">'+
@@ -1352,8 +1362,8 @@ function renderBoveda(){
       /* Fase 10 · Brief 17 (ajuste): en la propia historia no se escanea (Próximamente); se ofrece la bandeja, con el mismo botón de Inicio */
       (esPropia() ? '<p>Si busco en tu correo, guardo aquí lo que encuentre.</p>'+(mailConnected ? '' : '<button type="button" class="btn-p" data-tap="fabmail">Buscar en tu correo</button>')
         : '<p>Trae tus documentos con el botón +.</p>')+'</div>';
-    G1el.setAttribute('data-sub',''); /* Fase 10 · Brief 07: la portada de la Bóveda no lleva subtítulo */
-    if(cur==='G1') tSub.textContent='';
+    G1el.setAttribute('data-sub','Los documentos de salud de tu familia.'); /* Fase 12 · Brief 08Ad: vacía también es la portada */
+    if(cur==='G1') tSub.textContent=G1el.getAttribute('data-sub');
     updateChip();
     return;
   }
@@ -1401,7 +1411,7 @@ function renderBovPortada(){
   });
   si.addEventListener('click', function(e){ e.stopPropagation(); });
   /* Fase 10 · Brief 05: sin contador en la portada (las carpetas ya muestran el suyo) */
-  var sub = ''; /* Fase 11 · Brief 07b: sin subtítulo, como Inicio y Calendario (revierte el cambio 6 del Brief 07) */
+  var sub = 'Los documentos de salud de tu familia.'; /* Fase 12 · Brief 08Ad: la única pestaña con nombre de metáfora dice qué es (excepción al 19 oct) */
   G1el.setAttribute('data-title','Bóveda'); /* Fase 10 · Brief 07: "Bóveda de salud" no cabía junto al filtro a 320 px; igual que la pestaña */
   G1el.setAttribute('data-sub', sub);
   G1el.setAttribute('data-back', bovFrom||'');
@@ -1409,14 +1419,13 @@ function renderBovPortada(){
     tTitle.textContent='Bóveda';
     tSub.textContent=fx(sub);
     topBack.style.display = bovFrom ? 'flex' : 'none';
-    topMenu.style.display = bovFrom ? 'none' : 'flex';
     topBack.setAttribute('data-target', bovFrom||'');
   }
 }
 /* Fase 6 · carpeta ord/res/med: lista plana filtrada por cat + persona, sin agrupar por consulta.
    El atrás siempre vuelve a la portada (sentinel 'BOVPORTADA', ver topBack), no a bovFrom. */
 function renderBovFolder(cat){
-  var label=FOLDER_LABELS[cat];
+  var label=cat==='res' ? 'Resultados' : FOLDER_LABELS[cat]; /* Fase 12 · Brief 09B: «Resultados de exámenes» no cabe en el encabezado a 390 (247 de 220 px); la tarjeta de la portada sigue con el nombre completo */
   var docs=DOCS.filter(function(d){
     var okP = bovPerson==='all' || fx(d.p)===bovPerson;
     return okP && d.cat===cat;
@@ -1439,47 +1448,60 @@ function renderBovFolder(cat){
     tTitle.textContent=label;
     tSub.textContent=fx(sub);
     topBack.style.display='flex';
-    topMenu.style.display='none';
     topBack.setAttribute('data-target','BOVPORTADA');
   }
 }
-/* Fase 6 · "Todos los documentos": la Bóveda de siempre (buscador, chips de tipo, agrupación por
-   consulta) — solo cambian el título y que el atrás vuelve a la portada en vez de a bovFrom. */
+/* Fase 6 · "Todos los documentos": la Bóveda de siempre; el atrás vuelve a la portada en vez de a bovFrom.
+   Fase 12 · Brief 02: título «Todos los documentos» sin subtítulo; buscador y «Filtrar» en una fila, la mascota debajo.
+   Salen el chip «Tipo: …», el filtro de la familia (#famChip, ver updateChip) y «Quitar filtros» suelto: todo va en la hoja Filtrar */
 function renderBovTodos(){
   if(cur==='G1') BOVNEW.all=false; /* Fase 10 · Brief 19: el punto de "Todos" se apaga al abrir "Todos" */
-  var h='';
-  /* Fase 10 · Brief 48: sale la línea fija de sincronización; el estado del correo vive en Configuración */
+  var h='<div class="bov-fila">';
   h+='<div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--r-texto-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
-    '<input id="bovSearch" type="text" placeholder="Buscar en la Bóveda…" value="'+(bovQuery||'').replace(/"/g,'&quot;')+'">'+
+    '<input id="bovSearch" type="text" placeholder="Buscar en la Bóveda…" aria-label="Buscar en la Bóveda" value="'+(bovQuery||'').replace(/"/g,'&quot;')+'">'+
     (bovQuery?'<button type="button" class="clr" data-bovclear="1" aria-label="Borrar búsqueda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>':'')+
     '</div>';
-  /* Fase Móvil · Punto 4: la fila deslizable de pestañas se pierde de vista en pantalla angosta —
-     se reemplaza por un chip trigger que abre una hoja con las mismas 6 opciones */
-  var tSel = (tiposBov().filter(function(t){ return t[0]===bovType; })[0]||TYPES[0])[1]; /* Fase 11 · Brief 05 (B) */
-  h += '<button type="button" class="tabp plain" id="bovTypeChip" data-bovtypeopen="1" aria-haspopup="menu" aria-controls="bovTypeMenu" aria-expanded="false">Tipo: '+tSel+'<span class="chev">'+CHEV_D+'</span></button>';
-  if(bovPerson!=='all'||bovType!=='all') h+='<button type="button" class="clearf" data-clearf="1">Quitar filtros</button>';
+  var hay = bovPerson!=='all' || bovType!=='all';
+  h+='<button type="button" class="fam-top bov-filtrar'+(hay?' on':'')+'" data-bovfiltro="1" aria-haspopup="dialog"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg><span class="fam-label">Filtrar</span></button></div>';
+  h+='<div class="bov-tm">'+mascotaSVG('calma', 36)+'<p>Los agrupé según el diagnóstico de cada documento.</p></div>';
   h+='<div id="bovResults"></div>';
   G1el.innerHTML=fx(h);
   var si=document.getElementById('bovSearch');
   si.addEventListener('input', function(){ bovQuery=si.value; renderBovResults(); });
   si.addEventListener('click', function(e){ e.stopPropagation(); });
   renderBovResults();
-  /* Fase 10 · Rediseño · Brief 11: el título se queda "Bóveda" y la vista va en el subtítulo (ver renderBovResults), para no chocar con el filtro */
-  G1el.setAttribute('data-title','Bóveda');
+  G1el.setAttribute('data-title','Todos los documentos');
+  G1el.setAttribute('data-sub','');
   G1el.setAttribute('data-back', 'BOVPORTADA');
   if(cur==='G1'){
-    tTitle.textContent='Bóveda';
+    tTitle.textContent='Todos los documentos'; tSub.textContent='';
     topBack.style.display='flex';
-    topMenu.style.display='none';
     topBack.setAttribute('data-target','BOVPORTADA');
   }
 }
-/* Fase Móvil · Punto 4: mismo patrón que renderI3RelSheet() — pinta las opciones dentro de la hoja */
-/* Fase 10 · Rediseño · Brief 12: el tipo de documento es menú pegado a #bovTypeChip (antes hoja m3menu) */
-function renderBovTypeMenu(){
-  var h='';
-  tiposBov().forEach(function(t){ var on=bovType===t[0]; /* Fase 11 · Brief 05 (B) */ h+='<button type="button" role="menuitemradio" aria-checked="'+on+'" class="pop-i'+(on?' sel':'')+'" data-bovtype="'+t[0]+'">'+t[1]+'</button>'; });
-  document.getElementById('bovTypeMenu').innerHTML=h;
+/* Fase 12 · Brief 02: hoja «Filtrar documentos». De quién (bovPerson) y Tipo (bovType) se eligen aquí sin aplicar;
+   «Ver N documentos» cuenta en vivo, aplica y cierra. «Quitar filtros» los quita y cierra */
+var bfP='all', bfT='all';
+function bovFiltrados(p, t){
+  var q=(bovQuery||'').trim().toLowerCase();
+  return DOCS.filter(function(d){
+    var okQ=!q || fx(d.t).toLowerCase().indexOf(q)>-1 || fx(d.s).toLowerCase().indexOf(q)>-1 || tipoDoc(d).toLowerCase().indexOf(q)>-1;
+    return (p==='all'||fx(d.p)===p) && (t==='all'||d.ty===t) && okQ;
+  });
+}
+function openBovFiltro(){ bfP=bovPerson; bfT=bovType; closeSheets(); renderBovFiltro(); abrirHoja('scrimFiltro'); }
+function renderBovFiltro(){
+  function chip(attr, val, on, cont){ return '<button type="button" class="tabp plain" role="radio" aria-checked="'+on+'" '+attr+'="'+val+'">'+cont+'</button>'; }
+  var n=bovFiltrados(bfP, bfT).length;
+  var h='<div class="grab"></div><div class="bf-head"><h3 id="bfTit">Filtrar documentos</h3>'+
+    (bfP!=='all'||bfT!=='all' ? '<button type="button" class="link-u" data-bfclear="1">Quitar filtros</button>' : '')+'</div>';
+  h+='<p class="wgt-lbl sh-lbl" id="bfLblP">De quién</p><div class="bf-ops" role="radiogroup" aria-labelledby="bfLblP">'+chip('data-bfp','all',bfP==='all','Todos');
+  ['SO','SF','MT','MA'].filter(function(k){ return SLOTS.indexOf(k)>=0 && !personaFuera(k); }).forEach(function(k){ /* el orden y el nombre de Sonia, como en el lienzo */
+    h+=chip('data-bfp', k, bfP===k, '<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+(k==='SO'?V.u:PNAME[k])); });
+  h+='</div><p class="wgt-lbl sh-lbl" id="bfLblT">Tipo</p><div class="bf-ops" role="radiogroup" aria-labelledby="bfLblT">';
+  tiposBov().forEach(function(t){ h+=chip('data-bft', t[0], bfT===t[0], t[1]); });
+  h+='</div><button type="button" class="btn-p" data-bfver="1">Ver '+n+' documento'+(n===1?'':'s')+'</button>';
+  var b=document.getElementById('scrimFiltroBody'); b.innerHTML=fx(h); paintAvatars(b);
 }
 /* Fase 10 · Rediseño · Brief 12: el filtro "Ver" es menú pegado a #famChip. Sin subtítulo ni conteo: sirve para elegir rápido */
 function renderFamMenu(){
@@ -1501,12 +1523,10 @@ function renderBovResults(){
     var okQ=!q || fx(d.t).toLowerCase().indexOf(q)>-1 || fx(d.s).toLowerCase().indexOf(q)>-1 || tipoDoc(d).toLowerCase().indexOf(q)>-1;
     return okP && okT && okQ;
   });
-  /* Fase 11 · Brief 05 (A): sin búsqueda ni «Tipo», una tarjeta por persona con sus temas; con búsqueda o tipo, la lista de siempre */
+  /* Fase 11 · Brief 05 (A): sin búsqueda ni «Tipo», una tarjeta por persona con sus temas; con búsqueda o tipo, la lista de siempre.
+     Fase 12 · Brief 02: sin subtítulo (el título ya dice «Todos los documentos») */
   if(!q && bovType==='all'){
     box.innerHTML=fx(bovTemasHTML(list)); paintAvatars(box);
-    var lbl0 = bovPerson==='all' ? 'Todos los documentos' : 'Documentos de '+PNAME[bovPerson];
-    G1el.setAttribute('data-sub', lbl0);
-    if(cur==='G1') tSub.textContent=fx(lbl0);
     return;
   }
   var h='', shown=0;
@@ -1537,8 +1557,8 @@ function renderBovResults(){
     h+='<div class="epi epi-card'+(ep.id==='na'?' epi-loose':'')+'"'+(pv?' style="'+pv+'"':'')+'>'+
        '<button type="button" class="epi-h" data-rev="'+key+'" aria-expanded="false">'+
        (p ? '<span class="av" data-p="'+p+'" style="background:'+PCOL[p]+'">'+p+'</span>' : '')+
-       epiHeaderHTML(ep, epiPendHTML(docs), true)+
-       epiColaHTML(docs, ep.dcorta)+'</button><div class="epi-b" data-revb="'+key+'" style="display:none;"><div class="epi-linea">'; /* Fase 10 · Brief 34c: al abrir manda el display de la hoja de estilos */
+       epiHeaderHTML(ep, docs, epiPendHTML(docs), true)+
+       EPI_CHEV+'</button><div class="epi-b" data-revb="'+key+'" style="display:none;"><div class="epi-linea">'; /* Fase 10 · Brief 34c: al abrir manda el display de la hoja de estilos */
     /* Fase 6: todo documento abre su ficha primero (de ahí se puede saltar al trámite con "Abrir ese trámite") */
     docs.forEach(function(d){ h+=docRowHTML(d, false, true); });
     h+='</div></div></div>';
@@ -1546,12 +1566,9 @@ function renderBovResults(){
   if(!shown){
     h += q /* Fase 8 · Yifrah: vacío de "Todos" sugiere quitar el filtro de categoría (el botón ya está visible arriba) */
       ? '<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">Nada con «'+fx(bovQuery)+'». Prueba con otra palabra.</p>'
-      : '<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">No hay documentos con esos filtros. Prueba con otra categoría.</p>';
+      : '<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">No hay documentos con esos filtros. Prueba con otro filtro.</p>';
   }
   box.innerHTML=fx(h); paintAvatars(box);
-  var label = bovPerson==='all' ? 'Todos los documentos' : 'Documentos de '+PNAME[bovPerson]; /* Fase 10 · Rediseño · Brief 11 · Brief 41: sin repetir */
-  G1el.setAttribute('data-sub', label);
-  if(cur==='G1') tSub.textContent=fx(label);
 }
 /* Fase 11 · Brief 05 (A): «Todos los documentos» por persona y tema. Caja de la mascota, una tarjeta por persona (tinte y borde de su color)
    y sus temas como filas cerradas; al abrir uno salen sus consultas con la línea de tiempo. Lo de DOCS_PEND no está en DOCS: no entra */
@@ -1563,8 +1580,7 @@ function bovTemaDe(d){
 function bovTemasHTML(list){
   var CHEV='<span class="epi-chev" aria-hidden="true">'+CHEV_D+'</span>';
   var epOf=function(id){ return EPIS.filter(function(e){ return e.id===id; })[0]; };
-  var fechaCorta=function(ep){ var m=(ep.d||'').match(/(\d{1,2}) de (\w+)/); return m ? m[1]+' '+MESCORTO[MESNUM[m[2]]] : ''; };
-  var h='<div class="bov-tm">'+mascotaSVG('calma', 36)+'<p>Los agrupé según el diagnóstico que dice cada documento. Si algo no cuadra, cuéntame en el chat.</p></div>';
+  var h=''; /* Fase 12 · Brief 02: la caja de la mascota sube a renderBovTodos(), también con filtros */
   var personas=TEMAS_ORDEN.filter(function(k){ return list.some(function(d){ return fx(d.p)===k; }); });
   if(list.some(function(d){ return !PCOL[fx(d.p)]; })) personas.push(''); /* las fotos sin persona */
   if(!personas.length) return h+'<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">Todavía no hay documentos.</p>';
@@ -1577,7 +1593,7 @@ function bovTemasHTML(list){
     var pv = k ? ' style="--pc:'+PCOL[k]+';'+(TINTVAR[k] ? '--tinte:var(--'+TINTVAR[k]+'-t);' : '')+'"' : '';
     h+='<div class="tema-p'+(k?'':' sin-p')+'"'+pv+'>'+
       (k ? '<div class="tema-p-h"><span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+
-        '<span class="card-main"><b>'+PNAME[k]+'</b><small>'+docs.length+' documento'+(docs.length===1?'':'s')+'</small></span></div>' : '');
+        '<span class="card-main"><b>'+(k==='SO' ? V.u : PNAME[k])+'</b><small>'+docs.length+' documento'+(docs.length===1?'':'s')+'</small></span></div>' : ''); /* Fase 12 · Brief 08Ac: la tarjeta de Sonia dice «Sonia», como en la hoja Filtrar */
     ids.forEach(function(id){
       var tdocs=docs.filter(function(d){ return bovTemaDe(d)===id; });
       var tema=TEMAS.filter(function(t){ return t.id===id; })[0];
@@ -1585,11 +1601,12 @@ function bovTemasHTML(list){
       eps=epiOrden().filter(function(e){ return eps.indexOf(e.id)>-1; }); /* la consulta más reciente arriba */
       var ult=eps.filter(function(e){ return e.d; })[0];
       var nom = tema ? tema.t : fx(epOf(id.slice(3)).t);
-      var sub = tema ? (ult && !tema.carne ? ult.d+' · ' : '')+tema.esp : (ult ? ult.d : epOf(id.slice(3)).s);
+      /* Fase 11 · Brief 19: sale el cuadrito .epi-n; el número va al final del subtítulo, con la fecha corta («7 oct · Oftalmología · 4 documentos») */
+      var sub = id==='ep-na' ? nDocs(tdocs.length) : [ult && !(tema && tema.carne) ? fechaCorta(ult) : '', tema ? tema.esp : '', nDocs(tdocs.length)].filter(Boolean).join(' · ');
       var key='tema-'+(k||'x')+'-'+id;
       h+='<div class="tema"><button type="button" class="tema-h" data-rev="'+key+'" aria-expanded="false">'+
         '<span class="card-main"><b>'+nom+'</b><small>'+sub+'</small></span>'+
-        '<span class="epi-n">'+tdocs.length+'</span>'+CHEV+'</button>'+
+        CHEV+'</button>'+
         '<div class="tema-b" data-revb="'+key+'" style="display:none;">';
       eps.forEach(function(e){
         if(e.id!=='na' && !(tema && tema.carne)) h+='<div class="wgt-lbl tema-c">'+fx(e.t)+(fechaCorta(e)?' · '+fechaCorta(e):'')+'</div>';
@@ -1622,8 +1639,8 @@ function renderConf(){
     h+='<div class="epi epi-card"'+(pv?' style="'+pv+'"':'')+'>'+
        '<button type="button" class="epi-h" data-rev="'+key+'" aria-expanded="false">'+
        '<span class="av" data-p="'+ep.p+'" style="background:'+PCOL[ep.p]+'">'+ep.p+'</span>'+
-       epiHeaderHTML(ep)+
-       epiColaHTML(docs, ep.dcorta)+'</button>'+ /* Fase 10 · Brief 05 · Brief 34 · Brief 44b: con la fecha */
+       epiHeaderHTML(ep, docs)+
+       EPI_CHEV+'</button>'+ /* Fase 11 · Brief 19: la fecha y el número pasan a la segunda línea */
        '<div class="epi-b" data-revb="'+key+'" style="display:none;"><div class="epi-linea">';
     docs.forEach(function(d){ h+=docRowHTML(d, false, true, true); }); /* Fase 10 · Brief 46: la misma fila de la Bóveda, sin tocar (sin ícono ni subtítulo) */
     h+='</div></div></div>';
@@ -1645,7 +1662,9 @@ var QLLEVAR={
   ter:{cel:[{t:'Orden de terapias vigente hasta el 18 de diciembre', doc:'ter'}], /* Fase 11 · Brief 01b: sale el carné de Sofía */ fis:['Ropa cómoda para la sesión'], prep:[]},
   med:{cel:[], fis:['Fórmula médica impresa','Documento de identidad'], prep:[]},
   /* Fase 10 · Brief 02 */
-  cir:{cel:[{t:'Autorización de {eps} para la {t2x}', doc:'autcir'}], fis:['Documento de identidad'], prep:[]},
+  /* Fase 12 · Brief 05 (A): textos del marco 11 y la preparación que pide la orden (nota). mostrar = lo que va en «Para mostrar» el día (marco 12) */
+  cir:{cel:[{t:'Autorización de {eps}', doc:'autcir'}], fis:['Cédula de {p3}'], prep:[{t:'En ayunas: sin comer desde las 11:00 p. m.'},{t:'Ir con un acompañante'}],
+    nota:'Lo dice la orden del {doc3}.', mostrar:[{t:'Autorización', doc:'autcir'},{t:'Orden de cirugía', doc:'orcir'}]},
   ctl:{cel:[{t:'Fórmula médica {t3}', doc:'formula'}], fis:['Documento de identidad'], prep:[]}
 };
 var DOCREF={
@@ -1655,6 +1674,7 @@ var DOCREF={
   ter:function(d){ return d.ep==='fon' && d.ty==='orden' && !d.vencida; },
   carne:function(d){ return d.ty==='certificado'; },
   autcir:function(d){ return d.th==='cir' && d.ty==='autorizacion'; }, /* Fase 10 · Brief 02 */
+  orcir:function(d){ return d.th==='cir' && d.ty==='orden'; }, /* Fase 12 · Brief 05 (A) */
   formula:function(d){ return d.th==='med' && d.ty==='orden'; }
 };
 function docIx(ref){ var f=DOCREF[ref]; if(!f) return -1; for(var i=0;i<DOCS.length;i++) if(f(DOCS[i])) return i; return -1; }
@@ -1669,17 +1689,17 @@ function qllevarTxt(k){
 var CITA={ ped:{tipo:'A', de:'el control de {p1}', cierre:'el control de {p1}'},
   lip:{tipo:'B', de:'la toma del {labl} de {p3}'}, /* Fase 11 · Brief 01b: el texto sigue a la persona */
   ter:{tipo:'A', de:'la cita de {tvl} de {p2}', cierre:'la cita de {tvl} de {p2}', guarda:'fon', p:'{wtv}', ords:'Órdenes de la cita de {tvl}'},
-  cir:{tipo:'A', de:'la {t2x} de {p3}', cierre:'la {t2x} de {p3}', guarda:'ort', p:'{wt2}', ords:'Órdenes de la {t2x}', pasos:true},
+  cir:{tipo:'A', de:'la {t2x} de {p3}', cierre:'la {t2x} de {p3}', guarda:'ort', p:'{wt2}', ords:'Órdenes de la {t2x}', pasos:true,
+    compacto:true}, /* Fase 12 · Brief 05 (A): compacto = el día antes, el día y «¿cómo le fue?» como en el lienzo (sin alarma, preguntas ni grabación) */
   ctl:{tipo:'A', de:'el control de {p3}', cierre:'el control de {p3}', formula:true} };
 /* Fase 10 · Brief 02: el trámite es de la dueña de la cuenta (Fase 11 · Brief 01b: {qmed} es {p3}, así que med y ctl no lo son) */
-var PASOS_OK='<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div></div>';
-/* la autorización (D) transformada en A llega a "Resuelto" en su stepper */
-var PASOS_FIN=PASOS_OK+'<div class="step-lbl"><span>Orden</span><span>Autorización</span><span>Cita</span><span class="on">Resuelto</span></div>';
-/* Fase 11 · Brief 04 (B): el cierre de las citas lleva sus etiquetas, como el de la autorización. A (ped, ctl, ter, sig) y B (lip); cir sigue con PASOS_FIN */
-var PASOS_A=PASOS_OK+'<div class="step-lbl"><span>Orden</span><span>Cita</span><span>¿Cómo<br>te fue?</span><span class="on">Resuelto</span></div>'; /* Fase 11 · stepper: «¿Cómo te fue?» en dos líneas, para que quepa bajo su círculo */
 var PASOS_B_L=['Orden','Toma','Resultado']; /* Fase 11 · Brief 14: el examen tiene tres pasos (sale «Resuelto») */
-var PASOS_B=pasosHTML(PASOS_B_L, 2).replace('<div class="sd now">3</div>','<div class="sd done">'+OK_IC+'</div>'); /* los tres con check y «Resultado» en negrilla */
-function pasosCierre(k){ return (CITA[k]&&CITA[k].pasos) ? PASOS_FIN : (CITA[k]&&CITA[k].tipo==='B') ? PASOS_B : PASOS_A; }
+var CIR_PASOS=['Radicada','En revisión','Aprobada']; /* Fase 12 · Brief 05 (A): la barra del radicado, como en el lienzo */
+var CIR_APROB=['10 de noviembre','10 nov','Martes, 10 de noviembre']; /* Fase 12 · Brief 05 (A): la aprobación del camino principal (ver cir.simAprobada). (B): la fecha larga, para la notificación */
+/* Fase 12 · Brief 06 (A): ramas D (se estanca el sáb 14, después del plazo del 13) y E (la niegan el mar 10). Las dos se aprueban
+   el mar 17, antes de las fechas de cirugía (18 y 20). [3] sirve para contar los días desde la radicación (HOY_SIM) */
+var CIR_APROB2=['17 de noviembre','17 nov','Martes, 17 de noviembre', new Date(2026,10,17)];
+function cirAprob(c){ return c && c.pill==='Radicado' ? CIR_APROB : CIR_APROB2; }
 /* Fase 11 · stepper en cada cambio de paso: el mismo .stepper + .step-lbl de la autorización. cur = índice del paso actual (.now/.on);
    los anteriores llevan check y los siguientes su número. Solo va en el mensaje del cambio de paso, nunca fijo arriba del hilo */
 function pasosHTML(labels, cur){
@@ -1690,6 +1710,17 @@ function pasosHTML(labels, cur){
     l+='<span'+(i===cur ? ' class="on"' : '')+'>'+t+'</span>';
   });
   return '<div class="stepper">'+d+'</div><div class="step-lbl">'+l+'</div>';
+}
+/* Fase 12 · Brief 08Ac: tarjeta de estado de la cirugía (marcos F05, F08): caja con borde de éxito, la línea de estado arriba y el stepper
+   compacto de tres columnas. cur = paso actual (3 = los tres hechos). doc = la fila de la autorización, solo en la aprobada */
+function cirEstadoHTML(linea, cur, doc){
+  var p='';
+  CIR_PASOS.forEach(function(t, i){
+    var st= i<cur ? 'done' : i===cur ? 'now' : 'todo';
+    p+='<div class="cir-paso '+st+'"><span class="cir-pd">'+(i<cur ? OK_IC : i+1)+'</span><span class="cir-pl">'+t+'</span></div>';
+  });
+  return '<div class="cir-est"><div class="cir-est-l"><span class="cir-est-ok" aria-hidden="true">'+OK_IC+'</span><span>'+linea+'</span></div>'+
+    '<div class="cir-pasos" style="--avance:'+(Math.min(cur, CIR_PASOS.length-1)/(CIR_PASOS.length-1))+'">'+p+'</div>'+(doc ? '<div class="cir-est-doc" style="--tinte:var(--'+(TINTVAR[fx('{wt2}')] || 'marta')+'-t)">'+doc+'</div>' : '')+'</div>'; /* el ícono, en el tinte de la persona de la cirugía */
 }
 /* al agendar: la orden ya está y la cita (o la toma) es el paso actual. cir no: su comprobante sigue con el de la autorización */
 function pasosAgendar(k){ if(!CITA[k] || CITA[k].pasos) return ''; return pasosHTML(CITA[k].tipo==='B' ? PASOS_B_L : ['Orden','Cita','¿Cómo<br>te fue?','Resuelto'], 1); }
@@ -1723,6 +1754,7 @@ function medAvisoRecibida(n){
   var nuevo={who:'t', medAviso:1, wgt:medAvisoHTML(n, true)};
   if(ix<0){ commit('med', nuevo); return; } /* sin la tarjeta en el hilo (no debería pasar): se publica una */
   var viejo=ms[ix]; ms[ix]=nuevo;
+  if((viejo.wgt||'').indexOf('data-act="quees"')>=0) nuevo.wgt+=queEsLink('med'); /* Fase 12 · Brief 09C: el enlace sigue en el primer mensaje */
   if(cur==='TH' && curThread==='med') [].forEach.call(TH.children, function(e){ if(e.__m===viejo){ var x=msgEl(nuevo); x.style.animation='none'; TH.replaceChild(x, e); } });
 }
 function esTuyo(k){ return fx(THREADS[k].p)==='Tú'; }
@@ -1758,7 +1790,7 @@ function proPreparar(){
   c.av=slot; c.c = 'var(--'+OB_VAR[slot]+')'; /* Fase 10 · Brief 18: el color de la persona del control */
   c.frase=de; c.fraseCorta = tuyo ? null : 'el {t1l}';
   c.sub=quien+' · Agendar la cita'; c.pill='Pendiente'; c.pc='pendiente'; c.sinCupo=false; c.vence='28 de noviembre'; /* Fase 11 · Brief 01b */
-  THREADS.ped.p=quien; THREADS.ped.sub=quien+' · <em>Vence el 28 de noviembre</em>';
+  THREADS.ped.p=quien; THREADS.ped.sub=quien+' · <em class="plazo">Vence el 28 de noviembre</em>'; /* Fase 12 · Brief 05 (A): el plazo en negrilla, sin rojo */
   proPend={ep:'pro', t:'Orden de {t1l}', s:'Dra. Paula Rincón · 29 de octubre', p:'{wt1}', ty:'orden', cat:'ord', th:'ped', pag:1, demo:1};
   return proPend;
 }
@@ -1792,11 +1824,11 @@ function rankAgenda(c){ return c.fase==='hoy'?0 : c.st==='trabado'?1 : c.fase===
 function horaDe(c){ return ((c&&c.when)||'').split(' · ')[1]||''; }
 /* suma minutos a una hora "3:00 p.m." y la devuelve en el mismo formato */
 function horaMas(h, min){
-  var m=(h||'').match(/(\d{1,2}):(\d{2})\s*([ap])\.m\./); if(!m) return h;
+  var m=(h||'').match(/(\d{1,2}):(\d{2})\s*([ap])\.\s?m\./); if(!m) return h; /* Fase 12 · Brief 05 (A): también lee «7:00 a. m.» (las fechas de la cirugía) */
   var t=(parseInt(m[1],10)%12)*60+parseInt(m[2],10)+(m[3]==='p'?720:0)+min;
   t=((t%1440)+1440)%1440;
   var hh=Math.floor(t/60), mm=t%60;
-  return ((hh%12)||12)+':'+(mm<10?'0':'')+mm+' '+(hh<12?'a.m.':'p.m.');
+  return ((hh%12)||12)+':'+(mm<10?'0':'')+mm+' '+(hh<12?'a. m.':'p. m.'); /* Fase 12 · Brief 09C */
 }
 /* "Lun 9 nov · 3:00 p.m." → "lunes 9 de noviembre" */
 /* Fase 10 · Brief 02b: el mes sale de c.when (antes "de septiembre" iba fijo) */
@@ -1814,7 +1846,7 @@ function renderCalendario(){
   var mc0=card('med'), ml0=mc0 && (mc0.st==='accionable' || mc0.st==='trabado') && okFam(mc0) && fechaLim(mc0).match(/(\d{1,2}) de noviembre/);
   if(ml0 && !byDay[+ml0[1]]) byDay[+ml0[1]]=mc0;
   var gridH='';
-  CAL_DIAS.forEach(function(d){ /* Fase 11 · Brief 01b: noviembre, del lunes 2 al miércoles 18 */
+  CAL_MES.forEach(function(d){ /* Fase 11 · Brief 01b: noviembre, del lunes 2 al miércoles 18. Fase 12 · Brief 05 (B): hasta el 30, para que quepan las fechas de la cirugía (CAL_DIAS sigue en el selector de días) */
     var c=byDay[d];
     if(c){
       /* Fase 10 · Rediseño · Brief 09: punto y borde del calendario con el color de la persona (PCOL), ya no la variante oscura */
@@ -1847,6 +1879,8 @@ function renderCalendario(){
   /* Fase 11 · Brief 05 (A): la fecha de cada evento, antes repetida con su estilo inline en citas y entrega.
      Brief 05 (ajuste): sin estilo inline; .cal-fecha pone 8 hasta su tarjeta y 16 desde el día anterior */
   var fechaP=function(t){ return '<p class="cal-fecha">'+t+'</p>'; };
+  /* Fase 12 · Brief 09B: encabezados cortos y todos iguales, como el lienzo («Lun 9 nov», «Vie 4 dic»); el día de la semana sale de la fecha */
+  var fechaCorta=function(dia, mesLargo){ var m=MESNUM[mesLargo]; return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][new Date(HOY_SIM.getFullYear(), m, dia).getDay()]+' '+dia+' '+MESCORTO[m]; };
   if(!citas.length && !showEntrega && !medEv){
     listH+='<p style="font-size:var(--fs-cuerpo);color:var(--r-texto-2);text-align:center;padding:30px var(--esp-xl);line-height:var(--lh-cuerpo);">'+
       /* Fase 11 · Brief 05 (A): el vacío se queda corto */
@@ -1856,17 +1890,15 @@ function renderCalendario(){
     var evs=[];
     citas.forEach(function(c){
       var parts=c.when.split(' · '), dparts=parts[0].split(' ');
-      var dowFull=DOWFULL[dparts[0]]||dparts[0];
       var av=fx(c.av), col=PCOL[av]||c.c||'var(--r-borde)';
       /* Fase 10 · Brief 14 (corrección): la cita toma el estilo de las filas de Inicio (lienzo 47): sin franja, tinte de la persona (--tinte, como todoRowHTML) y pill "Resuelto" en vez del ✓ */
       var tinte = TINTVAR[av] ? ' style="--tinte:var(--'+TINTVAR[av]+'-t)"' : '';
       var mes=MESFULL[dparts[2]]||'noviembre'; /* Fase 11 · Brief 01b: el mes sale de c.when */
-      evs.push({o:MESNUM[mes]*100+(+dparts[1]), h:fechaP(dowFull+' '+dparts[1]+' de '+mes)+
+      evs.push({o:MESNUM[mes]*100+(+dparts[1]), f:fechaCorta(+dparts[1], mes), h: /* Fase 12 · Brief 09B: antes «Lunes 9 de noviembre». La fecha va aparte: se escribe una vez por día (ver abajo) */
         '<button type="button" class="card cal-appt" data-go="F2" data-thread-key="'+c.k+'">'+
           '<span class="appt-in"'+tinte+'>'+
             '<span class="av" data-p="'+av+'" style="background:'+col+'">'+av+'</span>'+
-            '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+c.t+'</span><span class="card-sub">'+parts[1]+' · '+(c.sede||'')+'</span></span>'+
-            (c.st==='resuelto' ? '<span class="pill completo">Resuelto</span>' : '')+
+            '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+c.t+'</span><span class="card-sub">'+(c.st==='resuelto' ? '<span class="cal-res">Resuelto ·</span> ' : '')+parts[1]+' · '+(c.sede||'')+'</span></span>'+ /* Fase 12 · Brief 09B: una línea; lo resuelto la empieza en verde (sale la pastilla «Resuelto») */
             '<span class="chev">'+CARD_CHEV+'</span>'+
           '</span>'+
         '</button>'});
@@ -1875,8 +1907,7 @@ function renderCalendario(){
     if(medEv){
       var eav=fx(mc.av), ecol=PCOL[eav]||mc.c||'var(--r-borde)';
       var etinte = TINTVAR[eav] ? ' style="--tinte:var(--'+TINTVAR[eav]+'-t)"' : '';
-      var edow=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][new Date(HOY_SIM.getFullYear(), MESNUM[medEv.mes], medEv.day).getDay()];
-      evs.push({o:MESNUM[medEv.mes]*100+medEv.day, h:fechaP(edow+' '+medEv.day+' de '+medEv.mes)+
+      evs.push({o:MESNUM[medEv.mes]*100+medEv.day, f:fechaCorta(medEv.day, medEv.mes), h: /* Fase 12 · Brief 09B */
         '<button type="button" class="card cal-appt" data-thread="med" data-from="cal">'+
           '<span class="appt-in"'+etinte+'>'+
             '<span class="av" data-p="'+eav+'" style="background:'+ecol+'">'+eav+'</span>'+
@@ -1885,18 +1916,20 @@ function renderCalendario(){
           '</span>'+
         '</button>'});
     }
-    evs.sort(function(a,b){ return a.o-b.o; }).forEach(function(e){ listH+=e.h; });
+    /* Fase 12 · Brief 09B (ajuste): dos eventos del mismo día van bajo un solo encabezado (antes «Mié 18 nov» salía dos veces) */
+    var fechaUlt='';
+    evs.sort(function(a,b){ return a.o-b.o; }).forEach(function(e){ if(e.f!==fechaUlt) listH+=fechaP(e.f); fechaUlt=e.f; listH+=e.h; });
     /* Hallazgo #6 · la entrega vive solo en la lista (no en la grilla, que sigue fija a noviembre). Fase 10 · Brief 14 (corrección 2): mismo .appt-in que las citas, con su píldora */
     if(showEntrega){
       var mav=fx(mc.av), mcol=PCOL[mav]||mc.c||'var(--r-borde)';
       /* Fase 10 · Brief 14 (corrección 2): la entrega toma el mismo estilo que las citas (.cal-appt + .appt-in con --tinte), sin franja */
       var mtinte = TINTVAR[mav] ? ' style="--tinte:var(--'+TINTVAR[mav]+'-t)"' : '';
-      listH += fechaP(mc.entrega.dia+' de '+mc.entrega.mesTexto)+
+      var fEnt=fechaCorta(mc.entrega.dia, mc.entrega.mesTexto);
+      listH += (fEnt!==fechaUlt ? fechaP(fEnt) : '')+ /* Fase 12 · Brief 09B: antes «4 de diciembre», sin día */
         '<button type="button" class="card cal-appt" data-go="F2" data-thread-key="med">'+
           '<span class="appt-in"'+mtinte+'>'+
             '<span class="av" data-p="'+mav+'" style="background:'+mcol+'">'+mav+'</span>'+
-            '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+mc.t+'</span><span class="card-sub">Disponible en {far1} y {far2}</span></span>'+
-            '<span class="pill '+mc.pc+'">Entrega</span>'+
+            '<span class="card-main"><span class="card-title" style="font-size:var(--fs-cuerpo);">'+mc.t+'</span><span class="card-sub">Entrega 3 de 3 · {far1}</span></span>'+ /* Fase 12 · Brief 09B: una línea, sin la pastilla «Entrega». Solo existe tras reclamar la 2, así que la que sigue es la 3 */
             '<span class="chev">'+CARD_CHEV+'</span>'+
           '</span>'+
         '</button>';
@@ -1934,10 +1967,10 @@ function nocitaHTML(okFam){
   ls.forEach(function(c){
     var av=fx(c.av), f=fechaLim(c), m=f.match(/(\d{1,2}) de (\w+)/);
     var fecha = m ? '<b>'+m[1]+'</b>'+MESCORTO[MESNUM[m[2]]] : '<b>—</b>sin fecha';
-    var det = c.desde ? 'Desde el '+f : f ? PNAME[av]+' · la orden vence ese día' : PNAME[av];
+    var det = c.desde ? 'Desde el '+f : f ? 'La orden vence ese día' : ''; /* Fase 11 · Brief 19: sin el nombre (ya está el avatar); sin fecha, sin línea */
     h+='<button type="button" class="nocita-r" data-thread="'+c.k+'" data-from="cal"><span class="nocita-f">'+fecha+'</span>'+
       '<span class="av" data-p="'+av+'" style="background:'+(PCOL[av]||'var(--r-borde)')+'">'+av+'</span>'+
-      '<span class="card-main"><span class="todo-t">'+c.t+'</span><span class="todo-s">'+det+'</span></span>'+
+      '<span class="card-main"><span class="todo-t">'+c.t+'</span>'+(det ? '<span class="todo-s">'+det+'</span>' : '')+'</span>'+
       '<span class="chev">'+CARD_CHEV+'</span></button>';
   });
   return h+'</div></div>';
@@ -1993,8 +2026,8 @@ function renderCalDetail(){
    HILOS — el chat de verdad
    ============================================================ */
 var THREADS = {
-  ped:{title:'{t1}', p:'{p1}', sub:'{p1} · <em>Vence en 4 días</em>', av:'{wt1}', msgs:[], started:false},
-  cir:{title:'{t2}', p:'{p3}', sub:'{p3} · orden del 7 oct',         av:'{wt2}', /* Fase 11 · Brief 01b */ msgs:[], started:false},
+  ped:{title:'{t1}', p:'{p1}', sub:'{p1} · <em class="plazo">Vence en 4 días</em>', /* Fase 12 · Brief 05 (A): el plazo en negrilla, sin rojo */ av:'{wt1}', msgs:[], started:false},
+  cir:{title:'{t2}', p:'{p3}', sub:'{p3} · Radicar la autorización', /* Fase 12 · Brief 05 (A): la línea del lienzo */ av:'{wt2}', /* Fase 11 · Brief 01b */ msgs:[], started:false},
   med:{title:'{t3}', p:'{qmed}', sub:'{qmed} · fórmula de 3 entregas', av:'{wt3}', msgs:[], started:false},
   ter:{title:'{tv}', p:'{p2}', sub:'{p2} · vigente hasta diciembre', av:'{wtv}', msgs:[], started:false},
   lip:{title:'{lab}',p:'{p3}', sub:'{p3} · orden del 9 oct',         av:'{wlab}', msgs:[], started:false},
@@ -2009,20 +2042,30 @@ var THREADS0 = JSON.parse(JSON.stringify(THREADS));
    una línea completa de alto en vez de ahorrarla. Doctor y sede se funden en una línea con pin, sin el chip
    con borde de antes; con nombres largos igual puede pasar a dos líneas, pero ya no suma una tercera arriba.
    `when` sigue completo en data-slot (se usa tal cual en otras pantallas), acá solo se separa para mostrarlo. */
-function slotHTML(fr,when,doc,sede){
+function slotHTML(fr,when,doc,sede,soloSede){
   /* Fase 10 · Rediseño · Brief 11 (corrección, lienzo 45): textos a la izquierda ("Lun 9 nov · 9:00 a.m." en una línea y debajo
      "Doctor · Sede") y el indicador a la derecha. Sin íconos de mañana/tarde ni pin. La elegida toma el tinte de la persona (--tinte en #TH) */
+  /* Fase 12 · Brief 05 (A): soloSede = la cirugía nombra al médico en el título; debajo va solo la sede */
   return '<button type="button" class="slot" data-slot="'+when+'" data-doc="'+doc+'" data-sede="'+sede+'">'+
     '<span class="slot-main"><span class="slot-when">'+when+'</span>'+
-    '<span class="slot-who">'+doc+' · '+sede+'</span></span>'+
+    '<span class="slot-who">'+(soloSede ? sede : doc+' · '+sede)+'</span></span>'+
     '<span class="slot-radio" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l4 4 8-9"/></svg></span></button>';
 }
 /* 3 sugeridos: los más cercanos, repartidos entre mañana y tarde */
 /* Fase 6 · el mes entra en el día ("Lun 9 nov"), no en la hora — sin mes, "Lun 9" asume el mes
    sin decirlo, y una cita sí se puede agendar con meses de anticipación */
 /* Fase 10 · Brief 02: ped vence el 10 de noviembre → solo se ofrecen los horarios anteriores (lun 9). Fase 11 · Brief 01b: fechas de la ficha */
+/* Fase 12 · Brief 05 (A): las fechas del lienzo son solo de la cirugía (marco 9; otra = rama G, «No pudo ir»). Las demás citas no cambian */
+var CIR_FECHAS=[['Mié 18 nov · 7:00 a. m.','Vie 20 nov · 9:30 a. m.'],['Lun 23 nov · 7:00 a. m.','Jue 26 nov · 9:30 a. m.']];
+function cirFechasWgt(otra){
+  return '<div class="wgt-t">'+(otra ? 'Te busco otra fecha. {eps} tiene estas con el {doc3}:' : '{eps} tiene estas fechas con el {doc3}:')+'</div>'+
+    CIR_FECHAS[otra?1:0].map(function(w){ return slotHTML('am',w,'{doc3}','{sede3}',true); }).join('')+
+    '<button type="button" class="btn-p" data-act="ped.confirmar" disabled>Confirmar fecha</button>'+
+    '<button type="button" class="link-u" data-act="cir.ninguna" data-otra="'+(otra?1:0)+'">No me sirve ninguna</button>';
+}
 function slotsWgt(k){
   if(k===undefined) k=K();
+  if(k==='cir') return cirFechasWgt(false); /* Fase 12 · Brief 05 (A) */
   return '<div class="wgt-t">Estos son los horarios más cercanos</div>'+
     slotHTML('am','Lun 9 nov · 9:00 a.m.','{doc1}','{sede2}')+
     slotHTML('pm','Lun 9 nov · 3:00 p.m.','{docm}','{sede1}')+
@@ -2034,6 +2077,7 @@ function slotsWgt(k){
 /* Fase 11 · Brief 01b: noviembre. CAL_DIAS = la cuadrícula (lun 2 a mié 18); el lunes 16 es festivo y no tiene cupo */
 var CAL_DIAS=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
 var DIAS_LIBRES=[9,10,12,13,17,18];
+var CAL_MES=[]; for(var cmD=2; cmD<=30; cmD++) CAL_MES.push(cmD); /* Fase 12 · Brief 05 (B): la cuadrícula de la pestaña Calendario, lun 2 a lun 30 de noviembre */
 /* Fase 10 · Brief 02: para ped, el 10 (sin cupo) y los días después del vencimiento van en gris */
 function calWgt(k){
   if(k===undefined) k=K();
@@ -2129,23 +2173,15 @@ function citaPideConfirmar(k, ok){
   var cuando=cap1(fechaCita(c))+', '+horaDe(c);
   document.getElementById('cancSub').textContent = cuando+(/\.$/.test(cuando) ? '' : '.')+' Después tendrás que buscar otro cupo.'; /* "9:00 a.m." ya trae el punto */
   cancelPend=ok;
-  document.getElementById('scrimCancelar').style.display='flex';
+  abrirHoja('scrimCancelar');
 }
 /* Fase 11 · Brief 04b (B): lo que cambia de la queja ante Supersalud según el trámite */
+/* Fase 12 · Brief 06 (A): sale QUEJA.cir. La queja de la cirugía tiene sus propios pasos (cir.queja, cir.quejaEnviar), como el lienzo */
 var QUEJA={
-  cir:{motivo:'no respondió la autorización en 5 días hábiles', adjunto:'el radicado AUT-2026-11938 y el plazo vencido',
-    adjCorto:'Adjunté el radicado y el plazo vencido.', radicado:'SNS-2026-84417', chip:['cir.simAprobada','Simular: llegó la autorización'],
-    despues:function(){
-      setCard('cir',{st:'encurso', sub:'{p3} · queja en Supersalud', pill:'Escalado', pc:'espera',
-        bov:['{p3} · queja enviada a Supersalud','Escalado','espera']}, '{t2} ya está en «En curso»'); /* Fase 10 · Rediseño · Brief 10 */
-      THREADS.cir.sub='{p3} · queja en Supersalud'; refreshHilo('cir');
-      renderInicio();
-    }},
   med:{motivo:'no llevó el {t3n} a domicilio en 48 horas', adjunto:'la constancia de que no había',
     adjCorto:'Adjunté la constancia de que no había.', radicado:'SNS-2026-85102', chip:['med.domicilio','Simular: llegó a domicilio'],
     despues:function(){ /* Fase 11 · Brief 05 (B): como cir, la tarjeta de Inicio dice que la queja va y que espera la entrega */
-      setCard('med',{sub:'{qmed} · queja enviada, espera la entrega', pill:'Escalado', pc:'espera'});
-      THREADS.med.sub='{qmed} · queja enviada, espera la entrega'; refreshHilo('med');
+      medSub('Queja enviada por la entrega '+medEntregaN()+' de 3', {pill:'Escalado', pc:'espera'}); /* Fase 12 · Brief 08A: con el número, para que medEntregaN() lo siga leyendo */
       renderInicio();
     }}
 };
@@ -2170,7 +2206,7 @@ function bloquearActs(k, acts){
 /* la orden nueva quedó pedida: fuera los horarios viejos y la tarjeta pasa a "Solicitada" hasta el chip "Simular: llegó la orden nueva" */
 function ordenSolicitada(k){
   bloquearActs(k,['ped.agendar','ped.confirmar','ped.mas','ped.dia','ped.nueva']);
-  setCard(k,{st:'encurso', sub:THREADS[k].p+' · esperando orden nueva', pill:'Solicitada', pc:'espera'}, THREADS[k].title+' ya está en «En curso»');
+  setCard(k,{st:'encurso', sub:THREADS[k].p+' · esperando orden nueva', pill:'Solicitada', pc:'espera'}, k==='cir' ? null : THREADS[k].title+' ya está en «En curso»'); /* Fase 12 · Brief 06 (B): en la cirugía, sin aviso en Inicio */
   THREADS[k].sub=THREADS[k].p+' · esperando orden nueva'; refreshHilo(k);
   renderInicio();
 }
@@ -2205,13 +2241,13 @@ var PROB_H={
   nonecesito:function(k){ play(k,[{who:'t', wgt:probConfirmaCierre(k)}]); },
   nollegan:function(k){ play(k,[{who:'t', /* Fase 10 · Brief 42: sin think */ text:'Cada laboratorio tiene su tiempo. Los resultados pueden quedar listos sin llegar al correo.' /* Fase 11 · Brief 01: sin "a veces" */+' Si en dos semanas no han llegado, te aviso y te digo cómo pedirlos.'},
     {who:'t', wgt:simChip('cita.resultados','Simular: llegaron los resultados')}]); },
-  farmacia:function(k){ play(k,[{who:'t', cara:'atenta', think:1, comp:{t:'Dejé constancia de que hoy no había', s:'{eps} tiene 48 horas para llevártelo a casa.', time:'Hoy · 9:41 a.m.'}},
+  farmacia:function(k){ medSub('La entrega '+medEntregaN()+' de 3 llega a casa'); /* Fase 12 · Brief 08A */ play(k,[{who:'t', cara:'atenta', think:1, comp:{t:'Dejé constancia de que hoy no había', s:'{eps} tiene 48 horas para llevártelo a casa.', time:'Hoy · 9:41 a.m.'}},
     {who:'t', wgt:'<div class="chipwrap">'+ /* Fase 11 · Brief 04b (B): también puede no llegar */
       '<button type="button" class="chip-o chip-sim" data-act="med.domicilio">'+SIM_IC+'Simular: llegó a domicilio</button>'+
       '<button type="button" class="chip-o chip-sim" data-act="med.noLlego">'+SIM_IC+'Simular: no llegó</button></div>'}]); },
   notomo:function(k){ play(k,[{who:'t', text:'Entiendo. Antes de dejarla, cuéntaselo a quien la formuló. ¿Te ayudo a pedir un control?'} /* Fase 11 · Brief 04 (C) */,
     {who:'t', wgt:'<button type="button" class="btn-s" data-act="med.pedirctl">Pedir un control</button><button type="button" class="btn-s" data-act="med.hablado">Ya lo hablé con el médico</button>'}]); },
-  falta:function(k){ play(k,[{who:'t', wgt:'<div class="wgt-t">Te lo explico corto</div><div class="wgt-d">'+CIR_INTRO+'</div><button type="button" class="btn-p" data-act="cir.radicar">Entendido, radícala</button>'}]); },
+  falta:function(k){ play(k,[{who:'t', wgt:'<div class="wgt-t">Te lo explico corto</div><div class="wgt-d">'+CIR_INTRO.split('<br>').join('</div><div class="wgt-d">') /* Fase 12 · Brief 08A: una frase por bloque */+'</div><button type="button" class="btn-p" data-act="cir.radicar">Entendido, radícala</button>'}]); },
   otravez:function(k){ tramReabrir(k,false); },
   otra:function(k){ play(k,[{who:'t', text:'Cuéntame qué pasa con tus palabras. Si no puedo resolverlo, te digo a quién acudir.'} /* Fase 11 · Brief 04 (C) */,
     {who:'t', wgt:'<button type="button" class="btn-s" data-act="nm.humano">Hablar con una persona</button>'}]); }
@@ -2224,20 +2260,63 @@ function probRun(k, o, txt){
 }
 /* al salir del desvío, se retoma el accionable propio de cada trámite */
 function resumeWgt(k){
-  if(k==='cir' && !cirEsCita(card('cir'))) /* Fase 10 · Brief 21: la autorización aprobada ya es cita */ return '<div class="wgt-t">Seguimos, entonces</div><div class="wgt-d">La orden del {doc3} está lista para radicar ante {eps}.</div><button type="button" class="btn-p" data-act="cir.radicar">Radicar autorización</button>';
+  if(k==='cir' && !cirEsCita(card('cir'))) /* Fase 10 · Brief 21: la autorización aprobada ya es cita */ return '<div class="wgt-t">Seguimos, entonces</div><div class="wgt-d">La orden del {doc3} está lista para radicar ante {eps}.</div><button type="button" class="btn-p" data-act="cir.radicar">Prepárala conmigo</button>'; /* Fase 12 · Brief 05 (A): el botón del lienzo */
   if(k==='med') return '<div class="wgt-t">Seguimos, entonces</div><div class="wgt-d">Entrega 2 de 3 · disponible en {far1} y {far2}.</div><button type="button" class="btn-p" data-act="med.reclamar">Marcar como reclamada</button>';
   return slotsWgt(k); /* Fase 10 · Brief 02 */
 }
 
-/* Fase 11 · Brief 04 (C): un solo texto para la intro de la autorización (INTRO.cir y PROB_H.falta) */
-var CIR_INTRO='Esta cirugía se ordenó por fuera de la red de {eps}. Por eso necesita autorización antes de darte fecha. Yo radico la solicitud y sigo el plazo.';
+/* Fase 11 · Brief 04 (C): un solo texto para la intro de la autorización (INTRO.cir y PROB_H.falta).
+   Fase 12 · Brief 05 (A): sale «Esta cirugía se ordenó por fuera de la red…»; queda el segundo mensaje del marco 2 */
+var CIR_INTRO='{eps} solo recibe órdenes de menos de un mes.<br><b>Hay que radicar antes del 7 de noviembre.</b><br>Yo la radico; tú solo revisas y confirmas.';
+/* Fase 12 · Brief 05 (A): los 3 documentos que se adjuntan son los de la consulta ort que ya están en DOCS (no se crean nuevos).
+   El lienzo dice «biometría»; aquí es «Exámenes previos a la cirugía», así se mantienen los 12 documentos */
+function cirAdj(){
+  var ty=['orden','soporte','resultado'], t=['Orden de cirugía','Historia clínica de oftalmología','Exámenes previos a la cirugía'],
+      s=['{doc3} · 7 oct','{doc3} · 7 oct','Resultado · 16 oct'];
+  return ty.map(function(x,i){ var ix=-1; DOCS.forEach(function(d,j){ if(ix<0 && d.ep==='ort' && d.ty===x) ix=j; }); return {ix:ix, t:t[i], s:s[i]}; });
+}
+/* una fila por documento (.exlist/.exrow): abre el visor. A la derecha: ok=true, check verde; ok=texto, ese texto como enlace.
+   Fase 12 · Brief 08A: miniatura de 32 × 42 (la hoja .t-hoja de la cámara) y sin la flecha (marcos 2 y 3) */
+function cirDocRow(ix, t, s, ok){
+  return '<button type="button" class="exrow ex-doc" data-docview="'+ix+'"><span class="t-hoja ex-th" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'+
+    '<span class="ex-tx"><span class="ex-v">'+t+'</span><span class="ex-k">'+s+'</span></span>'+
+    (ok===true ? '<span class="ex-mk">'+OK_IC+'</span>' : ok ? '<span class="ex-ver">'+ok+'</span>' : '')+'</button>';
+}
+/* Fase 12 · Brief 06 (A): la fila «clave · valor» de las revisiones (marco 4, D2 y E2), antes local de cir.revisar */
+function cirFila(k,v){ return '<div class="exrow"><span><span class="ex-k">'+k+'</span><span class="ex-v">'+v+'</span></span></div>'; }
+/* Fase 12 · Brief 06 (A): D · {eps} no respondió (también al volver de «Ahora no» y de «Simular: pasaron dos días») y E · la negó */
+function cirMsgD(){
+  /* «Esperar dos días más» sale una sola vez: después de esperar (c.espero), D vuelve corta y solo con la queja */
+  var c=card('cir');
+  if(c && c.espero) return {who:'t', cara:'atenta', wgtCls:'err', wgt:'<div class="wgt-t">'+WARN+'Siguen sin responder.</div>'+
+    '<div class="wgt-d"><b>La demora es de {eps}, no tuya.</b></div>'+
+    '<button type="button" class="btn-p" data-act="cir.queja">Prepara la queja conmigo</button>'};
+  return {who:'t', cara:'atenta', wgtCls:'err', wgt:'<div class="wgt-t">'+WARN+'{eps} no respondió a tiempo.</div>'+
+  '<div class="wgt-d">El plazo era el 13 de noviembre. <b>La demora es de {eps}, no tuya.</b></div>'+
+  '<div class="wgt-d">Puedo poner una queja ante la Superintendencia de Salud con el radicado #45892.</div>'+
+  '<button type="button" class="btn-p" data-act="cir.queja">Prepara la queja conmigo</button>'+
+  '<button type="button" class="link-u" data-act="cir.esperar">Esperar dos días más</button>'}; }
+/* Fase 12 · Brief 06 (A): los chips «se estancó» y «negaron» del radicado siguen activos (se pueden alternar), pero solo mientras la
+   autorización está radicada, estancada o negada. Después (queja, reconsideración, aprobada) un toque suelto ya no rompe el camino */
+/* Fase 12 · Brief 08Ac: al cambiar de estado (se estancó, negaron, pasaron dos días, aprobada) se bloquean los botones de D, E y sus revisiones.
+   Se llama ANTES de pintar el mensaje nuevo, para que el último siga activo */
+var CIR_RAMA_ACTS=['cir.queja','cir.esperar','cir.quejaEnviar','cir.quejaAhoraNo','cir.revisarApelacion','cir.apelar','cir.cancelarApelacion','cir.llamar'];
+function cirSimRamaOk(){ var c=card('cir'); return !!c && /^(Radicado|Estancado|Negada)$/.test(c.pill); }
+function cirMsgE(){ return {who:'t', cara:'atenta', wgtCls:'err', wgt:'<div class="wgt-t">'+WARN+'{eps} negó la autorización.</div>'+
+  '<div class="wgt-d">Dice que faltó la justificación médica, pero sí estaba. <b>No fue culpa tuya.</b></div>'+
+  '<div class="wgt-d">Puedo pedir que reconsideren, con la justificación de la historia clínica.</div>'+
+  '<button type="button" class="btn-p" data-act="cir.revisarApelacion">Pedir que reconsideren</button>'}; }
+function cirAdjHTML(){ return '<div class="exlist">'+cirAdj().map(function(a){ return cirDocRow(a.ix, a.t, a.s, true); }).join('')+'</div>'; }
 var INTRO = {
   ped: [{who:'t', wgt:'<div class="wgt-t">La orden del control de {p1} se vence el 10 de noviembre</div>'+
         '<div class="wgt-d">Puedo buscarte horarios disponibles en {eps} ahora mismo.</div>'+
         '<button type="button" class="btn-p" data-act="ped.agendar">Agendar cita</button>'}], /* Fase 10 · Brief 21 */
-  cir: [{who:'t', wgt:'<div class="wgt-t">Guardé esta orden del {doc3}</div>'+
-        '<div class="wgt-d">'+CIR_INTRO+'</div>'+ /* Fase 11 · Brief 04 (C) */
-        '<button type="button" class="btn-p" data-act="cir.radicar">Radicar autorización</button>'}], /* Fase 10 · Brief 21 */
+  /* Fase 12 · Brief 05 (A): marco 2, dos mensajes y los botones del lienzo. La miniatura de la orden abre el visor */
+  cir: [{who:'t', text:'Leí la orden de cirugía de {p3}.<br>Antes de agendar, <b>{eps} tiene que autorizarla.</b>'+
+          '<div class="exlist ex-sola">'+cirDocRow(cirAdj()[0].ix,'Orden de {t2x}','{doc3} · 7 oct',false)+'</div>'}, /* Fase 12 · Brief 08A: sin caja gris */
+        {who:'t', text:CIR_INTRO},
+        {who:'t', wgt:'<button type="button" class="btn-p" data-act="cir.radicar">Prepárala conmigo</button>'+
+          '<button type="button" class="btn-s" data-act="cir.quees">¿Qué es radicar?</button>'}],
   med: [{who:'t', medAviso:1, wgt:medAvisoHTML(medEntregaN(), false)}], /* Fase 10 · Brief 21. Fase 11 · aviso de entrega: la tarjeta de los puntos; se actualiza al llegar */
   ter: [{who:'t', wgt:'<div class="wgt-t">La orden de terapias de {p2} vence el 18 de diciembre</div>'+
         '<div class="wgt-d">Quedan 12 sesiones. Conviene pedir cupo con tiempo.</div>'+ /* Fase 11 · Brief 04 (C) */
@@ -2268,12 +2347,12 @@ function msgEl0(m0){
   if(m.toast){ d.className='toast'; d.innerHTML=m.toast+(undoTipo(curThread) ? ' <button type="button" class="u" data-undo="hilo">Deshacer</button>' : ''); return d; /* Fase 11 · Brief 10b */ }
   if(m.comp){
     d.className='row';
-    d.innerHTML=tAv(m.cara || (m.comp.fin ? 'celebra' : 'calma'))+'<div class="comp'+(m.comp.cancel?' cancel':'')+'">'+ /* Fase 10 · Rediseño · Brief 14: comp.fin = cierre a "Resuelto". Fase 11 · Brief 04b: cancel = X sobre blanco */
+    d.innerHTML=tAv(m.cara || 'calma')+'<div class="comp'+(m.comp.cancel?' cancel':'')+'">'+ /* Fase 11 · Brief 04b: cancel = X sobre blanco. Fase 12 · Brief 09C: sale comp.fin (el cierre es cierreMsg) */
       '<span class="comp-ck">'+(m.comp.cancel ? X_IC : '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>')+'</span>'+
       '<span class="comp-b"><span class="comp-t">'+m.comp.t+'</span>'+
       (m.comp.s?'<span class="comp-s">'+m.comp.s+'</span>':'')+
       (m.comp.x||'')+ /* Fase 10 · Brief 01: html extra del comprobante (stepper del cierre) */
-      '<span class="comp-time"><span>'+(m.comp.time||'Hoy · 9:41 a.m.')+'</span>'+(m.comp.canal ? ' <span>· '+m.comp.canal+'</span>' : '')+'</span>'+ /* Fase 11 · comprobantes: hora y canal en una línea; si no cabe, el canal baja entero */
+      '<span class="comp-time"><span>'+fx(m.comp.time||'Hoy · 9:41 a.m.') /* Fase 12 · Brief 06 (B): la hora pasa por horaDura */+'</span>'+(m.comp.canal ? ' <span>· '+m.comp.canal+'</span>' : '')+'</span>'+ /* Fase 11 · comprobantes: hora y canal en una línea; si no cabe, el canal baja entero */
       (m.comp.ev?'<button type="button" class="comp-ev" '+(m.comp.go?'data-go="'+m.comp.go+'"':'')+(m.comp.doc?' data-docview="'+m.comp.doc+'"':'')+'>'+
         (m.comp.icon||'<svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>')+
         m.comp.ev+'<span class="chev">'+CARD_CHEV+'</span></button>':'')+
@@ -2300,19 +2379,33 @@ function msgEl0(m0){
   /* Fase 10 · Rediseño · Brief 11: si solo trae una .btn-p es una acción que propone Taremi (lienzo 53, "Ver los horarios"):
      va en la columna de las burbujas y a lo ancho (row act); a la derecha quedan solo las respuestas de la persona */
   var soloAct = soloBtns && (m.wgt.match(/<button/g)||[]).length===1 && /<button[^>]*class="btn-p\b/.test(m.wgt);
-  d.className = soloAct ? 'row act' : soloBtns ? 'row opts' : 'row';
+  /* Fase 12 · Brief 05c: en la cirugía no hay botones de Taremi a la derecha. La fila queda marcada (__inb) y thAdd() mete su .wgt
+     en el mensaje de Taremi anterior; si no hay, queda como tarjeta de Taremi */
+  var inb = soloBtns && curThread==='cir';
+  d.className = inb ? 'row' : soloAct ? 'row act' : soloBtns ? 'row opts' : 'row';
+  if(inb) d.__inb=true;
   if(m.wgtCls && /\bfull\b/.test(m.wgtCls)) d.className += ' full'; /* Fase 10 · Rediseño · Brief 11: herramienta a ancho completo, sin la sangría del chat */
-  var inner = m.wgt ? '<div class="wgt'+(m.wgtCls?' '+m.wgtCls:'')+'">'+m.wgt+'</div>' : (m.raw ? m.raw : '<div class="bub t">'+m.text+'</div>');
-  /* Fase 10 · Rediseño · Brief 14: una fila de error (.wgt.err o .crit) va atenta */
-  d.innerHTML=tAv(m.cara || ((m.wgtCls && /\berr\b/.test(m.wgtCls)) || (m.raw && /class="crit"/.test(m.raw)) ? 'atenta' : 'calma'))+inner; /* Fase 11 · Brief 13: m.cara elige el gesto del avatar */
+  /* Fase 12 · Brief 08A: en las burbujas de Taremi cada frase (cortada por <br>) es su propio bloque .fr, con 12 entre ellas (marco 2) */
+  var inner = m.wgt ? '<div class="wgt'+(m.wgtCls?' '+m.wgtCls:'')+'">'+m.wgt+'</div>' : (m.raw ? m.raw : '<div class="bub t">'+String(m.text||'').split('<br>').map(function(f){ return '<div class="fr">'+f+'</div>'; }).join('')+'</div>');
+  /* Fase 10 · Rediseño · Brief 14: una fila de error (.wgt.err) va atenta. Fase 12 · Brief 06 (A): sale .crit */
+  d.innerHTML=tAv(m.cara || (m.wgtCls && /\berr\b/.test(m.wgtCls) ? 'atenta' : 'calma'))+inner; /* Fase 11 · Brief 13: m.cara elige el gesto del avatar */
   /* Fase 10 · Brief 03b: m.lk = widget ya bloqueado fuera del hilo (ver pegBloqueaAgendar); se vuelve a bloquear cada vez que se pinta */
   var lb=m0.lk && d.querySelector('.wgt button'); if(lb) lock(lb);
   return d;
 }
 
+/* Fase 12 · Brief 05c: una fila de solo botones (__inb) entra en el último mensaje de Taremi: su burbuja o su tarjeta (marco 2).
+   El .wgt lleva su propio __m para que lock() marque ese mensaje y no el de la burbuja; si antes no hay mensaje de Taremi, va sola */
+function thAdd(e){
+  var p=e.__inb && TH.lastElementChild,
+      box=p && /^row( full)?$/.test(p.className) && p.querySelector(':scope > .bub.t, :scope > .wgt');
+  if(!box){ TH.appendChild(e); return; }
+  var w=e.querySelector('.wgt'); w.classList.add('inb'); w.__m=e.__m;
+  box.classList.add('con-btns'); box.appendChild(w);
+}
 function renderThread(key){
   TH.innerHTML='';
-  THREADS[key].msgs.forEach(function(m){ var e=msgEl(m); e.style.animation='none'; TH.appendChild(e); });
+  THREADS[key].msgs.forEach(function(m){ var e=msgEl(m); e.style.animation='none'; thAdd(e); }); /* Fase 12 · Brief 05c: thAdd */
   down(true); /* Fase 10 */
 }
 function startEdit(id){
@@ -2339,7 +2432,7 @@ function seed(key, list){ list.forEach(function(m){ THREADS[key].msgs.push(m); }
 
 function commit(key, m){
   THREADS[key].msgs.push(m);
-  if(cur==='TH' && curThread===key){ TH.appendChild(msgEl(m)); down(); }
+  if(cur==='TH' && curThread===key){ thAdd(msgEl(m)); down(); } /* Fase 12 · Brief 05c: thAdd */
 }
 function makeTyping(){
   var d=document.createElement('div');
@@ -2373,7 +2466,7 @@ function play(key, list, fin){
 /* Fase 10 · Brief 06 · pestaña Taremi: el chat general es el hilo gen, con dos estados.
    Sin conversación (gen sin mensajes de la persona) → bienvenida con la mascota y 3 sugerencias;
    con conversación → se ve como un hilo, con la barra de contacto (#hdrHilo.gen). Brief 06b: ver genHello(). */
-var GEN_SUG=['¿Qué le toca a {p1}?','¿Cómo va la autorización?','¿Cuántas pastillas le quedan a {p3}?'];
+var GEN_SUG=['¿Cómo funciona Taremi?','¿Qué le toca a {p1}?','¿Cómo va la autorización?']; /* Fase 12 · Brief 01: la primera no depende de ninguna persona ni trámite */
 /* Fase 10 · Rediseño · Brief 13c (corrección): un chip que nombra a una persona solo sale si está en la familia (personaFuera);
    si sale alguno, lo reemplaza el siguiente chip general de CHIP_GEN */
 var CHIP_P={'¿Qué le toca a {p1}?':'SF', '¿Cuántas pastillas le quedan a {p3}?':'MA'}, /* Fase 11 · Brief 01b */ CHIP_GEN=['¿Cómo va la autorización?','¿Cuántas pastillas le quedan a {p3}?','¿Qué llevo a la cita?'];
@@ -2394,7 +2487,7 @@ function genHelloHTML(){
     '</div></div>';
 }
 /* Fase 10 · Brief 06b · una sola conversación: al entrar a la pestaña, el historial de gen queda arriba
-   y la bienvenida va al final (genHi = la bienvenida está a la vista). La barra de contacto se ve si hay historial. */
+   y la bienvenida va al final (genHi = la bienvenida está a la vista). Fase 12 · Brief 01: la barra de contacto (con volver) se ve siempre. */
 var genHi=false;
 function genHello(){
   var hist = THREADS.gen.msgs.length>0;
@@ -2402,7 +2495,6 @@ function genHello(){
   var h=d.firstChild;
   h.querySelector('.gen-hello-m').innerHTML=mascotaSVG('hola', hist ? 120 : 150); /* Fase 10 · Rediseño · Brief 14. Fase 11 · Brief 14c: con historial, más chica */
   TH.appendChild(h); genHi=true;
-  hdrHilo.style.display = hist ? 'block' : 'none';
   chips.style.display='none'; fab.classList.remove('fab-chips');
   TH.classList.toggle('gen-w', !hist);
 }
@@ -2418,9 +2510,18 @@ function genConv(){
 /* Fase 10 · Brief 06: al salir de un hilo, lo que tenía queda como visto (punto "sin revisar" de Por hacer) */
 function marcarVisto(){ if(cur==='TH' && curThread && THREADS[curThread]) THREADS[curThread].seen=THREADS[curThread].msgs.length; }
 /* Fase 11 · Brief 06 (B): textos de la hoja «¿Qué es esto?» por trámite. Borrador: Sofía debe revisar los plazos antes de la entrega final */
+/* Fase 12 · Brief 05 (A): QUEES.cir pasa a la rama A del lienzo, «¿Qué es radicar?»: una frase (sub) y tres filas (filas: [ícono, título, texto]).
+   Sale «¿Qué es una autorización?» con sus palabras (Radicar, Reconsiderar, Supersalud). Las demás hojas no cambian */
+/* Fase 12 · Brief 09C: sale la (i) del encabezado. El primer mensaje de cada trámite con QUEES (menos cir) trae este enlace,
+   debajo del último botón; abre la misma hoja y lock() no lo bloquea nunca */
+function queEsLink(k){ return '<button type="button" class="link-u" data-act="quees">'+QUEES[k].t+'</button>'; }
+function introConLink(k, list){
+  if(!QUEES[k] || k==='cir' || !list.length || !list[0].wgt) return list;
+  return [Object.assign({}, list[0], {wgt:list[0].wgt+queEsLink(k)})].concat(list.slice(1)); /* copia: INTRO no cambia */
+}
 var QUEES={
-  cir:{t:'¿Qué es una autorización?', q:'El permiso de tu EPS para hacer la cirugía.', r:'{eps}. Si no responde a tiempo, es falla suya, no tuya.', c:'Tiene 5 días hábiles para responder.',
-    w:[['Radicar','Entregar la solicitud a tu EPS.'],['Reconsiderar','Pedir que revisen una respuesta negativa.'],['Supersalud','La entidad que vigila a las EPS.']]},
+  cir:{t:'¿Qué es radicar?', sub:'Es el primer paso para que {eps} pague la cirugía.',
+    filas:[['send','Es pedir la autorización','Envío la orden a {eps} por su portal.'],['cal','Tiene plazo','{eps} solo recibe órdenes de menos de un mes: hasta el 7 nov.'],['doc','Yo lo hago por ti','Tú revisas lo que voy a enviar y confirmas.']]},
   med:{t:'¿Cómo funciona la fórmula?', q:'La orden del médico para el medicamento, en 3 entregas.', r:'La farmacia de tu EPS. Si no hay, tiene 48 horas para llevarlo a casa.', c:'Una entrega al mes. Al terminar, hay que renovarla.',
     w:[['Entrega','Lo que da la farmacia cada mes.'],['Renovar','Pedir un control para una fórmula nueva.']]},
   cita:{t:'¿Cómo funciona una cita?', q:'La cita que pide la orden del médico.', r:'Tu EPS y su IPS dan el horario.', c:'La orden vence. Agenda antes de esa fecha.',
@@ -2432,7 +2533,8 @@ QUEES.ped=QUEES.ctl=QUEES.cita;
 /* Fase 11 · Brief 06b: vacuna y terapia con texto propio (antes usaban el de cita). Sofía debe revisar los plazos */
 QUEES.sig={t:'¿Cómo funciona una vacuna?', q:'La vacuna que toca según el carné.', r:'Tu EPS y su IPS dan el horario.', c:'Se aplica desde el {sigd}.', w:[['Carné','El registro de las vacunas puestas.']]};
 QUEES.ter={t:'¿Cómo funciona la terapia?', q:'Las sesiones de terapia que autorizó tu EPS.', r:'Tu EPS y su IPS dan el horario.', c:'Valen hasta diciembre. Agenda antes.', w:[['Sesión','Cada visita de la terapia.']]};
-function openQueEs(){
+/* Fase 12 · Brief 05 (A): conAccion = se abrió con «¿Qué es radicar?» (cir.quees): la hoja ofrece «Prepárala conmigo» y «Cerrar» */
+function openQueEs(conAccion){
   var q=QUEES[curThread]; if(!q) return;
   /* Fase 11 · Brief 06c: cada caja con su ícono (Lucide); las palabras van juntas en una sola tarjeta, sin ícono */
   var SH='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
@@ -2441,10 +2543,13 @@ function openQueEs(){
     cal:SH+'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'};
   function caja(ic,t,x){ return '<div class="sh-caja"><span class="sh-ic">'+SHI[ic]+'</span><span class="sh-tx"><b>'+t+'</b><span>'+x+'</span></span></div>'; }
   document.getElementById('queEsTitle').textContent=fx(q.t);
-  document.getElementById('queEsBody').innerHTML=fx(caja('doc','Qué es',q.q)+caja('send','Quién responde',q.r)+caja('cal','Cuánto tarda',q.c)+
+  document.getElementById('queEsBody').innerHTML=fx(q.filas ? '<p class="sh-sub">'+q.sub+'</p>'+q.filas.map(function(f){ return caja(f[0],f[1],f[2]); }).join('') : /* Fase 12 · Brief 05 (A) */
+    caja('doc','Qué es',q.q)+caja('send','Quién responde',q.r)+caja('cal','Cuánto tarda',q.c)+
     '<p class="wgt-lbl sh-rotulo">Palabras que verás</p>'+
     '<div class="sh-tarjeta">'+q.w.map(function(w){ return '<div class="sh-pal"><b>'+w[0]+'</b><span>'+w[1]+'</span></div>'; }).join('')+'</div>');
-  document.getElementById('scrimQueEs').style.display='flex';
+  document.getElementById('queEsAcc').innerHTML = !q.filas ? '<button type="button" class="btn-p" data-close="1">Entendido</button>' :
+    (conAccion ? '<button type="button" class="btn-p" data-act="cir.radicar">Prepárala conmigo</button>' : '')+'<button type="button" class="btn-s" data-close="1">Cerrar</button>';
+  abrirHoja('scrimQueEs');
 }
 function openThread(key, navKey){
   var th=THREADS[key]; if(!th) return;
@@ -2455,7 +2560,6 @@ function openThread(key, navKey){
   TH.setAttribute('data-nav', navKey || 'inicio');
   hiloTitle.textContent=fx(th.title);
   hiloSub.innerHTML=fx(th.sub);
-  updateConfirmBadge(key);
   var tav=fx(th.av), tcol = key==='gen' ? 'var(--r-seleccion-fuerte)' : (PCOL[tav]||'var(--r-borde)');
   /* Fase 10 · Rediseño · Brief 13 (corrección): las iniciales salen de INIT (y el ícono de PICON), no de la clave del slot:
      la clave del slot no siempre coincide con las iniciales. "T" del hilo general no está en INIT y queda igual */
@@ -2476,7 +2580,7 @@ function openThread(key, navKey){
   /* Fase 10 · Brief 06: la bienvenida reemplaza el saludo de INTRO.gen */
   genHi=false; /* Fase 10 · Brief 06b */
   if(key==='gen') th.started=true;
-  th.msgs.forEach(function(m){ var e=msgEl(m); e.style.animation='none'; TH.appendChild(e); });
+  th.msgs.forEach(function(m){ var e=msgEl(m); e.style.animation='none'; thAdd(e); }); /* Fase 12 · Brief 05c: thAdd */
   /* Fase 10 · Brief 06b: historial arriba, bienvenida al final; la vista baja hasta la bienvenida */
   if(key==='gen'){ genHello(); down(true); requestAnimationFrame(function(){ if(cur==='TH' && curThread==='gen') down(true); }); return; }
   restoreDraft(key);
@@ -2484,7 +2588,7 @@ function openThread(key, navKey){
   reabrirRestore(key); /* Fase 10 · Brief 20 */
   /* Fase 10 · al reabrir el hilo cae en el último mensaje; se repite en el siguiente cuadro por si el alto cambia al pintar */
   down(true); requestAnimationFrame(function(){ if(cur==='TH' && curThread===key) down(true); });
-  if(!th.started){ th.started=true; play(key, (key==='ped' && esPropia()) ? proIntro() : (INTRO[key]||[])); } /* Fase 10 · Brief 16 */
+  if(!th.started){ th.started=true; play(key, introConLink(key, (key==='ped' && esPropia()) ? proIntro() : (INTRO[key]||[]))); } /* Fase 10 · Brief 16. Fase 12 · Brief 09C: con «¿Cómo funciona…?» */
 }
 /* H05: al reentrar, el widget vuelve con lo que ya estaba elegido */
 function restoreDraft(key){
@@ -2502,14 +2606,7 @@ function restoreDraft(key){
 }
 function refreshHilo(key){
   var th=THREADS[key];
-  if(cur==='TH' && curThread===key){ hiloSub.innerHTML=fx(th.sub); updateConfirmBadge(key); }
-}
-/* Fase 6 · #17: el hilo muestra "Confirmada" apenas la cita queda agendada, y sigue visible al reabrir el hilo */
-function updateConfirmBadge(key){
-  var c=card(key);
-  /* Fase 10 · Rediseño · Brief 13 (corrección 6): "Confirmada" habla de la cita agendada; cuando ya pasó y falta contar
-     cómo te fue ("por confirmar"), las dos etiquetas juntas se contradecían, así que la de la cita sale */
-  hiloConfirmBadge.style.display = (c && c.st==='encurso' && c.when && c.fase!=='porconfirmar') ? 'flex' : 'none';
+  if(cur==='TH' && curThread===key){ hiloSub.innerHTML=fx(th.sub); } /* Fase 12 · Brief 09C: sale «Confirmada» */
 }
 
 /* ============================================================
@@ -2535,11 +2632,11 @@ function citaFase(k, fase, pill, pc, accion, hsub){
   THREADS[k].sub=THREADS[k].p+' · '+hsub; refreshHilo(k);
   renderInicio();
 }
-function citaResolver(k){
+function citaResolver(k, dia){ /* Fase 12 · Brief 09C: dia = el de la tarjeta de cierre; el encabezado dice «Resuelto · 9 nov», como la cirugía */
   var c=card(k);
   c.st='resuelto'; c.fase=null; c.pill='Resuelto'; c.pc='completo';
   c.sub=THREADS[k].p+' · '+(CITA[k].tipo==='B'?'Toma':'Cita')+' del '+fechaCita(c);
-  THREADS[k].sub=THREADS[k].p+' · resuelto'; refreshHilo(k);
+  THREADS[k].sub=THREADS[k].p+' · Resuelto · '+(dia||diaCorto(c,0)); refreshHilo(k);
   freshConfirmKey=k; appVacia=false;
   renderInicio();
 }
@@ -2556,22 +2653,32 @@ function preguntasWgt(k, tachar){
   }).join('')+'</div>';
 }
 function prepMsgs(k){
-  var c=card(k), Q=QLLEVAR[k], hora=horaDe(c), rows='', n=0;
+  var c=card(k), Q=QLLEVAR[k], hora=horaDe(c), rows='', n=0, comp=!!CITA[k].compacto; /* Fase 12 · Brief 05 (A) */
   var marca=function(t){ n++; return '<button type="button" class="exrow" data-act="cita.check" aria-pressed="false"><span class="ex-v">'+t+'</span></button>'; };
   /* Fase 10 · Rediseño · Brief 13 (corrección 10): "En tu celular" solo si el documento está en la Bóveda; si no (p. ej. el carné
      de «Sofia P.» cuando es otra persona), pasa a "Llévalo en físico" para no prometer lo que no está guardado */
   var cel=Q.cel.filter(function(it){ return docIx(it.doc)>=0; }),
       fis=Q.cel.filter(function(it){ return docIx(it.doc)<0; }).map(function(it){ return it.t; }).concat(Q.fis);
-  if(cel.length){ rows+='<div class="wgt-lbl llevar-lbl">En tu celular</div><div class="exlist llevar">'+cel.map(function(it){ n++; return '<div class="exrow"><span class="ex-v">'+it.t+'</span><span class="ok-chip">'+OK_IC+'En tu celular</span></div>'; }).join('')+'</div>'; }
+  /* Fase 12 · Brief 05 (A): en la cirugía (compacto) lo del celular también lleva casilla: son 4 casillas (marco 11).
+     Brief 09C: igual en todas las citas; sale la fila con «En tu celular» al lado */
+  var listo = 0;
+  if(cel.length){ rows+='<div class="wgt-lbl llevar-lbl">En tu celular</div><div class="exlist llevar">'+cel.map(function(it){ return marca(it.t); }).join('')+'</div>'; }
   if(fis.length){ rows+='<div class="wgt-lbl llevar-lbl">Llévalo en físico</div><div class="exlist llevar">'+fis.map(function(t){ return marca(t); }).join('')+'</div>'; }
   if(Q.prep.length){ rows+='<div class="wgt-lbl llevar-lbl">Preparación</div><div class="exlist llevar">'+Q.prep.map(function(it){ return marca(it.t+(it.ayuno?': no comas desde las '+horaMas(hora,-it.ayuno*60):'')); }).join('')+'</div>'; }
+  if(Q.nota) rows+='<div class="wgt-d">'+Q.nota+'</div>'; /* Fase 12 · Brief 05 (A) */
   /* Fase 11 · negrilla: en «Qué llevar» solo el título va en negrilla; las etiquetas de grupo y las filas (.llevar-lbl, .exlist.llevar) van en regular */
   /* Fase 10 · Brief 01 (corrección): barra de progreso en vez de .dots; el ancho del relleno es el único estilo inline */
-  var pc0=Math.round(cel.length*100/n), lleno=cel.length===n;
-  var barra='<div class="progress" role="progressbar" aria-label="Qué llevar" aria-valuemin="0" aria-valuenow="'+cel.length+'" aria-valuemax="'+n+'"'+(lleno?' data-full':'')+'><span class="progress-fill" style="width:'+pc0+'%"></span></div>';
+  var pc0=Math.round(listo*100/n), lleno=listo===n;
+  var barra='<div class="progress" role="progressbar" aria-label="Qué llevar" aria-valuemin="0" aria-valuenow="'+listo+'" aria-valuemax="'+n+'"'+(lleno?' data-full':'')+'><span class="progress-fill" style="width:'+pc0+'%"></span></div>';
+  /* Fase 12 · Brief 05 (A): «Todo listo para mañana» pasa a «Todo listo» (todas las citas), con «Listo, N de N» al lado (11b) */
+  var tit='<div class="wgt-tr"><span class="wgt-t">'+(lleno?'Todo listo':'Qué llevar')+'</span><span class="wgt-tr-s llevar-n">'+(lleno?'Listo, '+n+' de '+n:'')+'</span></div>';
+  if(comp) return [ /* Fase 12 · Brief 05 (A): marco 11 */
+    {who:'t', text:'Mañana es la cirugía de {p3}, a las '+hora.replace(/\.$/,'')+'.<br>Es en el '+c.sede+'.'},
+    {who:'t', wgt:tit+barra+rows},
+    {who:'t', wgt:simChip('cita.hoy','Simular: llegó el día de la cirugía')}];
   var list=[
     {who:'t', text:'Tu cita es mañana a las '+hora+', en '+c.sede+'. Te atiende '+c.doc+'.'}, /* Fase 11 · saludo de Inicio (revisión de frases): sale "Esto es lo que hay que llevar.", lo dice «Qué llevar» */
-    {who:'t', wgt:'<div class="wgt-t">'+(cel.length===n?'Todo listo para mañana':'Qué llevar')+'</div>'+barra+rows},
+    {who:'t', wgt:tit+barra+rows},
     /* Fase 10 · Brief 03: c.llegar lo trae el mensaje pegado ("llegar 20 minutos antes"); si no, 15 */
     {who:'t', wgt:'<div class="wgt-t">Llega a las '+horaMas(hora,-(c.llegar||15))+', '+(c.llegar||15)+' minutos antes de la cita.</div><button type="button" class="btn-s" data-act="cita.alarma">Poner alarma</button>'}
   ];
@@ -2583,25 +2690,26 @@ function consultaMsgs(k){
   var c=card(k), A=CITA[k].tipo==='A', rows='';
   /* Fase 10 · Rediseño · Brief 11: una fila por documento con el título, el dato clave y el botón oscuro "Mostrar" (lienzo 52, opción B).
      El dato clave es DOCS[ix].s sin lo que el título ya dice (la fecha, la persona); si no queda nada, no hay línea. No se inventa nada */
-  QLLEVAR[k].cel.forEach(function(it){
+  (QLLEVAR[k].mostrar || QLLEVAR[k].cel).forEach(function(it){ /* Fase 12 · Brief 05 (A): la cirugía muestra la autorización y la orden (marco 12) */
     var ix=docIx(it.doc); if(ix<0) return;
-    var tt=fx(it.t), dato=fx(DOCS[ix].s||'').split(' · ').filter(function(x){ x=x.trim(); return x && tt.indexOf(x)<0; }).join(' · ');
+    var tt=fx(it.t), dato=QLLEVAR[k].mostrar ? '' /* Fase 12 · Brief 05 (A): en la cirugía, solo el nombre (marco 12) */ : fx(DOCS[ix].s||'').split(' · ').filter(function(x){ x=x.trim(); return x && tt.indexOf(x)<0; }).join(' · ');
     rows+='<div class="show-r"><span class="show-m"><span class="show-t">'+it.t+'</span>'+(dato?'<span class="show-s">'+dato+'</span>':'')+'</span>'+
       '<button type="button" class="show-btn" data-docview="'+ix+'" aria-label="Mostrar '+tt.replace(/"/g,'&quot;')+' en grande">'+SHOW_IC+'Mostrar</button></div>';
   });
   /* Fase 11 · Brief 03: el día de la cita va en cajas con título, sin frases sueltas (lienzo fila 6, "día de la cita") */
   var list=[
-    {who:'t', wgt:'<div class="cita-hoy">'+CLOCK_IC+'<h2>Hoy · '+horaDe(c)+'</h2></div><div class="wgt-d">'+c.doc+' · '+c.sede+'</div>'},
-    {who:'t', wgtCls:'full show-w', wgt:'<div class="wgt-tr"><span class="wgt-lbl">Para mostrar</span><span class="ok-chip">'+OK_IC+'Sin conexión</span></div>'+rows} /* Fase 10 · Rediseño · Brief 11: herramienta, a ancho completo */
+    /* Fase 12 · Brief 09C: como el marco «Día de la cirugía»: el reloj en un cuadro de 48 en el tinte de la persona; debajo, médico y sede */
+    {who:'t', wgt:'<div class="cita-hoy"><span class="cita-hoy-ic">'+CLOCK_IC+'</span><span class="cita-hoy-tx"><h2>Hoy · '+horaDe(c)+'</h2><span class="wgt-d">'+c.doc+' · '+c.sede+'</span></span></div>'},
+    {who:'t', wgtCls:'show-w', /* Fase 12 · Brief 09C: sin full; empieza donde empiezan los demás mensajes */ wgt:'<div class="wgt-tr"><span class="wgt-lbl">Para mostrar</span><span class="ok-chip">'+OK_IC+'Sin conexión</span></div>'+rows}
   ];
-  /* en B, el modo consulta se reduce a "Para mostrar" */
-  if(A){
+  /* en B, el modo consulta se reduce a "Para mostrar". Fase 12 · Brief 05 (A): en la cirugía (compacto) también */
+  if(A && !CITA[k].compacto){
     var q=preguntasWgt(k,true); if(q) list.push({who:'t', wgt:q});
     /* Fase 11 · Brief 03: grabar tiene su propio botón (secundario); el micrófono del campo siempre es nota de voz */
-    list.push({who:'t', wgtCls:'full', wgt:'<div class="wgt-tr"><span class="wgt-lbl">Resumen de la consulta</span><span class="wgt-tr-s">Con permiso del médico</span></div>'+
+    list.push({who:'t', wgt:'<div class="wgt-tr"><span class="wgt-lbl">Resumen de la consulta</span><span class="wgt-tr-s">Con permiso del médico</span></div>'+
       '<button type="button" class="btn-s btn-ic" data-act="cita.grabar">'+MIC_IC+'Grabar la consulta</button>'});
   }
-  list.push({who:'t', wgt:simChip('cita.fin','Simular: terminó la cita')});
+  list.push({who:'t', wgt:simChip('cita.fin', CITA[k].compacto ? 'Simular: son las 2:00 p. m.' : 'Simular: terminó la cita')}); /* Fase 12 · Brief 05 (A): el marco 13 llega a las 2:00 p. m. */
   return list;
 }
 function citaMarca(el, cls, on){ el.classList.toggle(cls,on); el.setAttribute('aria-pressed', on?'true':'false'); }
@@ -2615,7 +2723,8 @@ function citaDots(w){
     bar.toggleAttribute('data-full', done===total);
     bar.querySelector('.progress-fill').style.width=Math.round(done*100/total)+'%';
   }
-  var t=w.querySelector('.wgt-t'); if(t) t.textContent = done===total ? 'Todo listo para mañana' : 'Qué llevar';
+  var t=w.querySelector('.wgt-t'); if(t) t.textContent = done===total ? 'Todo listo' : 'Qué llevar'; /* Fase 12 · Brief 05 (A): sale «para mañana» */
+  var nn=w.querySelector('.llevar-n'); if(nn) nn.textContent = done===total ? 'Listo, '+done+' de '+total : '';
 }
 /* Fase 10 · Brief 02b: un chip "Simular:" ya tocado se desactiva solo a sí mismo (sin lock() del widget).
    SIMUSED[hilo] guarda su posición entre los .chip-sim del hilo, que no cambia porque los mensajes solo se agregan. */
@@ -2665,7 +2774,7 @@ function citaOrdenesGuardadas(k){
     if(CITA[k].formula){
       DOCS.push({ep:'hta', t:'Fórmula médica {t3} · renovada', s:'Control del '+fechaCita(c).replace(/^\S+ /,''), p:'{whta}', ty:'orden', cat:'med', th:'med', pag:1,
         rel:'Salió del control de {p3} del '+fechaCita(c).replace(/^\S+ /,'')+'. Reemplaza la fórmula de 3 entregas.'}); /* Fase 11 · Brief 01b */
-      commit(k,{who:'t', comp:{fin:1, t:'Cerré el control de {p3} y guardé la fórmula nueva de {t3n}', x:pasosCierre(k) /* Fase 11 · Brief 04 */, time:hora, ev:'Ver la fórmula', doc:String(DOCS.length-1)}});
+      commit(k, cierreMsg('Cerré el control de {p3}.', diaCorto(c), {s:'Fórmula nueva de {t3n}', doc:String(DOCS.length-1)})); /* Fase 12 · Brief 09C */
       /* el hilo de med ya no dice que falta renovar */
       THREADS.med.sub='{qmed} · fórmula renovada'; refreshHilo('med');
       /* Fase 10 · Brief 02b: la fecha es la de la cita de ctl */
@@ -2673,7 +2782,7 @@ function citaOrdenesGuardadas(k){
     } else {
       DOCS.push({ep:CITA[k].guarda, t:CITA[k].ords, s:'Escaneadas el '+fechaCita(c).replace(/^\S+ /,''), p:CITA[k].p, ty:'orden', cat:'ord', pag:1,
         rel:'Salieron de '+CITA[k].cierre+'. Las guardé sin crear trámites nuevos.'});
-      commit(k,{who:'t', comp:{fin:1, t:'Cerré '+CITA[k].cierre+' y guardé las órdenes en la Bóveda', x:pasosCierre(k) /* Fase 11 · Brief 04 */, time:hora, ev:'Ver en la Bóveda', go:'G1'}});
+      commit(k, cierreMsg('Cerré '+CITA[k].cierre+'.', diaCorto(c), {s:'Órdenes de la cita', go:'G1'})); /* Fase 12 · Brief 09C */
     }
     bovMarcarNuevos([DOCS[DOCS.length-1]]); /* Fase 10 · Brief 19 */
     citaResolver(k);
@@ -2683,9 +2792,44 @@ function citaOrdenesGuardadas(k){
   /* Fase 10 · Brief 06: ya no revela ter (existe desde el inicio); crea sig, que vence en más de 30 días y va al Calendario */
   if(t && t.st==='oculto' && personaVisible(t)) t.st='accionable';
   appVacia=false;
-  commit(k,{who:'t', comp:{fin:1, t:'Cerré el control de {p1} y creé el trámite de {tsigl}', x:PASOS_A /* Fase 11 · Brief 04 */, time:'Hoy · '+horaMas(horaDe(c),40), ev:'Ver en el calendario', go:'F1'}});
+  /* Fase 12 · Brief 09C: la tarjeta verde con lo que se guardó y, debajo, lo que sigue: abre el hilo de la vacuna (o Inicio, si aún no se puede) */
+  var sigOk = t && t.st==='accionable', sigD=fx('{sigd}').replace(/ de (\S+)$/, function(m,mes){ return ' '+MESCORTO[MESNUM[mes]]; });
+  commit(k, cierreMsg('Cerré el control de {p1}.', diaCorto(c), {s:'Órdenes de la cita', go:'G1'},
+    {v:'Sigue: la {tsigl}', k:'Se puede agendar desde el '+sigD, at: sigOk ? 'data-thread="sig"' : 'data-go="A1"'}));
   citaResolver(k);
   openThread(k, TH.getAttribute('data-nav'));
+}
+/* Fase 12 · Brief 05 (A): marco 10 · «Listo, quedó en el Calendario.» con el comprobante (mes, día, hora y sede). Sale el comprobante verde
+   «Agendé la cita…» y «Te aviso un día antes…». El comprobante es un botón (data-cirev): abre el Calendario en ese día (Brief 05 B) */
+function cirAgendadaMsgs(label, sede){
+  var d=label.split(' · ')[0].split(' '), hora=label.split(' · ')[1];
+  return [{who:'t', cara:'celebra', wgt:'<div class="wgt-t">Listo, quedó en el Calendario.</div>'+
+    '<button type="button" class="cir-comp" data-cirev="1" data-go="F1" aria-label="Cirugía el '+fechaCita({when:label})+' a las '+hora+', '+sede+'. Ver en el Calendario">'+
+      '<span class="ok-chip">'+OK_IC+'Agendada en el portal de {eps}</span>'+
+      '<span class="cir-comp-r"><span class="fecha-tile" aria-hidden="true"><span class="fecha-mes">'+d[2].toUpperCase()+'</span><span class="fecha-dia">'+d[1]+'</span><span class="fecha-dow">'+d[0].toLowerCase()+'</span></span>'+
+      '<span class="cir-comp-tx"><span class="ex-v">Cirugía · '+hora+'</span><span class="ex-k">'+sede+'</span></span>'+
+      '<span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></span></button>'+
+    '<div class="wgt-d">Un día antes te recuerdo qué llevar.</div>'}];
+}
+/* Fase 12 · Brief 09C: tarjeta de cierre (marco «Resuelto»). Sale el comprobante verde de cierre (comp.fin) y su stepper.
+   t = la frase en el mensaje; dia = «18 nov»; fila = {s, go | doc}: «Quedó en la Bóveda» + lo que se guardó, con chevron.
+   La carpeta va en un cuadro de 32 en el tinte de la persona (--tinte del hilo). sigue = fila opcional debajo de la tarjeta */
+function cierreFila(ic, v, k, at){
+  return '<button type="button" class="exrow ex-doc" '+at+'><span class="cierre-ic" aria-hidden="true">'+ic+'</span>'+
+    '<span class="ex-tx"><span class="ex-v">'+v+'</span><span class="ex-k">'+k+'</span></span><span class="doc-chev" aria-hidden="true">'+CARD_CHEV+'</span></button>';
+}
+function cierreMsg(t, dia, fila, sigue){
+  var at = fila.doc!=null ? 'data-docview="'+fila.doc+'"' : 'data-go="'+(fila.go||'G1')+'"';
+  return {who:'t', cara:'celebra', wgt:'<div class="wgt-t">'+t+'</div>'+
+    '<div class="cir-est cierre"><div class="cir-est-l"><span class="cir-est-ok" aria-hidden="true">'+OK_IC+'</span><span>Resuelto · '+dia+'</span></div>'+
+    '<div class="cir-est-doc">'+cierreFila(FOLDER_IC, 'Quedó en la Bóveda', fila.s, at)+'</div></div>'+
+    (sigue ? '<div class="cierre-sigue">'+cierreFila(CLOCK_IC, sigue.v, sigue.k, sigue.at)+'</div>' : '')};
+}
+function diaCorto(c, delta){ return cirDia(c, delta||0).replace(/^\S+ /,''); } /* «9 nov» */
+/* Fase 12 · Brief 05 (A): «Mar 17 nov» a partir de c.when, delta días antes o después (los separadores del hilo de la cirugía) */
+function cirDia(c, delta){
+  var d=((c&&c.when)||'').split(' · ')[0].split(' '), f=new Date(HOY_SIM.getFullYear(), MESNUM[MESFULL[d[2]]||'noviembre'], (+d[1])+delta);
+  return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][f.getDay()]+' '+f.getDate()+' '+MESCORTO[f.getMonth()];
 }
 /* Fase 10 · Brief 03 · núcleo de "agendada" que era de ped.confirmar, compartido con Pegar texto (pegUnir).
    Deja la tarjeta en encurso/agendada y devuelve los mensajes del hilo; quien llama decide si los reproduce (play) o los publica (commit).
@@ -2705,10 +2849,12 @@ function citaAgendada(k,label,doc,sede,extra){
   }}, /* Fase 11 · Brief 04 (C): un solo acuse; sale "Listo, … ya está en «En curso», en Inicio." */
   {who:'t', text:'Te aviso un día antes y te recuerdo qué llevar.'}];
   /* Fase 10 · Brief 01: la promesa se cumple con el chip que pasa la cita a "mañana" */
-  if(CITA[k]) confMsgs.push({who:'t', wgt:simChip('cita.manana','Simular: la cita es mañana')});
-  THREADS[k].sub=THREADS[k].p+' · agendada';
+  if(k==='cir') confMsgs=cirAgendadaMsgs(label, sede); /* Fase 12 · Brief 05 (A): marco 10 */
+  if(CITA[k]) confMsgs.push({who:'t', wgt:simChip('cita.manana', k==='cir' ? 'Simular: la cirugía es mañana' : 'Simular: la cita es mañana')});
+  THREADS[k].sub=THREADS[k].p+' · '+label; /* Fase 12 · Brief 05 (A): «Marta · Mié 18 nov · 7:00 a. m.». Brief 09C: todas las citas */
   setCard(k,{st:'encurso', sub:THREADS[k].p+' · '+label.replace(' · ',' a las '), pill:'Agendada', pc:'espera',
-    when:label, doc:doc, sede:sede, fase:'agendada', checks:{}, tachadas:{}, alarma:false, llegar:extra.llegar}, THREADS[k].title+' ya está en «En curso»') /* Fase 10 · Rediseño · Brief 10 */;
+    when:label, doc:doc, sede:sede, fase:'agendada', checks:{}, tachadas:{}, alarma:false, llegar:extra.llegar},
+    k==='cir' ? 'Agendé la {t2x}.' /* Fase 12 · Brief 05 (B): el aviso corto de F10c */ : THREADS[k].title+' ya está en «En curso»') /* Fase 10 · Rediseño · Brief 10 */;
   refreshHilo(k);
   renderInicio(); /* Fase 11 · Brief 14: sin freshConfirmKey; agendar ya no pinta «Confirmada ✓» */
   return confMsgs;
@@ -2733,13 +2879,14 @@ function tramReabrir(k, desdeBov){
     /* los mismos botones de acción de su intro ("Agendar cita" / "Radicar autorización" / "Marcar como reclamada") */
     var intro=(k==='ped' && esPropia()) ? proIntro() : (INTRO[k]||[]), btns='';
     if(k==='cir' && cirEsCita(c)) intro=[{wgt:'<button type="button" class="btn-p" data-act="ped.agendar">Agendar la {t2x}</button>'}]; /* Fase 10 · Brief 21: la autorización aprobada ya es cita */
-    intro.forEach(function(m){ ((m.wgt||'').match(/<button[\s\S]*?<\/button>/g)||[]).forEach(function(b){ btns+=b; }); });
+    intro.forEach(function(m){ ((m.wgt||'').match(/<button[\s\S]*?<\/button>/g)||[]).forEach(function(b){ if(b.indexOf('data-act="quees"')<0) btns+=b; }); }); /* Fase 12 · Brief 09C */
     if(btns) msgs.push({who:'t', wgt:btns});
   }
   play(k, msgs);
   renderInicio();
 }
 var ACT = {
+  'quees': function(el){ openQueEs(); }, /* Fase 12 · Brief 09C: sin lock(); reemplaza la (i) del encabezado */
   'undo.retirar': function(el){
     lock(el);
     var k=curThread||'cir';
@@ -2771,27 +2918,36 @@ var ACT = {
     var k=K();
     if(lastSlot && !sel){ label=lastSlot[0]; doc=lastSlot[1]; sede=lastSlot[2]; }
     lastSlot=[label,doc,sede];
-    commit(k,{who:'s', text:'Me sirve la de '+label.replace(' · ',' a las ')});
-    if(netBlocked()){ netErr(k,'ped.confirmar','{eps}'); return; }
+    commit(k,{who:'s', text: k==='cir' ? 'Confirmar fecha' /* Fase 12 · Brief 05 (A): como en el lienzo */ : 'Me sirve la de '+label.replace(' · ',' a las ')});
+    if(netBlocked()){ netErr(k,'ped.confirmar'); return; }
     play(k, citaAgendada(k,label,doc,sede,{}));
   },
   /* Fase 10 · Brief 01: cierre de citas. Los chips "Simular:" no llevan lock(): se protegen con la fase */
   'cita.manana': function(el){
     var k=K(), c=card(k); if(!c || c.st!=='encurso' || c.fase!=='agendada') return;
-    citaFase(k,'manana','Mañana','manana','Ver qué llevar','la cita es mañana');
-    commit(k,{sep:'Un día antes de la cita'});
+    /* Fase 12 · Brief 05 (A): en la cirugía, la fecha como separador y la línea del lienzo arriba. Brief 09C: en todas las citas */
+    citaFase(k,'manana','Mañana','manana','Ver qué llevar', 'Mañana · '+horaDe(c));
+    commit(k,{sep: cirDia(c,-1)});
     play(k, prepMsgs(k));
   },
   'cita.hoy': function(el){
     var k=K(), c=card(k); if(!c || c.st!=='encurso' || c.fase!=='manana') return;
-    citaFase(k,'hoy','Hoy','manana','Ver qué mostrar','la cita es hoy');
-    commit(k,{sep:'Día de la cita'});
+    citaFase(k,'hoy','Hoy','manana','Ver qué mostrar', 'Hoy · '+horaDe(c)); /* Fase 12 · Brief 05 (A). Brief 09C: en todas las citas */
+    commit(k,{sep: cirDia(c,0)});
     play(k, consultaMsgs(k));
   },
   'cita.fin': function(el){
     var k=K(), c=card(k); if(!c || c.st!=='encurso' || c.fase!=='hoy') return;
     citaGrabStop();
-    citaFase(k,'porconfirmar','Por confirmar','pendiente','¿Cómo te fue?','¿cómo te fue?'); /* Fase 10 · Brief 39: el hilo pregunta, no dice «por confirmar» */
+    citaFase(k,'porconfirmar','Por confirmar','pendiente','¿Cómo te fue?', CITA[k].compacto ? 'Hoy · ¿cómo le fue?' : '¿cómo te fue?'); /* Fase 10 · Brief 39: el hilo pregunta, no dice «por confirmar» */
+    /* Fase 12 · Brief 05 (A): marco 13. La cirugía no pregunta por órdenes nuevas: «Ya se la hicieron» cierra y «No pudo ir» busca otra fecha */
+    if(CITA[k].compacto){
+      commit(k,{sep:'2:00 p. m.'});
+      play(k,[{who:'t', text:'¿Cómo le fue a {p3}?<br>Cuéntame si ya le hicieron la cirugía.'},
+        {who:'t', wgt:'<button type="button" class="btn-s" data-act="cir.hecha">Ya se la hicieron</button>'+
+          '<button type="button" class="btn-s" data-act="cir.nopudo">No pudo ir</button>'}]);
+      return;
+    }
     commit(k,{sep:'Después de la cita'});
     var A=CITA[k].tipo==='A';
     play(k,[{who:'t', text:'¿Cómo te fue en '+CITA[k].de+'?'},
@@ -2848,7 +3004,7 @@ var ACT = {
       rel:'Salieron de '+CITA.ped.cierre+'. Las guardé sin crear trámites nuevos.'});
     bovFresh=true; /* Fase 10 · corrección Bóveda */
     bovMarcarNuevos([DOCS[DOCS.length-1]]); /* Fase 10 · Brief 19 */
-    commit(k,{who:'t', comp:{fin:1, t:'Cerré '+CITA.ped.cierre+' y guardé las órdenes en la Bóveda', x:PASOS_A /* Fase 11 · Brief 04 */, time:'Hoy · '+horaMas(horaDe(c),40), ev:'Ver en la Bóveda', go:'G1'}});
+    commit(k, cierreMsg('Cerré '+CITA.ped.cierre+'.', diaCorto(c), {s:'Órdenes de la cita', go:'G1'})); /* Fase 12 · Brief 09C */
     citaResolver(k); renderBoveda();
     play(k, proInvita()); /* Fase 10 · Brief 16b */
   },
@@ -2867,9 +3023,7 @@ var ACT = {
   'cita.sinordenes': function(el){
     lock(el); var k=K(), c=card(k);
     commit(k,{who:'s', text:'No me dieron órdenes nuevas'});
-    play(k,[{who:'t', comp:{fin:1, t:'Cerré '+CITA[k].cierre, s:c.doc+', '+fechaCita(c), /* Fase 10 · Brief 02: el nombre sale de CITA */
-      x:pasosCierre(k), /* Fase 11 · Brief 04 */
-      time:'Hoy · '+horaMas(horaDe(c),40), ev:'Ver en la Bóveda', go:'G1'}}].concat(k==='ped' && esPropia() ? proInvita() : [])); /* Fase 10 · Brief 16b */
+    play(k,[cierreMsg('Cerré '+CITA[k].cierre+'.', diaCorto(c), {s:'Consulta del '+diaCorto(c), go:'G1'}) /* Fase 12 · Brief 09C. Brief 02: el nombre sale de CITA */].concat(k==='ped' && esPropia() ? proInvita() : [])); /* Fase 10 · Brief 16b */
     citaResolver(k);
   },
   'cita.nohubo': function(el){
@@ -2909,9 +3063,44 @@ var ACT = {
     var ix=DOCS.length-1;
     bovFresh=true; /* mismo aviso de un solo uso que al guardar un escaneo · Fase 10 · corrección Bóveda */
     bovMarcarNuevos([DOCS[ix]]); /* Fase 10 · Brief 19 */
-    commit(k,{sep:'3 días después'});
-    play(k,[{who:'t', think:1, comp:{fin:1, t:'Llegaron los resultados · {lab} de {p3}', x:PASOS_B /* Fase 11 · Brief 04 */, time:'Hoy · 9:41 a.m.', ev:'Ver el resultado', doc:String(ix)}}]);
-    citaResolver(k);
+    commit(k,{sep:cirDia(c,3)}); /* Fase 12 · Brief 09C: la fecha, como los demás separadores (antes «3 días después») */
+    play(k,[Object.assign(cierreMsg('Llegaron los resultados de {p3}.', diaCorto(c,3), {s:'{lab}', doc:String(ix)}), {think:1})]); /* Fase 12 · Brief 09C */
+    citaResolver(k, diaCorto(c,3)); /* Fase 12 · Brief 09C */
+  },
+  /* Fase 12 · Brief 05 (A): marco 8 → 9 · «Buscar fechas» */
+  'cir.fechas': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:'Buscar fechas'});
+    play('cir',[{who:'t', wgt:cirFechasWgt(false)}]);
+  },
+  /* Fase 12 · Brief 05 (A): rama C · «No me sirve ninguna» → «Ver las fechas otra vez» (las mismas: las del marco 9 o las de la rama G) */
+  'cir.ninguna': function(el){
+    lock(el); var otra=el.getAttribute('data-otra');
+    commit('cir',{who:'s', text:'No me sirve ninguna'});
+    play('cir',[{who:'t', text:'Por ahora {eps} solo tiene esas dos fechas.'} /* Fase 12 · Brief 06 (B): sin la promesa de revisar cada día */,
+      {who:'t', wgt:'<button type="button" class="btn-p" data-act="cir.otravez" data-otra="'+otra+'">Ver las fechas otra vez</button>'}]);
+  },
+  'cir.otravez': function(el){
+    lock(el); var otra=el.getAttribute('data-otra')==='1';
+    commit('cir',{who:'s', text:'Ver las fechas otra vez'});
+    play('cir',[{who:'t', wgt:cirFechasWgt(otra)}]);
+  },
+  /* Fase 12 · Brief 05 (A): marco 14 · «Ya se la hicieron». Sale la pregunta por órdenes nuevas (cita.ordenes / cita.sinordenes) solo en la cirugía:
+     el cierre invita a traer la orden de control */
+  'cir.hecha': function(el){
+    lock(el); var c=card('cir'), dia=cirDia(c,0).replace(/^\S+ /,'');
+    commit('cir',{who:'s', text:'Ya se la hicieron'});
+    play('cir',[cierreMsg('Cerré el trámite de la cirugía.', dia, {s:'Orden, autorización y cirugía', go:'G1'}), /* Fase 12 · Brief 09C */
+      {who:'t', text:'Si le dieron una orden de control, tráemela y la organizo.'}]);
+    citaResolver('cir');
+    THREADS.cir.sub='{p3} · Resuelto · '+dia; refreshHilo('cir');
+  },
+  /* Fase 12 · Brief 05 (A): rama G · «No pudo ir»: la cita vuelve a como estaba antes de agendar y salen otras dos fechas; «Confirmar fecha» vuelve al marco 10 */
+  'cir.nopudo': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:'No pudo ir'});
+    citaRevertir('cir');
+    play('cir',[{who:'t', wgt:cirFechasWgt(true)}]);
   },
   'ped.mas': function(el){
     lock(el); var k=K();
@@ -2985,51 +3174,60 @@ var ACT = {
      Brief 21: el cuerpo pasa a tramReabrir(), que también usa "Lo necesito otra vez" */
   'ped.reabrir': function(el){ tramReabrir(el.getAttribute('data-k') || K(), el.hasAttribute('data-k')); },
 
+  /* Fase 12 · Brief 05 (A): marco 3 · «Prepárala conmigo». Llega del hilo, de la rama B o de la hoja «¿Qué es radicar?» (fuera de un .wgt:
+     cierra la hoja y bloquea los botones de la intro). La lista y el botón van en mensajes aparte: así los documentos se pueden abrir después */
   'cir.radicar': function(el){
-    lock(el);
-    commit('cir',{who:'s', text:'Radica la autorización'});
-    play('cir',[{who:'t', wgt:'<div class="wgt-t">Antes de radicar, revisa que esté bien</div>'+ /* Fase 8 · Yifrah #6: unifica "enviar"→"radicar" */
-      '<div class="wgt-d"><b>Solicitud:</b> autorización de {t2x}<br><b>Paciente:</b> {f3}<br><b>Ante:</b> {epsn}<br><b>Soportes:</b> orden médica e historia clínica del 7 de octubre</div><div class="wgt-d">No radico nada hasta que confirmes.</div>'+
-      '<button type="button" class="btn-p" data-act="cir.confirmar">Confirmar y radicar</button>'+
-      '<button type="button" class="btn-s" data-go="DOCS">Revisar documentos</button>'+
-      '<button type="button" class="btn-s" data-act="cir.cancelar">Cancelar</button>'}]);
+    if(el && !el.closest('.wgt')){ closeSheets(); bloquearActs('cir',['cir.radicar','cir.quees']); }
+    else if(el) lock(el);
+    commit('cir',{who:'s', text:'Prepárala conmigo'});
+    /* Fase 12 · Brief 08Ab: marco 3 en un solo mensaje (antes tres: el texto, la lista y el botón) */
+    play('cir',[{who:'t', wgt:'<div class="wgt-t">{eps} siempre pide la orden.</div>'+
+      '<div class="wgt-d d-cuerpo">A veces pide también la historia clínica y los exámenes previos. Los agrego por si acaso.</div>'+
+      '<div class="wgt-rot">Voy a enviar 3 documentos</div>'+cirAdjHTML()+
+      '<button type="button" class="btn-p" data-act="cir.revisar">Revisar antes de enviar</button>'}]);
   },
+  /* Fase 12 · Brief 05 (A): rama A · la hoja «¿Qué es radicar?» (la misma #scrimQueEs, con QUEES.cir) */
+  'cir.quees': function(el){ openQueEs(true); },
+  /* Fase 12 · Brief 05 (A): marco 4 · revisa. Salen «Antes de radicar, revisa que esté bien», «Confirmar y radicar» y «Cancelar» */
+  'cir.revisar': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:'Revisar antes de enviar'});
+    play('cir',[{who:'t', wgt:'<div class="wgt-t">Revisa que esté bien antes de enviar.</div><div class="wgt-d d-cuerpo">La radico en el portal de {eps}.</div>'+ /* Fase 12 · Brief 08Ab: caja de campos (marco F04) */
+      '<div class="exlist ex-campos">'+cirFila('Paciente','{p3} · {cc3}')+cirFila('Servicio','{t2}')+cirFila('Adjuntos','Orden, historia clínica y exámenes previos')+'</div>'+
+      '<button type="button" class="btn-p" data-act="cir.confirmar">Confirmar y enviar</button>'+
+      '<button type="button" class="btn-s" data-go="DOCS">Revisar documentos</button>'+
+      '<button type="button" class="link-u" data-act="cir.cancelar">Ahora no</button>'}]); /* Fase 12 · Brief 08A: enlace (marco F04) */
+  },
+  /* Fase 12 · Brief 05 (A): rama B · «Ahora no» */
   'cir.cancelar': function(el){
     lock(el);
-    commit('cir',{who:'s', text:'Todavía no'});
-    play('cir',[{who:'t', wgt:'<div class="wgt-t">Sin problema, no radiqué nada</div>'+ /* Fase 8 · Yifrah #6 */
-      '<div class="wgt-d">La orden sigue guardada. La radico cuando me digas.</div><div class="wgt-d">Los 5 días cuentan desde que se radique.</div>'+ /* Fase 11 · Brief 04 (C) */
-      '<button type="button" class="btn-p" data-act="cir.radicar">Radicar ahora</button>'}]);
-  },
-  'net.later': function(el){
-    lock(el); var k=K();
-    commit(k,{who:'s', text:'Guárdala para después'});
-    play(k,[{who:'t', wgt:'<div class="wgt-t">Queda lista</div>'+
-      '<div class="wgt-d">La dejo lista. Cuando vuelva la conexión, me confirmas y la envío.</div>'}]); /* Fase 11 · Brief 03: sin "te aviso", no hay aviso de conexión */
-    if(k==='cir') setCard('cir',{sub:'{p3} · lista para radicar', pill:'Sin enviar', pc:'pendiente',
-      bov:['{p3} · lista para radicar, sin enviar','Sin enviar','pendiente']});
-    renderInicio();
+    commit('cir',{who:'s', text:'Ahora no'});
+    play('cir',[{who:'t', text:'No envié nada.<br>La orden sirve hasta el <b>7 de noviembre</b>.'} /* Fase 12 · Brief 06 (B): sin la promesa de recordar */,
+      {who:'t', wgt:'<button type="button" class="btn-p" data-act="cir.radicar">Prepárala conmigo</button>'}]);
+    THREADS.cir.sub='{p3} · Radicar antes del 7 nov'; refreshHilo('cir');
   },
   'cir.confirmar': function(el){
     lock(el);
-    commit('cir',{who:'s', text:'Confirmo, radícala'});
-    if(netBlocked()){ netErr('cir','cir.confirmar','{eps}'); return; }
+    commit('cir',{who:'s', text:'Confirmar y enviar'});
+    if(netBlocked()){ netErr('cir','cir.confirmar'); return; }
     /* aquí SÍ hay procesamiento real: se conserva la animación */
-    play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Radicado ante {eps} ✓</div>'+
-      '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd now">2</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
-      '<div class="step-lbl"><span>Orden</span><span class="on">Autorización</span><span>Cita</span><span>Resuelto</span></div>'+
-      '<div class="wgt-d">Radiqué la solicitud en el portal de {eps}. Envié la orden médica y la historia clínica del 7 de octubre.</div><div class="wgt-d">Responde a más tardar el <b>13 de noviembre</b>.</div>'+ /* Fase 11 · Brief 04 (C): una idea por frase */
-      '<div class="log"><div class="log-r"><div class="log-d"></div><p><b>Radicado #45892</b>Hoy, 9:38 a.m.</p></div>'+
-      '<div class="log-r"><div class="log-d"></div><p><b>Adjunté la orden del {doc3}</b>Hoy, 9:37 a.m.</p></div></div>'+
-      '<button type="button" class="link-u" data-go="DOCS">Ver qué se envió</button>'}, /* Fase 11 · Brief 04 (C): un solo acuse; salen el comprobante "Radiqué la solicitud…" y el toast "Solicitud radicada" */
-      /* Fase Móvil · Punto 1c: chips "Simular" — reemplazan los saltos directos a trab/negado del panel externo */
+    /* Fase 12 · Brief 05 (A): marco 5. La barra de tres pasos (Radicada · En revisión · Aprobada) reemplaza Orden · Autorización · Cita · Resuelto;
+       salen el registro (log) con las horas y «Envié la orden médica y la historia clínica…» */
+    play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Radiqué la autorización en {eps}.</div>'+
+      cirEstadoHTML('Radicada en el portal de {eps} · 9:41 a. m.', 1)+ /* Fase 12 · Brief 08Ac: tarjeta de estado (marco F05) */
+      '<div class="wgt-d">Radicado #45892 · Orden, historia clínica y exámenes previos</div>'+
+      '<div class="wgt-d">Tienen que responder a más tardar el <b>13 de noviembre</b>.<br>Si no responden, te digo qué hacer.</div>'+
+      '<button type="button" class="link-u" data-go="DOCS">Ver qué se envió</button>'},
+      /* Fase Móvil · Punto 1c: chips "Simular" — reemplazan los saltos directos a trab/negado del panel externo.
+         Fase 12 · Brief 05 (A): primero el camino principal, la aprobación */
       {who:'t', wgt:'<div class="chipwrap">'+
+        '<button type="button" class="chip-o chip-sim" data-act="cir.simAprobada">'+SIM_IC+'Simular: {eps} la aprobó</button>'+
         '<button type="button" class="chip-o chip-sim" data-act="cir.simEstancado">'+SIM_IC+'Simular: se estancó</button>'+
         '<button type="button" class="chip-o chip-sim" data-act="cir.simNegado">'+SIM_IC+'Simular: negaron la autorización</button>'+
         '</div>'}]);
-    THREADS.cir.sub='{p3} · respuesta a más tardar el 13 de noviembre'; refreshHilo('cir'); /* Fase 11 · Brief 03: sale "día 1 de 5" */
-    setCard('cir',{st:'encurso', sub:'{p3} · respuesta a más tardar el 13 de noviembre', pill:'Radicado', pc:'espera',
-      bov:['{p3} · radicada, esperando respuesta de {eps}','En trámite','espera']}, '{t2} ya está en «En curso»') /* Fase 10 · Rediseño · Brief 10 */;
+    THREADS.cir.sub='{p3} · En revisión'; refreshHilo('cir'); /* Fase 11 · Brief 03: sale "día 1 de 5". Fase 12 · Brief 05 (A): la línea del lienzo */
+    setCard('cir',{st:'encurso', sub:'{p3} · Respuesta a más tardar el 13 de noviembre', pill:'Radicado', pc:'espera',
+      bov:['{p3} · radicada, esperando respuesta de {eps}','En trámite','espera']}); /* Fase 12 · Brief 06 (B): un solo acuse; el hilo ya confirmó la radicación y F06 no lleva aviso */
     renderInicio();
   },
   /* Fase Móvil · Punto 1c: mismo contenido crítico que armaba goTrabado() (ya retirado), pero
@@ -3037,12 +3235,13 @@ var ACT = {
   'cir.simEstancado': function(el){
     /* Fase Móvil · sin lock(el): son atajos de demo, no una acción real — deben poder simularse
        varias veces y alternar con cir.simNegado sin tener que reiniciar el prototipo */
-    commit('cir',{sep:'6 días después'});
-    play('cir',[{who:'t', raw:'<div class="crit"><div class="crit-h">'+WARN+'TRÁMITE ESTANCADO</div><div class="crit-b">'+
-      '<p>{eps} incumplió el plazo. Tenía 5 días hábiles para responder y venció ayer.</p>'+
-      '<button type="button" class="btn-p" data-act="cir.escalar">Escalar ante Supersalud</button>'+
-      '<button type="button" class="btn-danger" data-act="cir.llamar">Llamar a {eps}</button></div></div>'}]);
-    THREADS.cir.sub='{p3} · <em>trabado</em>'; refreshHilo('cir');
+    /* Fase 12 · Brief 06 (A): marco D. Sale la caja «TRÁMITE ESTANCADO» con «Escalar» y «Llamar»; el sábado 14, después del plazo del 13 */
+    if(!cirSimRamaOk()) return;
+    bloquearActs('cir', CIR_RAMA_ACTS); /* Fase 12 · Brief 08Ac */
+    commit('cir',{sep:'Sáb 14 nov'});
+    setCard('cir',{espero:false}); /* si se vuelve a simular, «Esperar dos días más» sale otra vez */
+    play('cir',[cirMsgD()]);
+    THREADS.cir.sub='{p3} · <em>Sin respuesta</em>'; refreshHilo('cir');
     setCard('cir',{st:'trabado', sub:'{p3} · <em>{eps} incumplió el plazo</em>', pill:'Estancado', pc:'urgente',
       bov:['{p3} · <em>{eps} incumplió el plazo</em>','Estancado','urgente']});
     renderInicio();
@@ -3050,22 +3249,65 @@ var ACT = {
   /* Fase Móvil · Punto 1c: mismo contenido crítico que armaba goNegado() (ya retirado) */
   'cir.simNegado': function(el){
     /* Fase Móvil · sin lock(el): mismo criterio que cir.simEstancado */
-    commit('cir',{sep:'4 días después'});
-    play('cir',[{who:'t', raw:'<div class="crit"><div class="crit-h">'+WARN+'AUTORIZACIÓN NEGADA</div><div class="crit-b">'+
-      '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd fail">'+X_IC+'</div><div class="sl"></div><div class="sd todo">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
-      '<div class="step-lbl"><span>Orden</span><span class="on">Autorización</span><span>Cita</span><span>Resuelto</span></div>'+
-      '<p>{eps} negó la autorización. Dice que faltó la justificación médica, pero sí estaba.</p>'+'<p style="background:var(--r-exito-suave);border-radius:var(--radio-m);padding:var(--esp-m) var(--esp-m);font-size:var(--fs-secundario);"><b>No fue culpa tuya.</b></p>'+ /* Fase 11 · Brief 04 (C) · Brief 04b (corrección): la caja verde en una línea; sale "de 2 a 5 días", lo dice «Ver la negación completa» */
-      '<button type="button" class="btn-p" data-act="cir.revisarApelacion">Pedir que reconsideren</button>'+
-      '<button type="button" class="btn-s" data-act="cir.porque">Ver la negación completa</button></div></div>'}]);
-    THREADS.cir.sub='{p3} · <em>negada</em>'; refreshHilo('cir');
+    /* Fase 12 · Brief 06 (A): marco E. Salen la caja «AUTORIZACIÓN NEGADA», la barra de cuatro pasos, la caja verde inline
+       y el enlace a la negación completa (el prototipo no tiene ese documento). El martes 10, dentro del plazo */
+    if(!cirSimRamaOk()) return;
+    bloquearActs('cir', CIR_RAMA_ACTS); /* Fase 12 · Brief 08Ac */
+    commit('cir',{sep:'Mar 10 nov'});
+    play('cir',[cirMsgE()]);
+    THREADS.cir.sub='{p3} · <em>{eps} la negó</em>'; refreshHilo('cir');
     setCard('cir',{st:'trabado', sub:'{p3} · <em>{eps} negó la autorización</em>', pill:'Negada', pc:'negada',
-      bov:['{p3} · <em>negada el 13 de noviembre</em>','Negada','negada']});
+      bov:['{p3} · <em>negada el 10 de noviembre</em>','Negada','negada']});
     renderInicio();
   },
-  /* Fase 11 · Brief 03: escalar ya no radica; muestra la revisión, como la reconsideración. "No me resolvieron, escalar" llega aquí también */
-  /* Fase 11 · Brief 04b (B): la queja ante Supersalud sirve a cir (autorización sin respuesta) y a med (no llegó a domicilio).
-     Lo que cambia por trámite vive en QUEJA; las acciones queja.* leen el trámite del hilo abierto (K()) */
-  'cir.escalar': function(el){ ACT['queja.revisar'](el); }, /* lo llaman la tarjeta de estancado y «No me resolvieron, escalar» */
+  /* Fase 12 · Brief 06 (A): «No me resolvieron, escalar» (cir.llamar) y la reconsideración sin respuesta llegan a D2, como «Prepara la queja conmigo» */
+  'cir.escalar': function(el){ ACT['cir.queja'](el); },
+  /* Fase 12 · Brief 06 (A): marco D2 · revisa la queja. Salen «Antes de enviar, revisa que esté bien», el motivo y «Cancelar» */
+  'cir.queja': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:((el && el.textContent) || 'Prepara la queja conmigo').trim()}); /* también «No me resolvieron, escalar» */
+    play('cir',[{who:'t', wgt:'<div class="wgt-t">Revisa que esté bien antes de enviar.</div><div class="wgt-d d-cuerpo">Pongo la queja en el portal de la Supersalud.</div>'+ /* Fase 12 · Brief 08Ab: caja de campos (marco F04) */
+      '<div class="exlist ex-campos">'+cirFila('Paciente','{p3} · {cc3}')+cirFila('Queja ante','Supersalud, contra {eps}')+cirFila('Adjuntos','Radicado #45892 y el plazo vencido')+'</div>'+
+      '<button type="button" class="btn-p" data-act="cir.quejaEnviar">Confirmar y enviar</button>'+
+      '<button type="button" class="link-u" data-act="cir.quejaAhoraNo">Ahora no</button>'}]); /* Fase 12 · Brief 08A: enlace (marco F04) */
+    THREADS.cir.sub='{p3} · Poner la queja'; refreshHilo('cir');
+  },
+  /* Fase 12 · Brief 06 (A): «Ahora no» vuelve a D */
+  'cir.quejaAhoraNo': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:'Ahora no'});
+    play('cir',[{who:'t', text:'No envié nada.'}, cirMsgD()]);
+    THREADS.cir.sub='{p3} · <em>Sin respuesta</em>'; refreshHilo('cir');
+  },
+  /* Fase 12 · Brief 06 (A): «Esperar dos días más». El estado no cambia; el tiempo pasa con el chip y vuelve D */
+  'cir.esperar': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:'Esperar dos días más'});
+    play('cir',[{who:'t', text:'Listo, espero dos días.'}, {who:'t', wgt:simChip('cir.simDosDias','Simular: pasaron dos días')}]);
+  },
+  'cir.simDosDias': function(el){
+    simUsar(el); /* sin lock(): es un chip «Simular» */
+    var c=card('cir'); if(!c || c.pill!=='Estancado') return;
+    bloquearActs('cir', CIR_RAMA_ACTS); /* Fase 12 · Brief 08Ac: nunca dos «Prepara la queja conmigo» vivos */
+    commit('cir',{sep:'2 días después'});
+    setCard('cir',{espero:true});
+    play('cir',[cirMsgD()]);
+  },
+  /* Fase 12 · Brief 06 (A): marco D3 · queja enviada. Hace lo que hacía QUEJA.cir.despues */
+  'cir.quejaEnviar': function(el){
+    lock(el);
+    commit('cir',{who:'s', text:'Confirmar y enviar'});
+    if(netBlocked()){ netErr('cir','cir.quejaEnviar'); return; }
+    play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Puse la queja ante la Supersalud.</div>'+
+      '<div class="wgt-d">Envié el radicado #45892 y el plazo vencido. Radicado SNS-84417.</div><div class="wgt-d">{eps} tiene que responder. Te aviso cuando lo haga.</div>'+
+      '<button type="button" class="link-u" data-go="DOCS" data-docs="queja">Ver qué se envió</button>'},
+      {who:'t', wgt:simChip('cir.simAprobada','Simular: {eps} la aprobó')}]);
+    setCard('cir',{st:'encurso', sub:'{p3} · queja en Supersalud', pill:'Escalado', pc:'espera',
+      bov:['{p3} · queja enviada a Supersalud','Escalado','espera']}, null); /* Fase 10 · Rediseño · Brief 10 */ /* Fase 12 · Brief 06c: sin aviso en Inicio; el hilo ya lo confirmó */
+    THREADS.cir.sub='{p3} · Queja en la Supersalud'; refreshHilo('cir');
+    renderInicio();
+  },
+  /* Fase 11 · Brief 04b (B): la queja ante Supersalud de med (no llegó a domicilio). Lo que cambia vive en QUEJA; las acciones queja.* leen el trámite del hilo abierto (K()) */
   'queja.revisar': function(el){
     lock(el); var k=K();
     commit(k,{who:'s', text:'Escalar ante Supersalud'});
@@ -3081,7 +3323,7 @@ var ACT = {
   'queja.enviar': function(el){
     lock(el); var k=K(), q=QUEJA[k]; if(!q) return;
     commit(k,{who:'s', text:'Confirmo, envía la queja'});
-    if(netBlocked()){ netErr(k,'queja.enviar','Supersalud'); return; }
+    if(netBlocked()){ netErr(k,'queja.enviar'); return; }
     /* Fase 11 · Brief 03: sale el "3 días después" automático; lo que sigue llega solo con el chip */
     play(k,[{who:'t', think:2, wgt:'<div class="wgt-t">Queja enviada a Supersalud ✓</div>'+
       '<div class="wgt-d">Envié la queja por el portal de Supersalud. '+q.adjCorto+'</div><div class="wgt-d">{eps} tiene que responder. Te aviso cuando lo haga.</div>'+ /* Fase 11 · Brief 04 (C) */
@@ -3089,20 +3331,27 @@ var ACT = {
       {who:'t', wgt:simChip(q.chip[0], q.chip[1])}]);
     if(q.despues) q.despues();
   },
-  /* Fase 11 · Brief 03: un solo cierre de "¡Llegó la autorización!" para la queja y la reconsideración. Sin lock(): es un chip «Simular» */
+  /* Fase 11 · Brief 03: un solo cierre para la aprobación, la queja y la reconsideración. Sin lock(): es un chip «Simular» */
   'cir.simAprobada': function(el){
     [].forEach.call(el.parentNode.querySelectorAll('.chip-sim'), simUsar); /* los dos chips de la reconsideración se excluyen */
     var c=card('cir'); if(!c || c.st!=='encurso') return;
-    var queja=c.pill==='Escalado';
-    play('cir',[{who:'t', cara:'celebra', wgt:'<div class="wgt-t">¡Llegó la autorización!</div>'+
-      '<div class="stepper"><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd done">'+OK_IC+'</div><div class="sl done"></div><div class="sd now">3</div><div class="sl"></div><div class="sd todo">4</div></div>'+
-      '<div class="step-lbl"><span>Orden</span><span>Autorización</span><span class="on">Cita</span><span>Resuelto</span></div>'+
-      '<div class="wgt-d">'+(queja?'Fueron 8 días y una queja, pero quedó.':'{eps} aprobó la reconsideración.')+' Ya puedes agendar la {t2x} de {p3}.</div>'+
-      '<button type="button" class="btn-p" data-act="ped.agendar">Agendar la {t2x}</button>'+
-      '<button type="button" class="btn-s" data-go="G1">Ver la autorización</button>'}], function(){
-      THREADS.cir.sub='{p3} · autorizada'; refreshHilo('cir');
-      setCard('cir',{st:'accionable', aprobada:true, sub:'{p3} · Agendar la {t2x}', pill:'Pendiente', pc:'pendiente',
-        bov:['{p3} · aprobada el 17 de noviembre','Completado','completo']}, '{t2} volvió a Inicio');
+    /* Fase 12 · Brief 05 (A): marco 8. El camino principal (radicada, pill «Radicado») se aprueba el martes 10 de noviembre: dos días hábiles
+       después de radicar (como el lienzo: 23 → 27 oct) y antes del plazo del 13. La queja y la reconsideración (Brief 06) siguen con el 17.
+       Sale «¡Llegó la autorización!» con la barra de cuatro pasos y «Agendar la {t2x}»: sigue «Buscar fechas» */
+    var queja=c.pill==='Escalado', directa=c.pill==='Radicado', aprob=cirAprob(c);
+    /* Fase 12 · Brief 05c: sin notificación del celular; el «Simular:» agrega los mensajes directo al hilo */
+    bloquearActs('cir', CIR_RAMA_ACTS); /* Fase 12 · Brief 08Ac */
+    commit('cir',{sep:'Mar '+aprob[1]}); /* las dos fechas caen en martes */
+    /* Fase 12 · Brief 06 (A): D4 empieza en «Fueron {N} días…» (N, desde la radicación) y E4 en «aprobó la reconsideración». Sale el «8» fijo */
+    var dias=Math.round((CIR_APROB2[3]-HOY_SIM)/864e5);
+    play('cir',[{who:'t', cara:'celebra', wgt:'<div class="wgt-t">'+(queja ? 'Fueron '+dias+' días y una queja, pero quedó.' : '{eps} aprobó '+(directa ? 'la autorización' : 'la reconsideración')+'.')+'</div>'+
+      cirEstadoHTML('Aprobada por {eps} · '+aprob[1], 3, cirDocRow(docIx('autcir'),'Autorización de servicios','En la Bóveda de {p3}'))+
+      '<button type="button" class="link-u link-izq" data-docview="'+docIx('autcir')+'">Ver la autorización</button>'}, /* Fase 12 · Brief 08Ac: tarjeta de estado (marco F08); «Ver la autorización» sale de la fila y va debajo */
+      {who:'t', text:'Ahora hay que elegir la fecha de la cirugía.<br>Busco las fechas disponibles en {eps}.'},
+      {who:'t', wgt:'<button type="button" class="btn-p" data-act="cir.fechas">Buscar fechas</button>'}], function(){
+      THREADS.cir.sub='{p3} · Elegir la fecha'; refreshHilo('cir');
+      setCard('cir',{st:'accionable', aprobada:true, frase:'la cirugía de {p3}', fraseCorta:'la cirugía', /* Fase 12 · Brief 08Ad: aprobada, ya no es «la autorización» */ sub:'{p3} · Agendar la {t2x}', pill:'Pendiente', pc:'pendiente',
+        bov:['{p3} · aprobada el '+aprob[0],'Completado','completo']}); /* Fase 12 · Brief 05 (B): una sola notificación por evento, sin el aviso «volvió a Inicio». Brief 06 (A): en las tres ramas. Brief 05c: la entrada en Notificaciones, sin pantalla del celular */
       renderInicio();
     });
   },
@@ -3111,45 +3360,46 @@ var ACT = {
     [].forEach.call(el.parentNode.querySelectorAll('.chip-sim'), simUsar); /* los dos chips de la reconsideración se excluyen */
     var c=card('cir'); if(!c || c.st!=='encurso') return;
     commit('cir',{sep:'10 días hábiles después'});
-    play('cir',[{who:'t', raw:'<div class="crit"><div class="crit-h">'+WARN+'TRÁMITE ESTANCADO</div><div class="crit-b">'+
-      '<p>{eps} incumplió el plazo. Tenía 10 días hábiles para responder la reconsideración.</p>'+
-      '<button type="button" class="btn-p" data-act="cir.escalar">Escalar ante Supersalud</button>'+
-      '<button type="button" class="btn-danger" data-act="cir.llamar">Llamar a {eps}</button></div></div>'}]);
-    THREADS.cir.sub='{p3} · <em>trabado</em>'; refreshHilo('cir');
+    /* Fase 12 · Brief 06 (A): con la voz de D, sin la caja «TRÁMITE ESTANCADO». No se alcanza desde el hilo (E3 ya no trae su chip): ver el Handoff */
+    play('cir',[{who:'t', cara:'atenta', wgtCls:'err', wgt:'<div class="wgt-t">'+WARN+'{eps} no respondió a tiempo.</div>'+
+      '<div class="wgt-d">Tenía 10 días hábiles para responder la reconsideración. <b>La demora es de {eps}, no tuya.</b></div>'+
+      '<button type="button" class="btn-p" data-act="cir.escalar">Prepara la queja conmigo</button>'+
+      '<button type="button" class="btn-s" data-act="cir.llamar">Llamar a {eps}</button>'}]);
+    THREADS.cir.sub='{p3} · <em>Sin respuesta</em>'; refreshHilo('cir');
     setCard('cir',{st:'trabado', sub:'{p3} · <em>{eps} incumplió el plazo</em>', pill:'Estancado', pc:'urgente',
       bov:['{p3} · <em>{eps} incumplió el plazo</em>','Estancado','urgente']});
     renderInicio();
   },
   'cir.revisarApelacion': function(el){
     lock(el);
-    commit('cir',{who:'s', text:'Pide que reconsideren'});
-    play('cir',[{who:'t', wgt:'<div class="wgt-t">Antes de radicar, revisa que esté bien</div>'+ /* Fase 8 · Yifrah #6 */
-      '<div class="wgt-d"><b>Solicitud:</b> reconsideración de la autorización de {t2x}<br><b>Paciente:</b> {f3}<br><b>Ante:</b> {epsn}<br><b>Soporte:</b> justificación médica tomada de la historia clínica del 7 de octubre</div><div class="wgt-d">No radico nada hasta que confirmes.</div>'+
-      '<button type="button" class="btn-p" data-act="cir.apelar">Confirmar y radicar</button>'+
-      '<button type="button" class="btn-s" data-act="cir.cancelarApelacion">Cancelar</button>'}]);
+    commit('cir',{who:'s', text:'Pedir que reconsideren'});
+    /* Fase 12 · Brief 06 (A): marco E2, con las filas de cir.revisar. Salen «Antes de radicar…», el soporte en párrafo y «Cancelar» */
+    play('cir',[{who:'t', wgt:'<div class="wgt-t">Revisa que esté bien antes de enviar.</div><div class="wgt-d d-cuerpo">Pido que reconsideren en el portal de {eps}.</div>'+ /* Fase 12 · Brief 08Ab: caja de campos (marco F04) */
+      '<div class="exlist ex-campos">'+cirFila('Paciente','{p3} · {cc3}')+cirFila('Solicitud','Reconsideración')+cirFila('Adjuntos','Justificación médica de la historia clínica')+'</div>'+
+      '<button type="button" class="btn-p" data-act="cir.apelar">Confirmar y enviar</button>'+
+      '<button type="button" class="link-u" data-act="cir.cancelarApelacion">Ahora no</button>'}]); /* Fase 12 · Brief 08A: enlace (marco F04) */
+    THREADS.cir.sub='{p3} · Pedir que reconsideren'; refreshHilo('cir');
   },
+  /* Fase 12 · Brief 06 (A): «Ahora no» vuelve a E */
   'cir.cancelarApelacion': function(el){
     lock(el);
-    commit('cir',{who:'s', text:'Todavía no'});
-    play('cir',[{who:'t', wgt:'<div class="wgt-t">Sin problema, no radiqué nada</div>'+ /* Fase 8 · Yifrah #6 */
-      '<div class="wgt-d">La reconsideración sigue sin pedirse. Avísame cuando quieras hacerlo.</div>'+
-      '<button type="button" class="btn-p" data-act="cir.revisarApelacion">Pedir que reconsideren</button>'}]);
+    commit('cir',{who:'s', text:'Ahora no'});
+    play('cir',[{who:'t', text:'No envié nada.'}, cirMsgE()]);
+    THREADS.cir.sub='{p3} · <em>{eps} la negó</em>'; refreshHilo('cir');
   },
   'cir.apelar': function(el){
     lock(el);
-    commit('cir',{who:'s', text:'Confirmo, pide que reconsideren'});
-    if(netBlocked()){ netErr('cir','cir.apelar','{eps}'); return; }
-    play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Solicitud de reconsideración radicada ✓</div>'+
-      '<div class="wgt-d">Pedí la reconsideración en el portal de {eps}. Envié la justificación médica de la historia clínica.</div><div class="wgt-d">Tiene 10 días hábiles para responder.</div>'+ /* Fase 11 · Brief 03: canal y qué envié. Fase 11 · Brief 04 (C): sale "Si no lo hacen…", lo dice el chip */
-      '<div class="log"><div class="log-r"><div class="log-d"></div><p><b>Radicado RC-2026-3391</b>Hoy, 11:04 a.m.</p></div></div>'},
-      /* Fase 11 · Brief 03: el tiempo solo pasa con un chip */
-      {who:'t', wgt:'<div class="chipwrap">'+
-        '<button type="button" class="chip-o chip-sim" data-act="cir.simAprobada">'+SIM_IC+'Simular: aprobaron</button>'+
-        '<button type="button" class="chip-o chip-sim" data-act="cir.simSinRespuesta">'+SIM_IC+'Simular: no respondieron</button>'+
-        '</div>'}]);
+    commit('cir',{who:'s', text:'Confirmar y enviar'});
+    if(netBlocked()){ netErr('cir','cir.apelar'); return; }
+    /* Fase 12 · Brief 06 (A): marco E3. Salen el registro (log) con la hora y el chip «no respondieron»: el lienzo deja solo la aprobación */
+    play('cir',[{who:'t', think:2, wgt:'<div class="wgt-t">Pedí que reconsideren en {eps}.</div>'+
+      '<div class="wgt-d">Envié la justificación médica de la historia clínica. Radicado RC-3391.</div>'+
+      '<div class="wgt-d">Tienen 10 días hábiles para responder.<br>Si no responden, te digo qué hacer.</div>'+
+      '<button type="button" class="link-u" data-go="DOCS" data-docs="recon">Ver qué se envió</button>'},
+      {who:'t', wgt:simChip('cir.simAprobada','Simular: {eps} la aprobó')}]);
     setCard('cir',{st:'encurso', sub:'{p3} · reconsideración en curso', pill:'Apelada', pc:'espera',
-      bov:['{p3} · reconsideración radicada','En trámite','espera']}, '{t2} ya está en «En curso»') /* Fase 10 · Rediseño · Brief 10 */;
-    THREADS.cir.sub='{p3} · reconsideración en curso'; refreshHilo('cir');
+      bov:['{p3} · reconsideración radicada','En trámite','espera']}, null) /* Fase 10 · Rediseño · Brief 10 */; /* Fase 12 · Brief 06c: sin aviso en Inicio; el hilo ya lo confirmó */
+    THREADS.cir.sub='{p3} · En revisión'; refreshHilo('cir');
     renderInicio();
   },
   'cir.porque': function(el){
@@ -3203,6 +3453,7 @@ var ACT = {
     [].forEach.call(el.parentNode.querySelectorAll('.chip-sim'), simUsar); /* «llegó» y «no llegó» se excluyen */
     var c=card('med'); if(!c || c.st==='descartado') return;
     commit('med',{sep:'2 días después'});
+    medSub('La entrega '+medEntregaN()+' de 3 no llegó'); /* Fase 12 · Brief 08A */
     play('med',[{who:'t', cara:'atenta', text:'Pasaron las 48 horas y no llegó. Puedo poner una queja ante Supersalud.'}, quejaRevision('med')]);
   },
   'med.domicilio': function(el){
@@ -3223,7 +3474,7 @@ var ACT = {
     var hoy=new Date(HOY_SIM.getFullYear(), MESNUM[c.entrega.mesTexto], c.entrega.dia);
     commit('med',{sep:c.entrega.dia+' de '+c.entrega.mesTexto});
     var aviso={who:'t', medAviso:1, wgt:medAvisoHTML(3, false, hoy)};
-    setCard('med',{st:'accionable', sub:'{qmed} · Reclamar entrega 3 de 3', pill:'Pendiente', pc:'pendiente', entrega:null, lim:null});
+    setCard('med',{st:'accionable', sub:'{qmed} · Reclamar la entrega 3 de 3', /* Fase 12 · Brief 08A */ pill:'Pendiente', pc:'pendiente', entrega:null, lim:null});
     THREADS.med.sub='{qmed} · entrega 3 de 3'; refreshHilo('med');
     play('med',[aviso]);
     renderInicio();
@@ -3238,6 +3489,8 @@ var ACT = {
   'med.control': function(el){ lock(el); medControl('Sí, pídela desde ya'); }
 };
 /* Fase 10 · Brief 21: la entrega 2 queda reclamada; pre = texto de Taremi antes (a domicilio) en vez del "Ya la reclamé" de la persona */
+/* Fase 12 · Brief 08A: la línea del Losartán en la fila de Inicio y en el encabezado del hilo. Siempre lleva «entrega N»: medEntregaN() la lee */
+function medSub(t, extra){ var s='{qmed} · '+t; setCard('med', Object.assign({sub:s}, extra||{})); THREADS.med.sub=s; refreshHilo('med'); renderInicio(); }
 function medReclamada(){ /* Fase 11 · aviso de entrega: sale pre ("Llegó a domicilio."): la tarjeta lo dice */
   bloquearActs('med',['med.reclamar']);
   var n=medEntregaN(); /* la que se acaba de recibir */
@@ -3278,7 +3531,7 @@ function medControl(txt){
   renderInicio();
 }
 function lock(el){ var w=el.closest('.wgt'); if(!w) return;
-  w.querySelectorAll('button').forEach(function(b){ b.setAttribute('disabled',''); });
+  w.querySelectorAll('button:not([data-docview]):not(.link-u[data-go="DOCS"]):not([data-act="quees"])').forEach(function(b){ b.setAttribute('disabled',''); }); /* Fase 12 · Brief 08Ab: las filas de documentos siguen abriendo el visor. Brief 08Ac: «Ver qué se envió» y «Ver la autorización» tampoco se bloquean */
   /* Fase 10 · Brief 21: el bloqueo queda en el mensaje (patrón m.lk del Brief 03b, copia y no mutación: los mensajes pueden ser los de INTRO);
      msgEl() lo vuelve a aplicar al pintar el hilo y restoreDraft() no reactiva "Confirmar cita" en un widget bloqueado (data-lk) */
   w.setAttribute('data-lk','');
@@ -3328,11 +3581,11 @@ var offline=false, failOnce=false, loadFail=false, lastSlot=null;
 function setOffline(v){ offline=v; document.getElementById('offbar').style.display = v?'flex':'none'; }
 function netBlocked(){ if(failOnce){ failOnce=false; return true; } return offline; }
 /* 1 · error de acción en el chat: se queda en el mismo hilo, con salida clara */
-function netErr(k, retryAct, quien){
-  play(k,[{who:'t', think:1, wgtCls:'err', wgt:'<div class="wgt-t"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>No pude conectar con '+quien+'</div>'+
-    '<div class="wgt-d">No se perdió nada: la solicitud quedó armada. Puedes intentarlo otra vez o dejarla para después.</div>'+ /* Fase 11 · Brief 04 (C) */
-    '<button type="button" class="btn-p" data-act="'+retryAct+'">Reintentar</button>'+
-    '<button type="button" class="btn-s" data-act="net.later">Guardar para después</button>'}]);
+/* Fase 12 · Brief 06 (B): marco «Sin conexión» · un solo texto para todos los trámites; sin «Guardar para después» */
+function netErr(k, retryAct){
+  play(k,[{who:'t', think:1, wgtCls:'err', wgt:'<div class="wgt-t"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>No envié nada: no hay conexión.</div>'+
+    '<div class="wgt-d">Guardé todo. Cuando vuelva la conexión, toca «Intentar ahora» y lo envío.</div>'+
+    '<button type="button" class="btn-s" data-act="'+retryAct+'">Intentar ahora</button>'}]);
 }
 function voiceNote(){
   var key = curThread && cur==='TH' ? curThread : 'gen';
@@ -3384,8 +3637,31 @@ var GO_NOM={ped:'{t1l}', cir:'{t2x}', med:'{t3n}'};
 /* Fase 10 · Brief 14 (corrección 4): un trámite existe para el chat general si no está oculto ni descartado y su persona está en la familia */
 function genVisible(c){ return !!c && c.st!=='oculto' && c.st!=='descartado' && personaVisible(c); }
 /* Fase 11 · Brief 03: frases de agotamiento (Brief 06 (C): suma miedo y desorientación); van antes de cualquier palabra clave de trámite */
-var ANGUSTIA_RE=/no puedo m[aá]s|no doy m[aá]s|estoy cansad|agotad|me toca todo|sola con todo|solo con todo|tengo miedo|me da miedo|no s[eé] qu[eé] hacer|no aguanto|desbordad/, agendaPrimera=null;
+var ANGUSTIA_RE=/no puedo m[aá]s|no doy m[aá]s|estoy cansad|agotad|me toca todo|sola con todo|solo con todo|tengo miedo|me da miedo|no s[eé] qu[eé] hacer|no aguanto|desbordad/, agendaPrimera=null,
+    huboUrgente=false; /* Fase 12 · Brief 08A: se enciende la primera vez que Inicio ve algo urgente; resetDemo() lo apaga */
+/* Fase 12 · Brief 01: «¿Cómo funciona Taremi?» reemplaza la pantalla Ayuda: un mensaje y las cuatro pestañas en tarjetas */
+var COMO_RE=/c[oó]mo funciona taremi/, NAV_IC={
+  inicio:'<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  bov:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  cuenta:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
+};
+var COMO_CARDS=[['inicio','Inicio','Lo que vence en el próximo mes.'],['cal','Calendario','Tus citas y lo que falta agendar.'],
+  ['bov','Bóveda','Todos tus documentos, por persona.'],['cuenta','Tu cuenta','Tu familia, tus notificaciones y tus datos.']];
+function comoHTML(){
+  return '<div class="mm-list">'+COMO_CARDS.map(function(c){
+    return '<div class="mm-card"><span class="mm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+NAV_IC[c[0]]+'</svg></span>'+
+      '<div><h5>'+c[1]+'</h5><p>'+c[2]+'</p></div></div>'; }).join('')+'</div>';
+}
 function textReply(txt){
+  if(COMO_RE.test(txt.toLowerCase())){
+    var kc = curThread && cur==='TH' ? curThread : 'gen';
+    if(cur!=='TH'){ openThread('gen','taremi'); kc='gen'; }
+    if(kc==='gen' && genHi){ genConv(); }
+    commit(kc,{who:'s', text:txt, ed:'e'+(++EDN)});
+    play(kc,[{who:'t', think:1, text:'Te explico en corto. Todo está en cuatro pestañas.'}, {who:'t', raw:comoHTML()}]);
+    return;
+  }
   if(ANGUSTIA_RE.test(txt.toLowerCase())){
     var ka = curThread && cur==='TH' ? curThread : 'gen';
     if(cur!=='TH'){ openThread('gen','taremi'); ka='gen'; }
@@ -3502,7 +3778,7 @@ probList.addEventListener('click', function(e){
   var k=curThread; probPanelClose();
   if(k) probRun(k, b.getAttribute('data-prob'));
 });
-document.addEventListener('click', function(e){ if(!probPanel.hidden && !probBar.contains(e.target)) probPanelClose(); }, true);
+document.addEventListener('click', function(e){ if(!probPanel.hidden && !probPanel.contains(e.target) && !probBtn.contains(e.target)) probPanelClose(); }, true); /* Fase 12 · Brief 06 (B): tocar el velo (::before de #probBar) también cierra */
 document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !probPanel.hidden){ e.preventDefault(); e.stopPropagation(); probPanelClose(true); } }, true);
 /* Fase 10 · Ajuste: el alto real de la barra flotante (chips + compositor) se reserva al final de .content */
 (function(){
@@ -3541,7 +3817,10 @@ var SCAN=[
   {w:'ok',   c:'Fórmula médica', m:'Fórmula médica de {p3}. Se lee todo.' /* Fase 11 · Brief 01b */}
 ];
 var SCAN_DEF='La leo bien. La reviso con las demás al final.';
-var SCAN_IDLE='Enfoca la hoja completa. Te digo al instante si la leo bien.';
+/* Fase 12 · Brief 04b (A): la cámara solo toma fotos; el veredicto de cada hoja (SCAN[i].m) se lee en #REVH */
+var SCAN_IDLE='Enfoca la hoja completa.';
+var CAM_FOTO={corrida:'img/camara/orden_desencuadrada.png', mesa:'img/camara/orden_mesa.png'}, HOJA_IMG={ok:'img/camara/hoja.jpg', borrosa:'img/camara/hoja_borrosa.jpg'};
+var camT=null, camScanT=null, retakeMode=false, revSel=0, revKeep=false;
 var scanShots=[];
 function scanSay(w, txt){
   var h=document.getElementById('scanHint'); if(!h) return;
@@ -3557,34 +3836,42 @@ function scanPendientes(){
   if(scanShots[1] && !scanShots[2]) p.push('la hoja 2 de la historia clínica');
   return p;
 }
+function scanThumbWarn(i){ return (i===1 && scanShots.length<3) || !!scanShots[i].blur; }
+/* Fase 12 · Brief 04b (A): en #REVH todas las miniaturas son botones; la foto real reemplaza las rayitas (que quedan si la foto falla) */
 function scanThumb(i){
-  var s=scanShots[i], warn=(i===1 && scanShots.length<3) || s.blur, borrosa=!!s.blur, el=document.createElement(borrosa?'button':'span');
-  el.className='thumb'+(borrosa?' borrosa':'');
-  if(borrosa){ el.type='button'; el.setAttribute('data-tap','thumb'); el.setAttribute('aria-label','Foto '+(i+1)+', salió borrosa. Toca para repetirla'); }
-  else{ el.setAttribute('role','img'); el.setAttribute('aria-label','Foto '+(i+1)+(warn?', falta una hoja':', se lee bien')); }
-  /* Fase 10 · Brief 14 (captura): papel blanco de 58×76 con la marca en círculo y el nombre corto debajo (lienzo 59) */
-  if(warn) el.classList.add('warn');
-  el.innerHTML='<span class="t-hoja" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="t-mk '+(warn?'warn':'ok')+'">'+(warn?ALERT_IC:OK_IC)+'</span></span>'+
-    '<span class="t-nm" aria-hidden="true">'+fx(s.c||('Hoja '+(i+1)))+'</span>';
+  var s=scanShots[i], warn=scanThumbWarn(i), borrosa=!!s.blur, el=document.createElement('button');
+  el.type='button'; el.className='thumb'+(borrosa?' borrosa':'')+(warn?' warn':'')+(i===revSel?' sel':'');
+  el.setAttribute('data-tap','thumb'); el.setAttribute('data-i', i);
+  el.setAttribute('aria-pressed', i===revSel ? 'true' : 'false');
+  el.setAttribute('aria-label','Foto '+(i+1)+', '+fx(s.c||('Hoja '+(i+1)))+', '+(borrosa?'salió borrosa':warn?'falta una hoja':'se lee bien')); /* Fase 12 · Brief 04b-C: el nombre pasa al aria-label */
+  el.innerHTML='<span class="t-hoja" aria-hidden="true"><i></i><i></i><i></i><i></i><img src="'+(borrosa?HOJA_IMG.borrosa:HOJA_IMG.ok)+'" alt="" data-fb><span class="t-mk '+(warn?'warn':'ok')+'">'+(warn?ALERT_IC:OK_IC)+'</span></span>'; /* Fase 12 · Brief 04b-C: sin el nombre corto debajo */
   return el;
 }
-function scanRefresh(){
-  var box=document.getElementById('thumbs'), pend=scanPendientes(), pl=document.getElementById('scanPend'), cd=document.getElementById('camDone');
-  [].forEach.call(box.querySelectorAll('.thumb'), function(x,i){
-    var n=scanThumb(i);
-    if(x.classList.contains('nueva')) n.classList.add('nueva');
-    if(x.classList.contains('sel') && n.tagName==='BUTTON') n.classList.add('sel');
-    if(x.outerHTML!==n.outerHTML) box.replaceChild(n,x);
-  });
-  var rb=document.getElementById('retakeBtn'); if(rb && !box.querySelector('.thumb.sel')) rb.hidden=true;
-  pl.hidden=!pend.length; pl.textContent = pend.length ? 'Aún falta: '+pend.join(' · ') : '';
-  cd.textContent = pend.length ? 'Continuar así' : 'Listo, son todas';
-  cd.className = pend.length ? 'btn-s' : 'btn-p';
+/* Fase 12 · Brief 04b (A): la foto del visor. Al abrir de cero, la hoja corrida y a los 1,5 s la encuadrada; si no, directo la encuadrada */
+function camEncuadre(){
+  var corrida=!!camT;
+  clearTimeout(camT); camT=null;
+  document.getElementById('camFoto').src=CAM_FOTO.mesa;
+  if(corrida) scanSay('ok','Así está bien. Toma la foto.');
 }
-function resetCam(){ camAltCerrar(); /* Fase 11 · Brief 05 (B) */ shots=0; scanShots=[]; hoja2Mode=false; /* Fase 10 · Brief 08f */ document.getElementById('thumbs').innerHTML=''; document.getElementById('shotC').textContent='0 fotos';
-  scanSay('', SCAN_IDLE);
-  document.getElementById('retakeBtn').hidden=true; scanRefresh(); /* Fase 10 · Brief 08 */
-  document.getElementById('camDone').setAttribute('disabled',''); }
+function camLimpiar(){
+  clearTimeout(camT); clearTimeout(camScanT); camT=camScanT=null;
+  document.getElementById('CAM').classList.remove('escaneando','cam-retake');
+  document.getElementById('shutter').removeAttribute('disabled');
+}
+/* Fase 12 · Brief 04b (A): la pila con la insignia y «Revisar» */
+function camBarra(){
+  var p=document.getElementById('camPila'), cd=document.getElementById('camDone');
+  p.classList.toggle('vacia', !shots);
+  document.getElementById('camN').textContent = shots || '';
+  p.setAttribute('aria-label', !shots ? 'Sin fotos' : shots===1 ? '1 foto' : shots+' fotos');
+  if(shots) cd.removeAttribute('disabled'); else cd.setAttribute('disabled','');
+}
+function resetCam(){ camAltCerrar(); /* Fase 11 · Brief 05 (B) */ camLimpiar(); shots=0; scanShots=[]; hoja2Mode=false; retakeMode=false; revSel=0; /* Fase 10 · Brief 08f */
+  document.getElementById('camFoto').src=CAM_FOTO.corrida; scanSay('', SCAN_IDLE);
+  camT=setTimeout(camEncuadre, 1500); /* Fase 12 · Brief 04b (A): se limpia al salir de #CAM (show) */
+  camBarra(); document.getElementById('thumbs').innerHTML='';
+}
 /* Fase 11 · Brief 05 (B): «Simular: la cámara no alcanza a leer». Las fotos tomadas se guardan sin leer (ty 'imagen', sin persona ni trámite,
    en «Sin consulta asociada») y el panel ofrece las entradas que ya existen: en el onboarding, las tarjetas del paso 4 (correo y PDF;
    ahí no hay pegar texto); en la app, el correo (Revisar ahora si está conectado; si no, Conectar tu correo del FAB), GAL y PEG */
@@ -3601,12 +3888,12 @@ function camNoLee(){
   nt.hidden=!n; nt.textContent = n===1 ? 'La foto queda en la Bóveda como imagen, para mostrarla en la cita.' : 'Las '+n+' fotos quedan en la Bóveda como imagen, para mostrarlas en la cita.';
   document.getElementById('camAltAv').innerHTML=mascotaSVG('atenta', 42);
   /* Fase 11 · Brief 05 (corrección): una hoja con velo sobre la cámara. Ya no se esconden el chip, el disparador ni «Listo»: el velo los tapa */
-  alt.style.display='flex';
+  abrirHoja(alt); /* Fase 12 · Brief 09D */
   document.getElementById('CAM').classList.add('cam-alt-on'); /* Fase 11 · Brief 05 (ajuste): sin la burbuja del visor */
 }
 /* Fase 11 · Brief 05 (corrección): cerrar la hoja (velo, «Seguir intentando» o closeSheets) vuelve a la cámara con su burbuja */
 function camAltCerrar(){
-  var alt=document.getElementById('scrimCamAlt'); if(alt) alt.style.display='none';
+  cerrarHoja(document.getElementById('scrimCamAlt')); /* Fase 12 · Brief 09D */
   document.getElementById('CAM').classList.remove('cam-alt-on');
 }
 function camAltIr(w){
@@ -3620,37 +3907,88 @@ function camAltIr(w){
   show(w==='pdf' ? 'GAL' : 'PEG');
 }
 function shutterTap(){
-  if(shots>=8 || (hoja2Mode && shots>=1)) return; /* Fase 10 · Brief 08f: desde #FIN solo falta una hoja */
+  if(camScanT) return; /* Fase 12 · Brief 04b (A): «Escaneando…» en curso */
+  if(retakeMode===false && (shots>=8 || (hoja2Mode && shots>=1))) return; /* Fase 10 · Brief 08f: desde #FIN solo falta una hoja */
   camUsada=true; /* Fase 10 · Brief 48: el permiso de cámara en Configuración */
-  var d=hoja2Mode ? SCAN[2] : SCAN[shots]; /* Fase 10 · Brief 08 */
-  scanShots.push({blur:!!(d&&d.blur), c:d&&d.c}); /* Fase 10 · Brief 14 (captura): c = nombre corto de la miniatura */
-  shots++;
-  var box=document.getElementById('thumbs');
-  [].forEach.call(box.querySelectorAll('.thumb'), function(x){ x.classList.remove('nueva'); });
-  var t=scanThumb(shots-1); t.classList.add('nueva');
-  box.appendChild(t);
-  document.getElementById('shotC').textContent = shots+' foto'+(shots>1?'s':'');
-  document.getElementById('camDone').removeAttribute('disabled');
-  scanRefresh(); scanSay(d?d.w:'ok', fx(d?d.m:SCAN_DEF));
+  if(camT) camEncuadre(); /* Fase 12 · Brief 04b (A): si dispara antes de los 1,5 s, se encuadra ahora */
+  var rep=retakeMode;
+  if(rep===false){
+    var d=hoja2Mode ? SCAN[2] : SCAN[shots]; /* Fase 10 · Brief 08 */
+    scanShots.push({blur:!!(d&&d.blur), c:d&&d.c}); /* Fase 10 · Brief 14 (captura): c = nombre corto de la miniatura */
+    shots++;
+  }
+  /* Fase 12 · Brief 04b (A): 0,8 s con el velo y «Escaneando…»; luego «Listo. ¿Hay otra hoja?» para todas, también la borrosa */
+  var cam=document.getElementById('CAM'), sh=document.getElementById('shutter');
+  sh.setAttribute('disabled',''); cam.classList.add('escaneando'); scanSay('', 'Escaneando…');
+  camScanT=setTimeout(function(){
+    camScanT=null; sh.removeAttribute('disabled'); cam.classList.remove('escaneando');
+    if(rep!==false){ retakeHecho(rep); return; }
+    camBarra(); scanSay('ok', hoja2Mode ? 'Listo, ya la tengo.' : 'Listo. ¿Hay otra hoja?'); /* Fase 12 · Brief 04b-C: en hoja2Mode solo falta una hoja */
+  }, 800);
 }
-/* Fase 10 · Brief 08: tocar la miniatura borrosa ofrece repetirla; repetirla la deja leíble */
-function thumbTap(){
-  var t=document.querySelector('#thumbs .thumb.borrosa'); if(!t) return;
-  t.classList.add('sel'); document.getElementById('retakeBtn').hidden=false;
+/* Fase 12 · Brief 04b (A): «Revisa las hojas». Hoja grande, mensaje de la hoja (SCAN[i].m tal cual) y miniaturas.
+   Al entrar queda la primera con problema (borrosa o «falta la hoja 2»); si no hay, la última. revKeep conserva la elegida */
+function revElegir(){
+  for(var i=0;i<scanShots.length;i++) if(scanThumbWarn(i)) return i;
+  return scanShots.length-1;
 }
+function renderRevh(){
+  var n=scanShots.length, s=byId.REVH;
+  if(revSel<0 || revSel>=n) revSel=Math.max(0,n-1);
+  s.setAttribute('data-sub', (n===1 ? '1 foto' : n+' fotos')+' · toca una para verla');
+  var x=scanShots[revSel]||{}, d=SCAN[revSel]||{}, img=document.getElementById('revImg');
+  img.hidden=false; img.src = x.blur ? HOJA_IMG.borrosa : HOJA_IMG.ok;
+  img.alt='Foto '+(revSel+1)+', '+fx(x.c||'');
+  document.getElementById('revCap').textContent=(revSel+1)+' de '+n+' · '+fx(x.c||('Hoja '+(revSel+1))); /* Fase 12 · Brief 04b-C: la hoja que se ve, con el nombre completo */
+  /* la mascota toma su gesto del mensaje: calma si w==='ok', atenta si warn o blur */
+  var w = x.rep ? 'ok' : (x.blur ? 'warn' : (d.w||'ok')), msg = x.rep ? 'Ahora sí: leí el nombre del procedimiento.' : fx(d.m||SCAN_DEF);
+  document.getElementById('revMsg').textContent=msg;
+  var av=document.getElementById('revAv'), g = w==='ok' ? 'calma' : 'atenta';
+  if(av.getAttribute('data-g')!==g){ av.setAttribute('data-g',g); av.innerHTML=mascotaSVG(g,36); }
+  var box=document.getElementById('thumbs'); box.innerHTML='';
+  for(var i=0;i<n;i++) box.appendChild(scanThumb(i));
+  document.getElementById('retakeBtn').hidden = !x.blur;
+}
+function thumbTap(el){ revSel=parseInt(el.getAttribute('data-i'),10)||0; renderRevh(); var b=document.querySelector('#thumbs [data-i="'+revSel+'"]'); if(b) b.focus(); }
+/* «Repetir esta foto»: la cámara en modo de una sola foto */
 function retakeTap(){
-  if(!scanShots[3]) return;
-  scanShots[3].blur=false;
-  var pi=document.getElementById('procInput'); if(pi){ pi.value=fx('{t2x}'); detCheckReady(); } /* Fase 10 · Brief 08f (ajuste): lo leído reemplaza lo escrito */
-  document.getElementById('retakeBtn').hidden=true;
-  scanRefresh();
-  scanSay('ok','Ahora sí: leí el nombre del procedimiento.');
+  if(!scanShots[revSel] || !scanShots[revSel].blur) return;
+  keepShots=true; show('CAM');
+  retakeMode=revSel; document.getElementById('CAM').classList.add('cam-retake');
+  camEncuadre(); scanSay('', 'Toma de nuevo esta hoja.');
 }
-function camDoneTap(){ if(!shots) return; if(hoja2Mode){ hoja2Done(); return; } /* Fase 10 · Brief 08f */ procFrom='CAM'; show('PROC'); }
+/* Fase 10 · Brief 08: repetirla la deja leíble. Fase 12 · Brief 04b (A): después vuelve a #REVH con esa hoja elegida */
+function retakeHecho(i){
+  retakeMode=false; document.getElementById('CAM').classList.remove('cam-retake');
+  scanShots[i].blur=false; scanShots[i].rep=true;
+  var pi=document.getElementById('procInput'); if(pi){ pi.value=fx('{t2x}'); detCheckReady(); } /* Fase 10 · Brief 08f (ajuste): lo leído reemplaza lo escrito */
+  revSel=i; revKeep=true; show('REVH');
+}
+/* Fase 12 · Brief 04b (A): «Revisar» (antes «Listo, son todas» → PROC) abre #REVH; con la hoja 2 desde la Bóveda sigue como antes */
+function camDoneTap(){ if(!shots || camScanT) return; if(hoja2Mode){ hoja2Done(); return; } /* Fase 10 · Brief 08f */ show('REVH'); }
+function revListoTap(){ if(!shots) return; procFrom='CAM'; show('PROC'); }
+/* Fase 12 · Brief 04b (B): galería. Se marcan solo los 3 documentos, con su orden (1, 2, 3); «Agregar» → PROC como antes */
+var galSel=[];
+function galPaint(){
+  var bs=document.querySelectorAll('#GAL .gal-i');
+  bs.forEach(function(b){ var k=galSel.indexOf(b); b.setAttribute('aria-pressed', k>-1); b.querySelector('.gal-ck').textContent = k>-1 ? (k+1) : ''; });
+  var n=galSel.length;
+  document.getElementById('galN').textContent = n ? n+(n===1?' seleccionada':' seleccionadas') : 'Elige las fotos';
+  document.getElementById('galAdd').disabled = !n;
+}
+function galPickTap(b){ var k=galSel.indexOf(b); if(k>-1) galSel.splice(k,1); else galSel.push(b); galPaint(); }
+function galAddTap(){ if(!galSel.length) return; procFrom='GAL'; show('PROC'); }
+function galReset(){ galSel=[]; galPaint(); }
+/* Fase 12 · Brief 04b (A): la X. En «Repetir» vuelve a #REVH; si no, sale como antes (con «¿Salir sin guardar?» si hay fotos) */
+function camXTap(){
+  if(retakeMode!==false){ camLimpiar(); retakeMode=false; revKeep=true; show('REVH'); return; }
+  attemptExitOb();
+}
 /* H09: volver a la cámara SIN borrar lo ya fotografiado */
 function masFotosTap(){
   keepShots=true;
   show('CAM');
+  camEncuadre(); /* Fase 12 · Brief 04b (A): sin la hoja corrida ni el temporizador */
   var pend=scanPendientes(); /* Fase 10 · Brief 08: fotos, estados y pendientes se conservan */
   scanSay(pend.length?'warn':'', 'Toma la foto de lo que falta. Las demás siguen aquí.');
 }
@@ -3669,14 +4007,14 @@ function guardarTap(){
   /* Fase 10 · Brief 08f: la orden sin procedimiento y la fórmula sin médico se guardan igual, marcadas (mismo patrón que la hoja 2) */
   var mi=document.getElementById('medInput'), pin=document.getElementById('procInput');
   var medMissing = detView.has[2] && !!(mi && !mi.value.trim());
-  var ordMissing = detView.has[1] && detView.borrosa && !(pin && pin.value.trim());
+  var ordMissing = detView.has[1] && !(pin && pin.value.trim()); /* Fase 11 · Brief 17: el procedimiento también se puede borrar con la orden nítida */
   var ordDoc=null, fDoc=null;
   if(!obMailActive && !fabMailActive){
     ordDoc = scanDoc(function(d){ return d.ep==='ort' && d.ty==='orden' && d.th==='cir'; }); /* Fase 10 · Brief 47 */
     /* Fase 10 · Brief 08f (ajuste): con la foto nítida, el procedimiento es lo que se leyó ({t2x}) y reemplaza lo escrito a mano */
     if(ordDoc && detView.has[1]){
       if(ordMissing){ ordDoc.pill=FALTA_PROC.slice(); delete ordDoc.proc; }
-      else { ordDoc.proc = detView.borrosa ? pin.value.trim() : '{t2x}'; if(ordDoc.pill && ordDoc.pill[0]===FALTA_PROC[0]) delete ordDoc.pill; }
+      else { ordDoc.proc = (pin.value.trim()===fx('{t2x}')) ? '{t2x}' : pin.value.trim(); if(ordDoc.pill && ordDoc.pill[0]===FALTA_PROC[0]) delete ordDoc.pill; }
     }
     if(detView.has[2]){
       fDoc = scanDoc(function(d){ return d.fscan; }); /* Fase 10 · Brief 47 */
@@ -3688,6 +4026,13 @@ function guardarTap(){
   /* Fase 11 · Brief 14b: {lab} se revela solo al escanear su orden (ya no por el correo) */
   var lipDoc = scanDoc(function(d){ return d.ep==='hta' && d.ty==='orden' && d.th==='lip'; }); /* Fase 11 · Brief 01b */
   if(!lipDoc && detView.has[3] && !obMailActive && !fabMailActive){ lipDoc={ep:'hta', t:'Orden de {labl}', s:'Medicina general · 9 de octubre', p:'{wlab}', ty:'orden', pag:1, cat:'ord', th:'lip'}; DOCS.push(lipDoc); } /* Fase 11 · Brief 14b: se crea al escanear, como la fórmula */
+  /* Fase 11 · Brief 17: lo que la persona corrigió (entidad y fecha) queda en el documento; lo leído sin cambios no se guarda */
+  [hcDoc, ordDoc, fDoc, lipDoc].forEach(function(dd, i){
+    if(!dd || !detView.has[i]) return;
+    var ei=document.getElementById('detEnt'+i), fi=document.getElementById('detFec'+i);
+    if(ei && ei.value.trim() && ei.value.trim()!==ei.getAttribute('data-orig')) dd.ent=ei.value.trim(); else delete dd.ent;
+    if(fi && fi.value.trim() && fi.value.trim()!==fi.getAttribute('data-orig')) dd.fv=fi.value.trim(); else if(dd.fv && dd.fv===(fi&&fi.getAttribute('data-orig'))) delete dd.fv;
+  });
   /* Fase 10 · Brief 47: lo escaneado de quien no está en la familia queda en DOCS_PEND (no se pierde); SCAN_IDS = quién aparece en lo escaneado */
   if(!obMailActive && !fabMailActive){
     var escan=[detView.has[0] && hcDoc, detView.has[1] && ordDoc, detView.has[2] && fDoc, detView.has[3] && lipDoc].filter(Boolean);
@@ -3721,7 +4066,7 @@ function guardarTap(){
   if(fabMailActive){
     fabMailActive=false;
     mailConnected=true; mailRevisado=Date.now(); /* Fase 10 · Brief 45: el correo queda conectado solo al guardar */ /* Fase 10 · Brief 48: mailRevisado */
-    if(esPropia()){ proGuardar(); pendingNote='Guardé todo lo que encontré en tu correo ✓'; renderInicio(); show('A1'); return; } /* Fase 10 · Brief 16: la orden de ejemplo y el control */
+    if(esPropia()){ proGuardar(); pendingNote='Guardé todo lo que encontré en tu correo'; renderInicio(); show('A1'); return; } /* Fase 10 · Brief 16: la orden de ejemplo y el control */
     /* Fase 10 · Brief 45: lo de la familia confirmada entra a la Bóveda; lo de quien no se ha confirmado pasa a DOCS_PEND */
     var traidos=[];
     DOCS_BANDEJA.forEach(function(d){
@@ -3740,7 +4085,7 @@ function guardarTap(){
     bovMarcarNuevos(DOCS.slice()); /* Fase 10 · Brief 19: lo que trajo el correo queda como nuevo */
     renderInicio();
     if(DOCS_PEND.length){ fabPend=true; show('A1'); docPendAbrir(); return; } /* Fase 10 · Brief 45: directo al paso 5 reabierto (obReabre='A1') */
-    pendingNote='Guardé todo lo que encontré en tu correo ✓';
+    pendingNote='Guardé todo lo que encontré en tu correo'; /* Fase 12 · Brief 09A: sin «✓» (también l. ~3939 y ~5176) */
     renderInicio();
     show('A1');
     return;
@@ -3809,7 +4154,7 @@ function finCalTap(){ tipSeen=true; show('F1'); }
 /* Fase 10 · Brief 08f: "Completar" abre el documento marcado en la Bóveda; "Escanear la hoja 2" abre la cámara solo para esa hoja */
 function finCompTap(b){ var ix=b.getAttribute('data-ix'); if(ix===null) return; tipSeen=true; show('G1'); openViewer(ix); }
 var hoja2Mode=false;
-function hoja2Tap(){ tipSeen=true; show('CAM'); hoja2Mode=true; scanSay('', 'Toma la foto de la hoja 2 de la historia clínica. La uno a la hoja 1.'); }
+function hoja2Tap(){ tipSeen=true; show('CAM'); hoja2Mode=true; camEncuadre(); /* Fase 12 · Brief 04b (A): directo la hoja encuadrada */ scanSay('', 'Toma la foto de la hoja 2 de la historia clínica. La uno a la hoja 1.'); }
 function hoja2Done(){
   hoja2Mode=false;
   var hc=DOCS.filter(function(d){ return d.ep==='ort' && d.ty==='soporte' && /^Historia clínica/.test(d.t); })[0];
@@ -3828,19 +4173,23 @@ function detDesdeCam(){
   detView = n ? {has:[n>=2,n>=4,n>=5,n>=1], hoja2:n>=3, borrosa:n>=4 && !!scanShots[3].blur} /* Fase 10 · Brief 08d: has = [historia, orden {t2x}, fórmula, orden {labl}] */ : {has:[1,1,1,1], hoja2:true, borrosa:false};
   for(var i=0;i<4;i++){ var c=document.getElementById('detCard'+i); if(c) c.style.display = detView.has[i] ? '' : 'none'; }
   var sub=document.getElementById('detSub0'); if(sub) sub.textContent = fx('{p3} · ')+(detView.hoja2?'2 hojas':'1 de 2 hojas'); /* Fase 11 · Brief 01b */
-  var pr=document.getElementById('procRow'), pi=document.getElementById('procInput'); if(pi) pi.value = detView.borrosa ? '' : fx('{t2x}'); /* Fase 10 · Brief 08f (ajuste): nítida = lo leído */
-  if(pr) pr.hidden=!detView.borrosa;
-  var b1=document.querySelector('[data-revb="1"]'); if(b1) b1.style.display = detView.borrosa ? '' : 'none'; /* Fase 10 · Brief 29 */
+  var pi=document.getElementById('procInput'); if(pi) pi.value = detView.borrosa ? '' : fx('{t2x}'); /* Fase 10 · Brief 08f (ajuste): nítida = lo leído */
+  /* Fase 11 · Brief 17: Procedimiento siempre visible (nítida: lleno; borrosa: vacío y «no se lee bien»); la tarjeta de la orden se abre como las demás */
+  var pl=document.getElementById('procLbl'); if(pl) pl.textContent = detView.borrosa ? 'Procedimiento: no se lee bien' : 'Procedimiento';
   detCheckReady();
 }
 function detChipSet(id, ok, txt){
   var c=document.getElementById(id); if(!c) return;
+  var antes=c.className;
   c.className = ok ? 'ok-chip' : 'warn-chip';
   c.innerHTML = ok ? OK_IC+'Listo' : WARN_IC+txt;
+  if(antes && antes!==c.className) fundir(c); /* Fase 12 · Brief 09D: «Revisar» ↔ «Listo» en su lugar, con fundido */
 }
 function resetDet(){
   setPtag(3, 'MT');
   var mi=document.getElementById('medInput'); if(mi) mi.value=fx('{doc3}');
+  /* Fase 11 · Brief 17: entidad y fecha vuelven a lo leído */
+  [].forEach.call(document.querySelectorAll('#DET input[data-det][data-orig]'), function(i){ if(i.id!=='procInput') i.value=i.getAttribute('data-orig'); });
   detDesdeCam();
 }
 function setPtag(i, code){
@@ -3857,35 +4206,37 @@ function setPtag(i, code){
 }
 function detCheckReady(){
   var pacDone = document.querySelector('[data-ptag="3"]').className.indexOf('warn')===-1;
-  var mi=document.getElementById('medInput');
-  var medDone = !!(mi && mi.value.trim());
-  var mr=document.getElementById('medRow'), mic=document.getElementById('medIcon'), mw=document.getElementById('medWarnMsg');
-  if(mr) mr.classList.toggle('warn', !medDone);
-  if(mic){ mic.innerHTML = medDone ? OK_IC : ALERT_IC; /* Fase 10 · Brief 28 */ mic.className = 'ex-mk'+(medDone?'':' warn'); } /* Fase 10 · Brief 25: marca de alerta por clase */
-  if(mw) mw.style.display = medDone ? 'flex' : 'none';
+  /* Fase 11 · Brief 17: cada campo de #DET vacío → fondo ámbar con «!»; la tarjeta a «Revisa» si alguno falta */
+  var ok=[true,true,true,true];
+  [].forEach.call(document.querySelectorAll('#DET input[data-det]'), function(inp){
+    var full = !!inp.value.trim(), fw=inp.parentNode, mk=fw.querySelector('.ex-mk');
+    fw.classList.toggle('warn', !full);
+    if(mk){ mk.innerHTML = full ? OK_IC : ALERT_IC; mk.className = 'ex-mk'+(full?'':' warn'); }
+    if(!full){ var c=inp.closest('.det-card'); if(c) ok[parseInt(c.id.slice(-1),10)]=false; }
+  });
+  var pi2=document.getElementById('procInput'), pl=document.getElementById('procLbl');
+  if(pl && pi2 && pi2.value.trim()) pl.textContent='Procedimiento'; /* borrar o escribir: la etiqueta es solo el nombre */
   var chip=document.getElementById('card2Chip');
   if(chip){
-    if(pacDone && medDone){ chip.className='ok-chip'; chip.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Listo'; }
+    var chAntes=chip.className; /* Fase 12 · Brief 09D */
+    if(pacDone && ok[2]){ chip.className='ok-chip'; chip.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Listo'; }
     else{ chip.className='warn-chip'; chip.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>Revisar'; }
+    if(chAntes && chAntes!==chip.className) fundir(chip); /* Fase 12 · Brief 09D: «Revisar» ↔ «Listo» en su lugar, con fundido */
   }
   /* Fase 10 · Brief 08: historia clínica y orden según lo que pasó en la cámara */
-  var pi2=document.getElementById('procInput'), procDone = !detView.borrosa || !!(pi2 && pi2.value.trim());
-  detChipSet('detChip0', detView.hoja2, 'Falta una hoja');
-  detChipSet('detChip1', procDone, 'Revisa');
-  var prw=document.getElementById('procRow'), pic=document.getElementById('procIcon');
-  if(prw) prw.classList.toggle('warn', !procDone);
-  if(pic){ pic.innerHTML = procDone ? OK_IC : ALERT_IC; /* Fase 10 · Brief 28 */ pic.className = 'ex-mk'+(procDone?'':' warn'); }
+  detChipSet('detChip0', detView.hoja2 && ok[0], detView.hoja2 ? 'Revisa' : 'Falta una hoja');
+  detChipSet('detChip1', ok[1], 'Revisa');
+  detChipSet('detChip3', ok[3], 'Revisa');
   /* Fase 6 · #22: ya no se deshabilita — si algo queda dudoso, igual se pueden guardar los documentos ya confirmados aparte */
   var btn=document.getElementById('btnGuardar');
   if(btn){
-    /* Fase 10 · Brief 08: el texto sigue lo que hay en pantalla; si no están las 4 tarjetas, no se cuenta */
-    var rd=[detView.hoja2, procDone, pacDone && medDone, true], all=true;
+    var rd=[detView.hoja2 && ok[0], ok[1], pacDone && ok[2], ok[3]], all=true;
     for(var k=0;k<4;k++){ if(!detView.has[k]) continue; if(!rd[k]) all=false; }
     btn.textContent = all ? 'Guardar en la Bóveda' : 'Guardar lo confirmado'; /* Fase 10 · Brief 08c: sin conteo */
   }
 }
 /* delegado porque applyProfile() reconstruye el innerHTML de DET al cambiar de perfil */
-document.addEventListener('input', function(e){ if(e.target && (e.target.id==='medInput' || e.target.id==='procInput')) detCheckReady(); });
+document.addEventListener('input', function(e){ if(e.target && e.target.matches && e.target.matches('#DET input[data-det]')) detCheckReady(); /* Fase 11 · Brief 17: todos los campos */ });
 
 /* ============================================================
    NAVEGACIÓN
@@ -3903,9 +4254,19 @@ function fadeContent(){
   if(window.ResizeObserver) new ResizeObserver(tick).observe(content);
   if(window.MutationObserver) new MutationObserver(tick).observe(content, {childList:true, subtree:true}); /* tras pintar Inicio o un hilo */
 })();
+/* Fase 12 · Brief 01: avatar de Sonia en la pestaña Tu cuenta (color de persona leído de PCOL) */
+function paintNavAv(){
+  var a=nav.querySelector('.nav-av'); if(!a) return;
+  a.style.background=PCOL.SO; paintAvatars(nav);
+}
+/* Fase 12 · Brief 08Ad: la silueta de fondo solo donde la pone el lienzo: las pestañas (de la Bóveda, solo la portada).
+   Salen H2 (Inicio sin pendientes; el brief lo llamó «Ver todo lo próximo», que en realidad abre F1) y «Leyendo las hojas» (PROC). La Bienvenida la lleva en .ob (ver obShow) */
+var SIL_PANTALLAS=['A1','F1','G1','CONFIG'];
+function conSil(id){ return SIL_PANTALLAS.indexOf(id)>=0 && !(id==='G1' && bovFolder!==null); }
 function show(id){
+  var dir=navDir; navDir=null; /* Fase 12 · Brief 09D: el sentido lo deja quien navega (volver); se consume aunque show() salga antes */
   /* Fase 10 · Brief 01: si sale de la captura sin guardar, las órdenes de la cita no quedan pendientes */
-  if(ordScanKey && ['CAM','GAL','PROC','DET','CONF','FIN','NOTIF'].indexOf(id)<0) ordScanKey=null; /* Fase 10 · Rediseño · Brief 12 (corrección): mirar los avisos no suelta la cita */
+  if(ordScanKey && ['CAM','REVH','GAL','PROC','DET','CONF','FIN','NOTIF'].indexOf(id)<0) ordScanKey=null; /* Fase 10 · Rediseño · Brief 12 (corrección): mirar los avisos no suelta la cita */
   /* Fase 6 · si cancelan un escaneo o una lectura de correo abiertos desde el onboarding, no los deja caer en la app ya poblada */
   /* Fase Móvil · mismo bug que guardarTap(): volvía a obShow(2) (elegir familia) en vez de obShow(3) ("Déjame el trabajo pesado", el paso del que salió el escaneo/correo) */
   /* Fase 10 · Brief 45b: cualquier pantalla principal, no solo A1 (goBackMain() va a lastMain, que tras "Cambiar de historia" podía ser G1/F1),
@@ -3920,7 +4281,11 @@ function show(id){
   [].forEach.call(document.querySelectorAll('.typing'), function(t){ t.remove(); });
   screens.forEach(function(x){ x.classList.remove('on'); });
   s.classList.add('on');
+  /* Fase 12 · Brief 09D: pestaña → fundido; entrar → desde la derecha; volver → desde la izquierda. Repintar la misma pantalla no se anima */
+  animPantalla(s, id===cur ? null : (dir || (PESTANAS.indexOf(id)>=0 ? 'tab' : 'entra')));
+  if(cur==='I3' && id!=='I3'){ i3Edit=null; i3EditOrig=null; } /* Fase 12 · Brief 02: volver sin guardar descarta los cambios */
   cur=id;
+  document.getElementById('app').classList.toggle('con-sil', conSil(id)); /* Fase 12 · Brief 03: la silueta de fondo en Inicio · Brief 08Ad: ver conSil() */
   if(id!=='TH') curThread=null;
   if(id==='A1'){ renderInicio(); }
   if(id==='F1'){ renderCalendario(); }
@@ -3931,24 +4296,21 @@ function show(id){
   if(id!=='FAM'){ var ftw=document.querySelector('#famScreen > .toast'); if(ftw) ftw.remove(); } /* Fase 10 · Brief 30b: el toast de Familia no sobrevive a salir de #FAM */
   if(id==='NOTIF'){ renderNotif(); } /* Fase 10 · Rediseño · Brief 12 */
   if(id==='CONFIG'){ renderConfig(true); } /* Fase 10 · Brief 48c: al entrar, todo cerrado */ /* Fase 10 · Brief 48 */
-  scrTitle.classList.toggle('st-30', id==='NOTIF');
   paintNotifDot();
   if(id==='PEG'){ if(!pegKeep) pegReset(); pegKeep=false; renderPeg(); } /* Fase 10 · Rediseño · Brief 12 (corrección): al volver de los avisos conserva lo pegado */ /* Fase 10 · Brief 03: siempre entra desde "Agregar documento", empieza vacía */
   /* Fase 6 · desde FIN, "atrás" vuelve a DET a corregir sin perder lo ya revisado — resetDet() es solo para la entrada normal CAM/GAL→PROC→DET */
   /* Fase 6 · Brief 3: data-back fijo en el HTML solo servía si siempre se entraba por CAM — mismo mecanismo que ya usa G1/bovFrom */
-  if(id==='DET'){ s.setAttribute('data-back', procFrom||'CAM'); if(!detNoReset) resetDet(); detNoReset=false; }
+  if(id==='DET'){ s.setAttribute('data-back', (procFrom||'CAM')==='CAM' ? 'REVH' : procFrom); /* Fase 12 · Brief 04b (A): desde la cámara, atrás vuelve a «Revisa las hojas» */ if(!detNoReset) resetDet(); detNoReset=false; }
   if(id==='CONF'){ renderConf(); }
+  if(id!=='CAM') camLimpiar(); /* Fase 12 · Brief 04b (A): el temporizador del encuadre y «Escaneando…» no siguen fuera de la cámara */
   if(id==='CAM'){ if(keepShots){ keepShots=false; } else { resetCam(); } }
+  if(id==='GAL') galReset(); /* Fase 12 · Brief 04b (B): cada vez que se abre, sin nada marcado */
+  if(id==='REVH'){ if(!revKeep) revSel=revElegir(); revKeep=false; renderRevh(); } /* Fase 12 · Brief 04b (A) */
   /* Fase 6 · PROC es una sola pantalla reusada por cámara/galería/correo — el copy y el destino automático se deciden aquí, no en cada punto de entrada */
   if(id==='PROC'){
-    var procP = s.querySelector('.proc p');
-    if(obMailActive){
-      s.setAttribute('data-title','Revisando tu correo');
-      if(procP) procP.textContent='Buscando órdenes, resultados y autorizaciones en tu correo…';
-    } else {
-      s.setAttribute('data-title','Leyendo las hojas'); /* Fase 10 · Brief 05 */
-      if(procP) procP.textContent='Separando las hojas y extrayendo los datos…';
-    }
+    /* Fase 12 · Brief 05 (B): el correo y el escaneo usan las mismas frases (procPasos); sale el párrafo de cada uno */
+    s.setAttribute('data-title', obMailActive ? 'Revisando tu correo' : 'Leyendo las hojas'); /* Fase 10 · Brief 05 */
+    procPasos(s);
     /* Fase 8 · Brief 6.1: correo desde el FAB también debe caer en CONF, no solo el de onboarding */
     s.setAttribute('data-auto', (obMailActive||fabMailActive) ? 'CONF' : 'DET');
   }
@@ -3958,13 +4320,13 @@ function show(id){
 
   var isHilo = s.getAttribute('data-hdr')==='hilo';
   /* Fase 6 · durante escaneo/subida/correo disparados desde el onboarding, el header superior tampoco tiene sentido: no hay familia armada ni menú/ayuda utilizables a medio onboarding */
-  var hideHdrOb = !obHecho && (obScanActive || obMailActive) && [ /* Fase 10 · Brief 45b */'CAM','GAL','PROC','CONF','DET','FIN'].indexOf(id)>=0;
-  /* Fase 10 · Brief 05 (punto 5): el encabezado global se queda también en el hilo; #hdrHilo es la segunda fila.
-     En el hilo, #famChip se oculta con .en-hilo (no con display, que lo maneja updateChip()) */
-  hdrGlobal.style.display = hideHdrOb?'none':'flex';
-  hdrGlobal.classList.toggle('en-hilo', isHilo);
+  var hideHdrOb = !obHecho && (obScanActive || obMailActive) && [ /* Fase 10 · Brief 45b */'CAM','REVH','GAL','PROC','CONF','DET','FIN'].indexOf(id)>=0;
+  /* Fase 12 · Brief 01: el hilo solo usa #hdrHilo (sin (?) ni campana) */
+  var sinHdr = s.getAttribute('data-hdr')==='none'; /* Fase 12 · Brief 04b (A): la cámara va a pantalla completa, con su propia X */
+  hdrGlobal.style.display = (hideHdrOb || isHilo || sinHdr)?'none':'block';
   hdrHilo.style.display   = isHilo?'block':'none';
-  scrTitle.style.display  = isHilo?'none':'block';
+  scrTitle.style.display  = (isHilo || sinHdr)?'none':'block';
+  document.getElementById('app').classList.toggle('cam-full', sinHdr);
   /* Fase 6 · header oculto en onboarding: la franja turquesa de scrTitle también se apaga, y las 6 pantallas ganan un botón de atrás propio en su lugar — FIN lo tenía escondido, el profe pidió que no (ver attemptExitOb) */
   scrTitle.classList.toggle('sc-ob', hideHdrOb);
   stBack.style.display = hideHdrOb ? 'flex' : 'none';
@@ -3972,15 +4334,14 @@ function show(id){
   if(obBackLink) obBackLink.style.display = hideHdrOb ? 'none' : '';
 
   var back = s.getAttribute('data-back');
-  topBack.style.display = (!isHilo && back) ? 'flex' : 'none';
-  topMenu.style.display = (!isHilo && back) ? 'none' : 'flex';
+  topBack.style.display = (!isHilo && !hideHdrOb && back) ? 'flex' : 'none';
   topBack.setAttribute('data-target', back||'');
   editBar.style.display='none'; editing=null;
 
   if(!isHilo){
     tTitle.textContent=fx(s.getAttribute('data-title')||'');
     tSub.textContent=fx(s.getAttribute('data-sub')||'');
-    if(['A1','H2','F1','G1'].indexOf(id)>=0) lastMain=id;
+    if(PESTANAS.indexOf(id)>=0) lastMain=id; /* Fase 12 · Brief 01: Tu cuenta también; «volver» desde Familia regresa a ella */
   }
   /* Fase 10 · Brief 05: Inicio vuelve a tener título; la mascota vive dentro de #A1 (ver mascotAInicio) */
   stRow.style.display = 'flex';
@@ -3996,8 +4357,12 @@ function show(id){
   /* Fase 6 · el flujo de traer documentos (onboarding o FAB) no muestra la barra de navegación inferior */
   /* Fase 10 · Rediseño · Brief 12 (corrección): si los avisos se abrieron a mitad de la captura, tampoco hay barra (no se sale sin el aviso de salir sin guardar) */
   /* Fase 10 · Brief 30c: «Agregar familiar» (I1) tampoco muestra la barra inferior; Familia e I3 la conservan */
-  nav.style.display = (['CAM','GAL','PROC','DET','CONF','FIN','I1'].indexOf(id)>=0 || (id==='NOTIF' && notifFrom && ['CAM','GAL','PROC','DET','CONF','FIN'].indexOf(notifFrom.id)>=0)) ? 'none' : 'flex';
+  /* Fase 12 · Brief 01: los hilos y el chat (TH) tampoco: el compositor queda pegado abajo */
+  nav.style.display = (['CAM','REVH','GAL','PROC','DET','CONF','FIN','I1','TH'].indexOf(id)>=0 || (id==='NOTIF' && notifFrom && ['CAM','REVH','GAL','PROC','DET','CONF','FIN'].indexOf(notifFrom.id)>=0)) ? 'none' : 'flex';
 
+  /* Fase 12 · Brief 02: una sola regla. (?) y campana siempre que se ve la barra de abajo; en Notificaciones, solo el (?) */
+  document.getElementById('stAcc').hidden = hideHdrOb || nav.style.display==='none';
+  document.getElementById('notifBtn').hidden = id==='NOTIF';
   var navKey=s.getAttribute('data-nav')||'none';
   [].forEach.call(nav.querySelectorAll('.nav-item'), function(n){
     n.classList.toggle('active', n.getAttribute('data-nav')===navKey);
@@ -4007,9 +4372,24 @@ function show(id){
   if(auto) T(function(){ if(cur===id) show(auto); }, parseInt(s.getAttribute('data-automs')||'1600',10));
 
   updateChip();
+  paintNavAv(); /* Fase 12 · Brief 01 */
   paintAvatars(byId[id]||document);
   markFlow(id);
 }
+/* Fase 12 · Brief 09D: transición entre pantallas. Solo se mueve la pantalla (opacity y transform); la barra de abajo y el
+   encabezado no. Las clases se quitan al empezar cada cambio (con movimiento reducido puede no llegar animationend) y al terminar */
+var navDir=null, ANIMS=['anim-tab','anim-entra','anim-vuelve'];
+function animPantalla(el, dir){
+  screens.forEach(function(x){ ANIMS.forEach(function(a){ x.classList.remove(a); }); });
+  if(!dir) return;
+  void el.offsetWidth; /* reinicia la animación si se toca dos veces seguidas */
+  el.classList.add('anim-'+dir);
+}
+['animationend','animationcancel'].forEach(function(ev){
+  content.addEventListener(ev, function(e){
+    if(e.target.classList && e.target.classList.contains('screen')) ANIMS.forEach(function(a){ e.target.classList.remove(a); });
+  });
+});
 function markFlow(id){
   [].forEach.call(document.querySelectorAll('#flowsel .fbtn'), function(b){
     var f=b.getAttribute('data-flow');
@@ -4019,6 +4399,18 @@ function markFlow(id){
 /* Fase 10 · Rediseño · Brief 11: FAB desplegado (lienzo 60). Las opciones suben encima de quien lo abrió: el FAB (a la derecha)
    o el "+" del compositor (a la izquierda, en espejo). Las posiciones salen del botón en tiempo real (inline, porque el FAB cambia
    de altura con la pantalla). El "+" del compositor queda debajo del velo (el dock tiene su propia capa), así que encima va #fdX */
+/* Fase 10 · Brief 44 · marco fiel: en escritorio (768 px o más) #app mide 390 × 844 y, si la ventana es más baja, se reduce
+   entero con zoom. MARCO es esa escala (1 en celular). getBoundingClientRect() devuelve medidas ya escaladas y los left/top que
+   se escriben dentro de #app no lo están: quien mezcle los dos divide la diferencia por MARCO
+   Fase 12 · Brief 03: vuelve. El Brief 01 la quitó con el recorrido y popOpen() y fdOpen() fallaban (MARCO is not defined) */
+var MARCO=1;
+function marcoEscala(){
+  var esc=matchMedia('(min-width:768px)').matches;
+  MARCO=esc ? Math.min(1, (window.innerHeight-48)/844) : 1;
+  document.documentElement.style.setProperty('--marco-escala', MARCO);
+}
+marcoEscala();
+window.addEventListener('resize', marcoEscala);
 var fdMenu=document.getElementById('fabMenu'), fdList=document.getElementById('fdList'), fdX=document.getElementById('fdX'), fdTrig=null;
 function fdToggle(trig){ if(fdTrig) fdClose(); else fdOpen(trig); }
 function fdOpen(trig){
@@ -4063,48 +4455,45 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowUp'||e.key==='ArrowDown'){ e.preventDefault(); var n=i<0?0:(i+(e.key==='ArrowUp'?1:-1)+its.length)%its.length; its[n].focus(); }
   else if(e.key==='Tab'){ e.preventDefault(); var m=i<0?0:(i+(e.shiftKey?-1:1)+its.length)%its.length; its[m].focus(); }
 });
-function closeSheets(){ fdClose(true); /* Fase 10 · Rediseño · Brief 11: el FAB desplegado reemplaza la hoja de Agregar */ ['scrimMM','scrimWho','scrimDocs','scrimDoc','scrimExit','scrimIcon','scrimOtra' /* Fase 10 · Brief 18 */, 'scrimFamDocs' /* Fase 10 · Brief 30 */, 'scrimMailOff' /* Fase 10 · Brief 48 */, 'scrimPolitica' /* Fase 11 · Brief 04 */, 'scrimCancelar' /* Fase 11 · Brief 04b */, 'scrimDatosDl', 'scrimDatosBorrar', 'scrimQueEs' /* Fase 11 · Brief 06 */].forEach(function(k){ var e=document.getElementById(k); if(e) e.style.display='none'; });
+/* Fase 12 · Brief 09D: abrir y cerrar hojas con movimiento. El velo aparece con fundido y la hoja sube (CSS). Al cerrar,
+   .cerrando hace lo contrario en 200 ms y después se oculta. Si se abre otra hoja a mitad de un cierre, ese cierre termina
+   de una vez: nunca quedan dos velos. Mientras baja, la hoja es inert (sin foco ni lector) y no recibe toques. El foco vuelve
+   a quien la abrió al ocultarse (initA11yDialogs, como antes). Con movimiento reducido se oculta sin esperar */
+var CIERRES=[];
+function abrirHoja(el){
+  if(typeof el==='string') el=document.getElementById(el); if(!el) return;
+  cierresYa(); el.style.display='flex';
+}
+function cerrarHoja(el){
+  if(!el || el.style.display==='none' || el.classList.contains('cerrando')) return;
+  if(menosMov() || getComputedStyle(el).display==='none'){ el.style.display='none'; return; }
+  el.classList.add('cerrando'); el.inert=true;
+  var c={el:el}; c.t=setTimeout(function(){ CIERRES=CIERRES.filter(function(x){ return x!==c; }); finCierre(c); }, 200); /* sin T(): show() no lo cancela */
+  CIERRES.push(c);
+}
+function finCierre(c){ clearTimeout(c.t); c.el.classList.remove('cerrando'); c.el.inert=false; c.el.style.display='none'; }
+function cierresYa(){ var q=CIERRES; CIERRES=[]; q.forEach(finCierre); }
+function closeSheets(){ fdClose(true); /* Fase 10 · Rediseño · Brief 11: el FAB desplegado reemplaza la hoja de Agregar */ ['scrimWho','scrimDocs','scrimDoc','scrimExit','scrimIcon','scrimOtra' /* Fase 10 · Brief 18 */, 'scrimFamDocs' /* Fase 10 · Brief 30 */, 'scrimMailOff' /* Fase 10 · Brief 48 */, 'scrimPolitica' /* Fase 11 · Brief 04 */, 'scrimCancelar' /* Fase 11 · Brief 04b */, 'scrimDatosDl', 'scrimDatosBorrar', 'scrimQueEs' /* Fase 11 · Brief 06 */, 'scrimFiltro' /* Fase 12 · Brief 02 */].forEach(function(k){ cerrarHoja(document.getElementById(k)); /* Fase 12 · Brief 09D: baja con animación */ });
   camAltCerrar(); /* Fase 11 · Brief 05 (corrección): la hoja de la cámara que no alcanza a leer */
-  sideClose(true); popClose(true); /* Fase 10 · Rediseño · Brief 12: barra lateral y menús pegados al botón ya no son hojas */ }
+  popClose(true); /* Fase 10 · Rediseño · Brief 12: los menús pegados al botón ya no son hojas */ }
 
 /* ============================================================
    Fase 10 · Rediseño · Brief 12 · CAPAS
-   Barra lateral (☰) y menús pegados al botón ("Ver" y tipo de documento). Ninguno es .sheet-scrim:
+   Menús pegados al botón ("Ver" y tipo de documento). No son .sheet-scrim:
    el foco, Tab y Escape se manejan aquí, no en initA11yDialogs.
    ============================================================ */
-var sideTrigger=null, popCur=null, popBtn=null;
-function renderSideHead(){
-  var av=document.getElementById('sideAv');
-  av.setAttribute('data-p','SO'); av.style.background=PCOL.SO; av.textContent=INIT.SO;
-  document.getElementById('sideNm').textContent=fx('{u} {ape}');
-  document.getElementById('sideMail').textContent=cuentaMail || fx('{mail}'); /* Fase 10 · Rediseño · Brief 13: el correo con que se creó la cuenta */
-  paintAvatars(document.getElementById('sideNav'));
-}
-function sideOpen(trigger){
-  if(tourStep>=0) return; /* Fase 10 · Rediseño · Brief 12 (corrección): mientras dura el recorrido, el recorrido manda */
-  popClose(true);
-  renderSideHead(); paintNotifDot();
-  sideTrigger=trigger||document.getElementById('topMenu');
-  document.getElementById('sideMenu').hidden=false;
-  document.querySelector('#sideNav .side-x').focus();
-}
-function sideClose(sinFoco){
-  var m=document.getElementById('sideMenu'); if(!m || m.hidden) return;
-  m.hidden=true;
-  var t=sideTrigger; sideTrigger=null;
-  if(!sinFoco && t && document.body.contains(t) && t.offsetParent) t.focus();
-}
+var popCur=null, popBtn=null;
 /* Una sola función para los dos menús: abre, posiciona debajo del botón (alineado a su borde derecho) y cierra */
 function popOpen(btn, menu){
-  if(tourStep>=0) return; /* Fase 10 · Rediseño · Brief 12 (corrección) */
   popClose(true);
   var box=menu.offsetParent || menu.parentElement;
   menu.hidden=false;
   var br=btn.getBoundingClientRect(), cr=box.getBoundingClientRect(), M=MARCO; /* Fase 10 · Brief 44: ÷ MARCO */
-  var right=Math.max(16, (cr.right-br.right)/M);
-  if(cr.width/M-right-menu.offsetWidth<16) right=Math.max(16, cr.width/M-16-menu.offsetWidth);
+  /* Fase 12 · Brief 03: el menú sale debajo del botón y centrado con él, sin salirse de 16 px de borde (antes, alineado a la derecha) */
+  var w=menu.offsetWidth, left=((br.left+br.right)/2-cr.left)/M-w/2;
+  left=Math.max(16, Math.min(left, cr.width/M-16-w));
   menu.style.top=((br.bottom-cr.top)/M+6)+'px';
-  menu.style.right=right+'px';
+  menu.style.left=left+'px';
   popCur=menu; popBtn=btn;
   btn.setAttribute('aria-expanded','true');
   var f=menu.querySelector('.pop-i.sel')||menu.querySelector('.pop-i'); if(f) f.focus();
@@ -4133,16 +4522,6 @@ document.addEventListener('keydown', function(e){
     if(e.key==='Tab'){ e.preventDefault(); var m=i<0?0:(i+(e.shiftKey?-1:1)+its.length)%its.length; its[m].focus(); return; }
     return;
   }
-  var sm=document.getElementById('sideMenu');
-  if(sm && !sm.hidden){
-    if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); sideClose(); return; }
-    if(e.key==='Tab'){
-      var f=[].slice.call(sm.querySelectorAll('button')).filter(function(el){ return el.offsetParent!==null; });
-      var first=f[0], last=f[f.length-1];
-      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
-      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
-    }
-  }
 }, true);
 /* Si la pantalla se desplaza, el menú ya no está pegado a su botón: se cierra */
 document.addEventListener('scroll', function(e){ if(popCur && !popCur.contains(e.target)) popClose(true); }, true);
@@ -4154,6 +4533,7 @@ function openNotif(){
   closeSheets(); show('NOTIF');
 }
 function notifBack(){
+  navDir='vuelve'; /* Fase 12 · Brief 09D */
   var f=notifFrom; notifFrom=null;
   if(f && f.th){ openThread(f.th, f.nav); return; }
   if(f && f.id && f.id!=='NOTIF' && byId[f.id]){
@@ -4168,7 +4548,7 @@ function notifBack(){
 }
 /* Fase 8 · Yifrah #10: salir por la flecha o por "Cancelar" (vía attemptExitOb) no pasa por el delegado de BACKMAIN,
    así que la bandera del correo desde el FAB se limpia aquí para no quedar pegada */
-function goBackMain(){ fabMailActive=false; closeSheets(); show(lastMain); }
+function goBackMain(){ navDir='vuelve'; /* Fase 12 · Brief 09D */ fabMailActive=false; closeSheets(); show(lastMain); }
 
 /* Fase 6 · advertencia de salir sin guardar, solo durante escaneo/correo del onboarding (hideHdrOb) — ver brief "Header oculto en onboarding".
    Generalizado para "Eliminar perfil" (I3): dangerLabel/action son opcionales — sin ellos se comporta
@@ -4178,20 +4558,21 @@ var exitAction=null;
    y el paso 1; obShow(1) cae en la cuenta. Si se enciende DEMO_PROPIA, necesita otra entrada */
 function verHistorias(){ closeSheets(); resetDemo(); obShow(1); }
 /* Fase 10 · Brief 18: hoja "Esto lo pruebas en otra historia" (Escanear, Subir y Pegar en la propia historia) */
-function otraOpen(){ document.getElementById('scrimOtra').style.display='flex'; }
+function otraOpen(){ abrirHoja('scrimOtra'); }
 function showExitDialog(title, body, neutralLabel, dangerLabel, action){
   exitTitle.textContent = title;
   exitBody.textContent = body;
   exitNeutralBtn.textContent = neutralLabel;
   exitDangerBtn.textContent = dangerLabel || 'Salir sin guardar';
   exitAction = action || null;
-  scrimExit.style.display='flex';
+  abrirHoja(scrimExit); /* Fase 12 · Brief 09D */
 }
 function attemptExitOb(){
   /* Fase 6 · desde FIN ya está todo guardado — no hay nada que perder, así que "atrás" va directo a
      corregir el documento en DET (la pantalla inmediatamente anterior), sin diálogo de advertencia */
   if(cur==='FIN'){ detNoReset=true; show('DET'); return; }
   if(cur==='GAL'){ goBackMain(); return; }
+  if(cur==='REVH'){ masFotosTap(); return; } /* Fase 12 · Brief 04b (A): en el onboarding, la flecha propia (stBack) */
   if(cur==='PROC' && obMailActive){ goBackMain(); return; }
   if((cur==='CAM' || cur==='PROC') && !obMailActive){
     if(shots<1){ goBackMain(); return; }
@@ -4206,11 +4587,22 @@ function attemptExitOb(){
   goBackMain();
 }
 stBack.addEventListener('click', attemptExitOb);
-exitNeutralBtn.addEventListener('click', function(){ scrimExit.style.display='none'; });
-exitDangerBtn.addEventListener('click', function(){ scrimExit.style.display='none'; (exitAction||goBackMain)(); exitAction=null; });
-/* Fase 10 · Rediseño · Brief 12: el ícono solo se elige en "Familia y perfiles"; "Listo" cierra el selector */
+exitNeutralBtn.addEventListener('click', function(){ cerrarHoja(scrimExit); /* Fase 12 · Brief 09D */ });
+exitDangerBtn.addEventListener('click', function(){ cerrarHoja(scrimExit); /* Fase 12 · Brief 09D */ (exitAction||goBackMain)(); exitAction=null; });
+/* Fase 12 · Brief 02: «Listo» aplica color e ícono juntos y cierra. El color va a PROFILE_EDITS.color → buildPeople() lo lleva a PCOL, PEOPLE y la variable */
 document.getElementById('iconDone').addEventListener('click', function(){
-  document.getElementById('scrimIcon').style.display='none';
+  cerrarHoja(document.getElementById('scrimIcon')); /* Fase 12 · Brief 09D */
+  var k=iconPickKey; if(!k || !iconPickCol) return;
+  if(iconPickIc) PICON[k]=iconPickIc; else delete PICON[k];
+  if(iconPickCol.col!==PCOL[k]){
+    (PROFILE_EDITS.color=PROFILE_EDITS.color||{})[k]={col:iconPickCol.col, tint:iconPickCol.tint};
+    refrescarPersonas();
+    if(cur==='I3') renderI3(); else if(cur==='CONFIG') renderConfig();
+  }
+  if(!ob.classList.contains('hidden') && obStep===3) renderObFam(); /* Fase 12 · Brief 09A: el paso 3 también abre la hoja */
+  if(!ob.classList.contains('hidden') && obStep===6) renderObFamSum(); /* Fase 12 · Brief 03: «Así quedó tu familia» repinta las filas con el color y el ícono nuevos */
+  paintAvatars(document); paintNavAv();
+  iconPickKey=null; iconPickCol=null;
 });
 
 document.addEventListener('click', function(e){
@@ -4226,32 +4618,40 @@ document.addEventListener('click', function(e){
 
   /* Fase Móvil · Punto 1b: "Reiniciar el prototipo" en Configuración, reemplaza el reset del panel externo */
   if(e.target.closest('#cfgReset')){ resetDemo(); return; }
+  if(e.target.closest('#cfgSalir')){ obSalir(); return; } /* Fase 12 · Brief 03 */
   /* Fase 10 · Brief 48: el correo en Configuración */
   var cAlt=e.target.closest('[data-camalt]'); if(cAlt){ camAltIr(cAlt.getAttribute('data-camalt')); return; } /* Fase 11 · Brief 05 (B) */
   if(e.target.closest('[data-cfgrevisar]')){ mailRevisado=Date.now(); cfgToast='Revisé tu correo. No hay nada nuevo.'; renderConfig(); return; }
   var swA=e.target.closest('[data-aviso]'); /* Fase 11 · Brief 06e */
   if(swA){ var kA=swA.getAttribute('data-aviso'); AVISOS_ON[kA]=!AVISOS_ON[kA]; renderConfig(); renderNotif(); var nb=document.querySelector('[data-aviso="'+kA+'"]'); if(nb) nb.focus(); return; }
-  if(e.target.closest('#hiloInfo')){ openQueEs(); return; } /* Fase 11 · Brief 06 (B) */
-  if(e.target.closest('[data-datosdl]')){ document.getElementById('scrimDatosDl').style.display='flex'; return; } /* Fase 11 · Brief 06 (A) */
-  if(e.target.closest('[data-datosbor]')){ document.getElementById('scrimDatosBorrar').style.display='flex'; return; }
+  if(e.target.closest('[data-datosdl]')){ abrirHoja('scrimDatosDl'); return; } /* Fase 11 · Brief 06 (A) */
+  if(e.target.closest('[data-datosbor]')){ abrirHoja('scrimDatosBorrar'); return; }
   if(e.target.closest('[data-datosdlok]')){ closeSheets(); cfgToast='En la app real se descarga tu carpeta.'; renderConfig(); return; } /* no descarga nada */
   if(e.target.closest('[data-datosborok]')){ closeSheets(); resetDemo(); return; } /* lo mismo que «Reiniciar el prototipo» */
-  if(e.target.closest('[data-cfgoff]')){ document.getElementById('scrimMailOff').style.display='flex'; return; }
+  if(e.target.closest('[data-cfgoff]')){ abrirHoja('scrimMailOff'); return; }
   if(e.target.closest('[data-mailoff]')){ closeSheets(); mailConnected=false; mailRevisado=null; cfgToast='Desconecté tu correo.'; renderConfig(); renderBoveda(); return; }
   /* Fase 10 · Brief 18: "Ver otra historia" (#scrimOtra) */
   if(e.target.closest('[data-otrahist]')){ verHistorias(); return; }
   var temaBtn=e.target.closest('#cfgBody [data-tema]'); /* Fase 10 · Brief 49 */
   if(temaBtn){ aplicarTema(temaBtn.getAttribute('data-tema')); renderConfig(); return; }
+  /* Fase 12 · Brief 07 (A): alto contraste y tamaño de letra; renderConfig() conserva los plegables abiertos, como con el tema */
+  var conBtn=e.target.closest('#cfgBody [data-contraste]');
+  if(conBtn){ aplicarTema(null, CONTRASTE==='alto' ? 'normal' : 'alto'); renderConfig(); return; }
+  var letBtn=e.target.closest('#cfgBody [data-letra]');
+  if(letBtn){ aplicarTema(null, null, letBtn.getAttribute('data-letra')); renderConfig(); return; }
 
-  /* Fase 10 · Brief 08e: "Ver el recorrido otra vez" desde Ayuda, empieza en el paso 1 sobre Inicio */
-  if(e.target.closest('[data-tourreplay]')){ show('A1'); tourOpen(0); return; }
 
+  /* Fase 11 · Brief 16: un toque en la barra de búsqueda (fuera de botones e input) enfoca su input */
+  var sb=e.target.closest('.search');
+  if(sb && !e.target.closest('button,input')){ var si=sb.querySelector('input'); if(si) si.focus(); }
   var ip=e.target.closest('[data-iconpick]');
   if(ip){ openIconSheet(ip.getAttribute('data-iconpick')); return; }
+  var icc=e.target.closest('[data-iccol]'); /* Fase 12 · Brief 02: color libre en la hoja; los en uso no tienen data-iccol */
+  if(icc){ iconPickCol=colorPool()[+icc.getAttribute('data-iccol')]; renderIconCols(); return; }
   var io=e.target.closest('[data-iconopt]');
   if(io){
     /* Fase 10 · Rediseño · Brief 13b (corrección 2): la opción vacía son las iniciales */
-    if(iconPickKey){ var ico=io.getAttribute('data-iconopt'); if(ico) PICON[iconPickKey]=ico; else delete PICON[iconPickKey]; paintAvatars(document); }
+    iconPickIc=io.getAttribute('data-iconopt'); /* Fase 12 · Brief 02: se aplica con «Listo» */
     [].forEach.call(document.querySelectorAll('#iconGrid .ic-opt'), function(b){ b.classList.toggle('sel', b===io); });
     return;
   }
@@ -4289,7 +4689,7 @@ document.addEventListener('click', function(e){
   }
 
   var pt=e.target.closest('[data-ptag]');
-  if(pt){ ptagPend=parseInt(pt.getAttribute('data-ptag'),10); document.getElementById('scrimWho').style.display='flex'; return; }
+  if(pt){ ptagPend=parseInt(pt.getAttribute('data-ptag'),10); abrirHoja('scrimWho'); return; }
 
   var sw=e.target.closest('[data-setwho]');
   if(sw){ var parts=sw.getAttribute('data-setwho').split('|'); if(ptagPend!==null) setPtag(ptagPend, parts[0]); ptagPend=null; closeSheets(); return; }
@@ -4332,13 +4732,18 @@ document.addEventListener('click', function(e){
     else if(cur==='G1') renderBoveda();
     updateChip();
     return; }
-  if(e.target.closest('#bovTypeChip')){ popToggle(e.target.closest('#bovTypeChip'), document.getElementById('bovTypeMenu'), renderBovTypeMenu); return; } /* Fase 10 · Rediseño · Brief 12 */
-  var bt=e.target.closest('[data-bovtype]');
-  if(bt){ bovType=bt.getAttribute('data-bovtype'); popClose(true); closeSheets(); renderBoveda(); var tc=document.getElementById('bovTypeChip'); if(tc) tc.focus(); return; }
+  /* Fase 12 · Brief 02: la hoja Filtrar reemplaza el menú de tipo (#bovTypeMenu) y «Quitar filtros» suelto */
+  if(e.target.closest('[data-bovfiltro]')){ openBovFiltro(); return; }
+  var bfo=e.target.closest('[data-bfp],[data-bft]');
+  if(bfo){ if(bfo.hasAttribute('data-bfp')) bfP=bfo.getAttribute('data-bfp'); else bfT=bfo.getAttribute('data-bft'); renderBovFiltro(); return; }
+  if(e.target.closest('[data-bfver]') || e.target.closest('[data-bfclear]')){
+    if(e.target.closest('[data-bfclear]')){ bfP='all'; bfT='all'; }
+    bovPerson=bfP; bovType=bfT; closeSheets(); renderBoveda(); updateChip();
+    var bf=document.querySelector('[data-bovfiltro]'); if(bf) bf.focus(); return; }
   /* Fase 6 · portada de la Bóveda: tocar una carpeta ya estando en G1 (sin navegar a otra pantalla) — los
      botones que sí navegan (F2/menú/etc.) combinan data-bovcat con data-go y se resuelven más abajo. */
   var bc=e.target.closest('[data-bovcat]');
-  if(bc && !bc.hasAttribute('data-go')){ bovFolder=bc.getAttribute('data-bovcat'); renderBoveda(); return; }
+  if(bc && !bc.hasAttribute('data-go')){ bovFolder=bc.getAttribute('data-bovcat'); renderBoveda(); animPantalla(byId.G1,'entra'); /* Fase 12 · Brief 09D: la carpeta entra desde la derecha */ return; }
   var tp=e.target.closest('[data-tap]');
   if(tp){
     if(tp.hasAttribute('disabled')) return;
@@ -4348,7 +4753,11 @@ document.addEventListener('click', function(e){
     else if(w==='camdone') camDoneTap();
     else if(w==='guardar') guardarTap();
     else if(w==='masfotos') masFotosTap();
-    else if(w==='thumb') thumbTap(); /* Fase 10 · Brief 08 */
+    else if(w==='thumb') thumbTap(tp); /* Fase 10 · Brief 08 · Fase 12 · Brief 04b (A): cualquier miniatura */
+    else if(w==='revlisto') revListoTap(); /* Fase 12 · Brief 04b (A) */
+    else if(w==='camx') camXTap(); /* Fase 12 · Brief 04b (A) */
+    else if(w==='galpick') galPickTap(tp); /* Fase 12 · Brief 04b (B) */
+    else if(w==='galadd') galAddTap(); /* Fase 12 · Brief 04b (B) */
     else if(w==='retake') retakeTap();
     else if(w==='fin') finTap();
     else if(w==='fincal') finCalTap(); /* Fase 10 · Brief 08d */
@@ -4383,7 +4792,6 @@ document.addEventListener('click', function(e){
     document.getElementById('natShare').style.display='flex'; return;
   }
   if(e.target.closest('[data-natclose]')){ document.getElementById('natShare').style.display='none'; return; }
-  if(e.target.closest('[data-sideclose]')){ sideClose(); return; } /* Fase 10 · Rediseño · Brief 12 */
 
   /* Fase 11 · Brief 04 (B): sale data-helpgo (atajo a las órdenes desde el menú y desde Ayuda) */
 
@@ -4393,7 +4801,6 @@ document.addEventListener('click', function(e){
   var rt=e.target.closest('[data-retry]');
   if(rt){ loadFail=false; renderBoveda(); return; }
 
-  if(e.target.closest('[data-clearf]')){ bovPerson='all'; bovType='all'; bovQuery=''; renderBoveda(); return; }
   if(e.target.closest('[data-bovclear]')){ bovQuery=''; renderBoveda(); return; }
   /* Fase 10 · Brief 06: "Nueva pregunta" vuelve a la bienvenida; la tarjeta de la mascota abre la pestaña Taremi */
   var cd=e.target.closest('[data-calday]'); /* Fase 10 · Brief 06 */
@@ -4405,13 +4812,11 @@ document.addEventListener('click', function(e){
   var g2=e.target.closest('[data-go2]');
   /* Fase 6 · antes: tocar a cualquiera de las 4 personas en Familia abría siempre el perfil de Mateo —
      data-go2 nunca guardaba a quién se había tocado. Ahora i3Key lo guarda antes de mostrar I3. */
-  if(g2){ i3Key=g2.getAttribute('data-go2'); i3Editing=false; i3Edit=null; i3EditOrig=null; closeSheets(); show('I3'); return; }
+  if(g2){ i3Key=g2.getAttribute('data-go2'); i3Edit=null; i3EditOrig=null; closeSheets(); show('I3'); return; }
 
   /* Fase 6 · editar/eliminar perfil (I3) */
   if(e.target.closest('#i3RelSheet .relpick')) return; /* Fase 10 · Brief 43: el campo del autocompletar */
-  if(e.target.id==='i3RelSheet'){ document.getElementById('i3RelSheet').style.display='none'; renderI3(); return; }
-  if(e.target.closest('[data-i3edit]')){ i3EnterEdit(i3Key); return; }
-  if(e.target.closest('[data-i3cancel]')){ i3Editing=false; i3Edit=null; i3EditOrig=null; renderI3(); return; }
+  if(e.target.id==='i3RelSheet'){ cerrarHoja(document.getElementById('i3RelSheet')); /* Fase 12 · Brief 09D */ renderI3(); return; }
   var ita=e.target.closest('[data-i3toggleaprox]');
   if(ita){ i3Edit.approx=!i3Edit.approx; i3Edit.nacErr=''; renderI3(); return; }
   if(e.target.closest('[data-i3relopen]')){ openI3RelSheet(); return; }
@@ -4419,7 +4824,7 @@ document.addEventListener('click', function(e){
   if(ir){
     var irv=ir.getAttribute('data-i3rel');
     i3Edit.rel=irv; i3Edit.otro=''; /* Fase 10 · Brief 43: sale "Otro"; la relación guarda el texto final */
-    document.getElementById('i3RelSheet').style.display='none'; renderI3();
+    cerrarHoja(document.getElementById('i3RelSheet')); renderI3(); /* Fase 12 · Brief 09D */
     var t1=document.querySelector('[data-i3relopen]'); if(t1) t1.focus();
     return;
   }
@@ -4429,7 +4834,7 @@ document.addEventListener('click', function(e){
     PROFILE_EDITS[i3Key]={nm:i3Edit.nm.trim(), nac:i3Edit.nac, approx:i3Edit.approx, edadAprox:i3Edit.edadAprox, rel:i3Edit.rel, otro:i3Edit.otro};
     /* Fase 8 · Estructura 1: propaga el cambio a V/PNAME/INIT — antes solo cambiaba lo que I3 mismo leía */
     propagateI3Edit(i3Key);
-    i3Editing=false; i3Edit=null; i3EditOrig=null;
+    i3Edit=null; i3EditOrig=null; i3Toast='Guardé los cambios.'; /* Fase 12 · Brief 02: se queda en Perfil, con los valores nuevos */
     renderI3();
     return;
   }
@@ -4445,14 +4850,13 @@ document.addEventListener('click', function(e){
     var tk=go.getAttribute('data-thread-key');
     if(tk) calSelKey=tk;
     if(t==='CAP'){ fdToggle(go); return; } /* Fase 10 · Rediseño · Brief 11: FAB desplegado (también desde el "+" del compositor) */
-    if(t==='MENU'){ sideOpen(go); return; } /* Fase 10 · Rediseño · Brief 12: barra lateral */
-    if(t==='MM'){ closeSheets(); document.getElementById('scrimMM').style.display='flex'; return; }
     if(t==='NOTIF'){ openNotif(); return; } /* Fase 10 · Rediseño · Brief 12: pantalla propia */
-    if(t==='DOCS'){ openDocsSheet(); return; }
+    if(t==='DOCS'){ openDocsSheet(go.getAttribute('data-docs')); return; } /* Fase 12 · Brief 06 (A): data-docs elige la queja o la reconsideración */
+    if(go.hasAttribute('data-cirev')){ var cv=card('cir'); calDaySel = cv && cv.when ? calDay(cv.when) : null; } /* Fase 12 · Brief 05 (B): el comprobante abre el Calendario en el día real de la cirugía (también si se reagendó) */
     /* Fase 8 · Brief 6.1: cancelar a mitad de camino no debe dejar la bandera pegada para un escaneo posterior */
     if(t==='BACKMAIN'){ fabMailActive=false; goBackMain(); return; }
     /* Fase 6 · Brief 3: galería sí tiene una pantalla propia a la que volver; las opciones directas del FAB desplegado ("Pegar texto de WhatsApp", "Conectar tu correo") no, así que su atrás sale del flujo */
-    if(t==='PROC'){ procFrom = go.classList.contains('gal-i') ? 'GAL' : 'BACKMAIN'; }
+    if(t==='PROC'){ procFrom='BACKMAIN'; } /* Fase 12 · Brief 04b (B): la galería ya no entra por aquí; va por galAddTap() */
     closeSheets();
     if(t==='G1'){
       /* Fase 6 · portada de la Bóveda: algunos destinos (calendario, "ver en la Bóveda") piden una
@@ -4472,7 +4876,7 @@ document.addEventListener('click', function(e){
    actualiza el estado y, para no perder foco/cursor en cada tecla, solo togglea el botón "Guardar"
    a mano en vez de volver a pintar toda la pantalla; el re-render completo queda para blur/toggle. */
 document.getElementById('I3').addEventListener('input', function(e){
-  if(!i3Editing || !i3Edit) return;
+  if(!i3Edit) return;
   var id=e.target.id;
   if(id==='i3fNm'){ i3Edit.nm=e.target.value; }
   else if(id==='i3fNac'){
@@ -4498,7 +4902,7 @@ document.getElementById('I3').addEventListener('input', function(e){
   if(sb) sb.toggleAttribute('disabled', !ready);
 });
 document.getElementById('I3').addEventListener('focusout', function(e){
-  if(!i3Editing || !i3Edit) return;
+  if(!i3Edit) return;
   var id=e.target.id;
   if(id==='i3fNac'){
     var v=(i3Edit.nac||'').trim();
@@ -4513,9 +4917,10 @@ document.getElementById('I3').addEventListener('focusout', function(e){
 });
 /* Fase 10 · Brief 43: sale el campo #i3fOtro (lo escrito se elige con «Usar «…»») */
 
-document.getElementById('hiloBack').addEventListener('click', function(){ show(lastMain); });
+document.getElementById('hiloBack').addEventListener('click', function(){ navDir='vuelve'; /* Fase 12 · Brief 09D */ show(lastMain); });
 topBack.addEventListener('click', function(){
   var t=this.getAttribute('data-target');
+  navDir='vuelve'; /* Fase 12 · Brief 09D: la flecha siempre es volver */
   /* Fase 8 · reapertura Yifrah #10: la flecha del encabezado es la otra
      salida de CAM/CONF con algo que perder — debe avisar igual que
      "Cancelar", que ya usa attemptExitOb() */
@@ -4525,12 +4930,13 @@ topBack.addEventListener('click', function(){
   }
   /* Fase 10 · Brief 08d: atrás desde #DET vuelve a la cámara con las fotos que ya tomaste (show('CAM') sin keepShots las borraba) */
   if(cur==='DET' && t==='CAM' && shots>0){ masFotosTap(); return; }
+  if(cur==='REVH'){ masFotosTap(); return; } /* Fase 12 · Brief 04b (A): atrás desde «Revisa las hojas» vuelve a la cámara con las fotos */
   /* Fase 6 · Brief 3: 'BACKMAIN' no es un id de pantalla (mismo sentinel que ya usa el delegado de data-go) — sin este caso, el atrás de AYUDA y ahora el de DET (cuando procFrom es 'BACKMAIN') no hacían nada */
   if(t==='BACKMAIN'){ goBackMain(); return; }
   if(t==='NOTIFBACK'){ notifBack(); return; } /* Fase 10 · Rediseño · Brief 12 */
   /* Fase 6 · portada de la Bóveda: el atrás de una carpeta o de "Todos" no navega a otra pantalla, vuelve
      a la portada dentro de la misma G1 — mismo criterio de sentinel que 'BACKMAIN' */
-  if(t==='BOVPORTADA'){ bovFolder=null; bovQuery=''; bovType='all'; renderBoveda(); return; }
+  if(t==='BOVPORTADA'){ navDir=null; bovFolder=null; bovQuery=''; bovType='all'; renderBoveda(); animPantalla(byId.G1,'vuelve'); /* Fase 12 · Brief 09D */ return; }
   show(t==='MAIN' ? lastMain : t);
 });
 
@@ -4716,22 +5122,25 @@ var mailRevisado=null, camUsada=false, micUsado=false, cfgToast=null;
 /* Fase 8 · Brief 6.1: correo conectado desde el FAB, fuera del onboarding */
 var fabMailActive=false;
 /* Fase 10 · Rediseño · Brief 13: la cuenta. cuentaMail = correo con que se creó (lo usa el menú), cuentaGoogle = si fue con Google.
-   cuentaVista = 'ini' | 'mail' | 'code' dentro del paso 2; cuentaCode = el código simulado ya llegó; obMailDraft = lo escrito en "Tu correo".
-   obBandeja = la pantalla "¿Busco también en tu bandeja?" está abierta dentro del paso 4 */
-var cuentaMail=null, cuentaGoogle=false, cuentaVista='ini', cuentaCode=false, obMailDraft='', obBandeja=false;
-var OB_CODE='482913';
-function obBar(){ var h=''; for(var i=0;i<OBN;i++) h+='<i class="'+(i<=obStep?'done':'')+'"></i>'; var b=document.getElementById('obBar'); b.innerHTML=h; b.classList.toggle('reabre', !!obReabre); } /* Fase 10 · Brief 46: reabierto desde la app, sin barra. Fase 11 · Brief 02: vuelve a contar el paso 1 */
+   cuentaVista = 'ini' | 'mail' | 'code' dentro del paso 1 (Fase 12 · Brief 03: era el 2); obMailDraft = lo escrito en "Tu correo".
+   obBandeja = la pantalla "¿Busco también en tu bandeja?" está abierta dentro del paso 4
+   Fase 12 · Brief 03: sale el código simulado (se escribe a mano). cuentaModo = 'crear' | 'entrar' («Inicia sesión», sin stepper) */
+var cuentaMail=null, cuentaGoogle=false, cuentaVista='ini', obMailDraft='', obBandeja=false, cuentaModo='crear';
+function obBar(){ var h=''; for(var i=0;i<OBN;i++) h+='<i class="'+(i<=obStep?'done':'')+'"></i>'; var b=document.getElementById('obBar'); b.innerHTML=h; b.classList.toggle('reabre', !!obReabre || cuentaModo==='entrar'); } /* Fase 10 · Brief 46: reabierto desde la app, sin barra. Fase 11 · Brief 02: vuelve a contar el paso 1. Fase 12 · Brief 03: sin barra al iniciar sesión */
 function obShow(n){
   /* Fase 10 · Brief 03: la detección solo existe si se conectó el correo o se escaneó algo; si no, se salta en los dos sentidos (Brief 13: paso 5) */
   if(n===5 && !detAplica()) n = obStep>5 ? 4 : 6;
   if(obStep===3 && n!==3) obFamApply(); /* Fase 10 · Rediseño · Brief 13: lo editado en "Empecemos por ti" llega a toda la app */
   if(n!==4) obBandeja=false;
   obStep=n;
+  ob.classList.remove('ob-quieto'); /* Fase 12 · Brief 08Ab: desde aquí, cada paso vuelve a entrar con pop */
   var key=(n===4 && obBandeja) ? 'bandeja' : String(n);
   [].forEach.call(document.querySelectorAll('.ob-step'), function(s){ s.classList.toggle('on', s.getAttribute('data-step')===key); });
   document.getElementById('obBack').classList.toggle('hide', n===0);
   var nb=document.getElementById('obNext'), sk=document.getElementById('obSkip');
-  nb.textContent = n===0 ? 'Empezar' : 'Continuar'; /* Fase 11 · Brief 02 · Brief 09: el último paso ya no promete llegar a Inicio */
+  nb.textContent = n===0 ? 'Crear cuenta' : (n===OBN-1 ? 'Ir a Inicio' : 'Continuar'); /* Fase 12 · Brief 01: el último paso lleva directo a Inicio. Fase 12 · Brief 03: «Crear cuenta» */
+  document.getElementById('obEntrar').style.display = n===0 ? '' : 'none'; /* Fase 12 · Brief 03: «Iniciar sesión», solo en la Bienvenida */
+  ob.classList.toggle('con-sil', n===0); /* Fase 12 · Brief 03: la silueta de fondo en la Bienvenida · Brief 08Ad: sale de «Listo» */
   /* Fase 11 · Brief 02: sale "Saltar la configuración". "Ahora no" solo en traer documentos (mientras no se trajo nada), la bandeja y la detección */
   var traido = !!document.getElementById('obMail').getAttribute('data-done') || obScanDone;
   sk.style.display = ((n===4 && (obBandeja || !traido)) || n===5) ? 'block' : 'none';
@@ -4739,19 +5148,18 @@ function obShow(n){
   if(obReabre && n===OBN-1) nb.textContent='Listo'; /* Fase 10 · Brief 40 (ajuste): ya se está en la app */
   nb.style.display = (n===4 && !obBandeja && !traido) ? 'none' : ''; /* Fase 11 · Brief 02: "Continuar" sale cuando ya se trajo algo */
   nb.removeAttribute('disabled');
-  if(n===1){ document.getElementById('obAcepto').checked=obAcepto; nb.toggleAttribute('disabled', !obAcepto); }
-  else if(n===2) obCuentaView();
+  if(n===2){ document.getElementById('obAcepto').checked=obAcepto; nb.toggleAttribute('disabled', !obAcepto); } /* Fase 12 · Brief 03: la política es el paso 2 y la cuenta el 1 */
+  else if(n===1) obCuentaView();
   else if(n===3){ obEditIx=-1; renderObFam(); }
   else if(n===4 && obBandeja){
     nb.textContent='Sí, busca en mi correo'; /* Fase 11 · Brief 02 */
-    document.getElementById('obBandejaMail').textContent = cuentaMail || fx('{mail}');
-    document.getElementById('obBandejaCta').textContent = (cuentaMail && !cuentaGoogle) ? 'Tu correo' : 'Tu cuenta de Google';
+    document.getElementById('obBandejaMail').textContent = cuentaMail || fx('{mail}'); /* Fase 12 · Brief 09A: «Con {correo}» sobre los botones; sale «Tu cuenta de Google» */
   }
   else if(n===5){ renderDet(); /* Fase 10 · Brief 03: renderDet() pone el texto y el estado del botón */
     /* Fase 10 · Brief 19: el paso empieza arriba (el .ob-step guardaba el scroll de la visita anterior) y el foco va al título */
     var st5=document.querySelector('.ob-step[data-step="5"]'); if(st5) st5.scrollTop=0;
     var t5=document.getElementById('obDetTitle'); if(t5) t5.focus({preventScroll:true}); }
-  else if(n===6){ renderObFamSum(); document.querySelector('.ob-listo .ob-m').innerHTML=mascotaSVG('celebra', 96); } /* Fase 11 · Brief 02: «Listo» */
+  else if(n===6){ obSumEdit=null; renderObFamSum(); document.querySelector('.ob-listo .ob-m').innerHTML=mascotaSVG('celebra', 96); } /* Fase 11 · Brief 02: «Listo» */
   obBar(); obPieH(); /* Fase 10 · Brief 46b */
 }
 /* Fase 11 · Brief 01: sale renderObFamChoice() (paso 1); OB_PLUS lo usa "Agregar a quien cuidas" */
@@ -4760,56 +5168,126 @@ var OB_PLUS='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke=
 function obCuentaView(){ obCuentaPinta(); obPieH(); } /* Fase 10 · Brief 46b: cada vista de la cuenta muestra u oculta "Continuar"; el pie se vuelve a medir */
 function obCuentaPinta(){
   [].forEach.call(document.querySelectorAll('[data-cview]'), function(v){ v.hidden = v.getAttribute('data-cview')!==cuentaVista; });
-  var nb=document.getElementById('obNext');
+  var nb=document.getElementById('obNext'), entrar=cuentaModo==='entrar';
   if(cuentaVista==='ini'){ nb.style.display='none'; return; }
   nb.style.display='';
   if(cuentaVista==='mail'){
-    var inp=document.getElementById('obMailInput');
+    var inp=document.getElementById('obMailInput'), ok=obMailValida(inp.value);
+    /* Fase 12 · Brief 03: en modo entrar el título es «Inicia sesión» y el botón va bajo el campo; el pie queda sin botón */
+    document.getElementById('obMailTitle').textContent = entrar ? 'Inicia sesión' : '¿Cuál es tu correo?';
+    document.getElementById('obEntrarAcc').hidden = !entrar;
+    document.getElementById('obMailSend').toggleAttribute('disabled', !ok);
     nb.textContent='Enviarme el código';
-    nb.toggleAttribute('disabled', !obMailValida(inp.value));
+    nb.toggleAttribute('disabled', !ok);
+    if(entrar) nb.style.display='none';
     return;
   }
   document.getElementById('obCodeMail').textContent=obMailDraft;
-  [].forEach.call(document.querySelectorAll('#obCode i'), function(c,i){ c.textContent = cuentaCode ? OB_CODE.charAt(i) : ''; });
-  document.getElementById('obCodeSim').toggleAttribute('disabled', cuentaCode);
+  obCodePinta();
   nb.textContent='Continuar';
-  if(!cuentaCode) nb.style.display='none';
 }
+/* Fase 12 · Brief 03: el código se escribe a mano en un solo <input> (#obCodeInp) que llena las seis cajas.
+   Cualquier código de 6 números entra, salvo 000000 (obCodeMal = el error está a la vista) */
+var obCodeMal=false;
+function obCodePinta(){
+  var v=document.getElementById('obCodeInp').value, cajas=document.querySelectorAll('#obCode i');
+  [].forEach.call(cajas, function(c,i){ c.textContent=v.charAt(i); c.classList.toggle('sig', i===Math.min(v.length,5)); });
+  document.getElementById('obCode').classList.toggle('err', obCodeMal);
+  document.getElementById('obCodeErr').hidden=!obCodeMal;
+  document.getElementById('obNext').toggleAttribute('disabled', v.length<6 || obCodeMal);
+}
+function obCodeLimpia(){ document.getElementById('obCodeInp').value=''; obCodeMal=false; }
+document.getElementById('obCodeInp').addEventListener('input', function(e){
+  e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);
+  obCodeMal=false; obCodePinta(); /* al cambiar un número se quita el error */
+});
 function obCuentaLista(google){
   cuentaGoogle=google;
   cuentaMail = google ? fx('{mail}') : obMailDraft;
-  cuentaVista='ini'; cuentaCode=false;
-  obFamInit(); obShow(3);
+  cuentaVista='ini'; obCodeLimpia();
+  if(cuentaModo==='entrar'){ obEntrarInicio(); return; } /* Fase 12 · Brief 03 */
+  obShow(2); /* Fase 12 · Brief 03: sigue a «Así cuido tus datos» (antes iba a «Tú y tu familia») */
 }
-/* Fase 10 · Rediseño · Brief 13b: "Así quedó tu familia" es su propia pantalla (paso 6, lienzo 56).
-   Fase 11 · Brief 02 (lienzo, fila 4, «Listo»): se junta con «Ya está». Una tarjeta con una fila por persona: avatar de 48 con el lápiz
-   (#scrimIcon; esta pantalla existe para elegir los íconos) y el nombre. Sin relación; quien quedó fuera de la familia no aparece */
-function obFamRow(av, nm){
-  return '<div class="fam-r ob-fam-r"><span class="ob-famsum-av">'+av+'</span>'+
-    '<span class="card-main"><span class="card-title">'+nm+'</span></span></div>';
+/* Fase 12 · Brief 03 · «Inicia sesión» → Inicio. Con la cuenta de esta sesión (obHecho, después de «Cerrar sesión») vuelve todo como estaba.
+   Si no, la historia completa de Sonia, como al terminar el onboarding por el correo con «Sí» a las tres personas:
+   las mismas funciones de ese camino (obFamInit/obFamApply, lo de obBandejaSi + guardarTap, detConfirmar y obFinish) */
+function obEntrarInicio(){
+  var m=cuentaMail, g=cuentaGoogle;
+  cuentaModo='crear';
+  if(obHecho){ ob.classList.add('hidden'); show('A1'); return; }
+  applyProfile('sonia'); cuentaMail=m; cuentaGoogle=g; /* applyProfile() reinicia la cuenta */
+  obFamInit(); obFamApply();
+  obMailActive=true; mailConnected=true; mailRevisado=Date.now(); SCAN_IDS=null;
+  bovMarcarNuevos(DOCS.slice()); markObDone();
+  obMailActive=false; obScanDone=true;
+  detIds().forEach(function(id){ var d=DETECT[id]; if(DET_EXTRA[id]) d.fuera = id!=='SP'; else d.si=true; });
+  detDupe='misma';
+  detConfirmar(); obFinish();
 }
-function obFamSlotRow(k){
-  var nm = k==='SO' ? V.u : PNAME[k];
-  return obFamRow('<span class="av" data-p="'+k+'" style="background:'+PCOL[k]+'">'+INIT[k]+'</span>'+
-    '<button type="button" class="av-badge av-badge-sm" data-iconpick="'+k+'" aria-label="Elegir ícono para '+(k==='SO'?'ti':nm)+'">'+I3_PENCIL+'</button>', k==='SO' ? fx('{u} · Tú') : nm);
+/* Fase 10 · Rediseño · Brief 13b: "Así quedó tu familia" es su propia pantalla (paso 6, lienzo 56). Fase 11 · Brief 02: se junta con «Ya está».
+   Fase 12 · Brief 09A (Figma): una sola fila de familia para el paso 3 y el 6 (obFilaFam). El avatar abre #scrimIcon; el resto de la fila
+   (o el lápiz de 24) abre el nombre en la misma fila. Sale el lápiz pequeño sobre el avatar (.av-badge-sm) */
+var OB_LAPIZ='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+/* o: k (ranura, para la hoja del avatar), av (el avatar), nm (lo que se lee), quien (para las etiquetas), edit (atributo del botón que edita),
+   ab (nombre abierto), campo (el campo del nombre). Sin k ni edit: fila sin botones (personas que solo existen por la detección) */
+function obFilaFam(o){
+  var av = o.k ? '<button type="button" class="ob-fila-av" data-iconpick="'+o.k+'" aria-label="'+(o.k==='SO' ? 'Cambiar cómo te ves' : 'Cambiar cómo se ve '+o.quien)+'">'+o.av+'</button>' : '<span class="ob-fila-av">'+o.av+'</span>';
+  var nm = o.edit ? '<button type="button" class="ob-fila-nm" '+o.edit+' aria-expanded="'+!!o.ab+'" aria-label="Editar el nombre de '+o.quien+'"><span class="card-title">'+o.nm+'</span><span class="ob-fila-lapiz">'+OB_LAPIZ+'</span></button>'
+    : '<span class="ob-fila-nm"><span class="card-title">'+o.nm+'</span></span>';
+  return '<div class="ob-fila"><div class="ob-fila-r">'+av+nm+'</div>'+(o.ab ? o.campo : '')+'</div>';
+}
+/* el avatar con su ícono (si tiene) o las iniciales; sin data-p para que paintAvatars() no le cambie las iniciales del paso 3 */
+function obFilaAv(k, ini){
+  var ic=PICON[k];
+  return '<span class="av'+(ic?' av-ic':'')+'" style="background:'+PCOL[k]+(ic?';--ic-ring:'+PCOL[k]:'')+'">'+(ic||ini)+'</span>';
+}
+function obFilaCampo(id, val, attrs, extra){
+  return '<div class="ob-fam-ed"><div class="field"><label for="'+id+'">Nombre</label><input class="ob-inp" type="text" id="'+id+'" '+attrs+' placeholder="Nombre" value="'+String(val).replace(/"/g,'&quot;')+'"></div>'+(extra||'')+'</div>';
+}
+var obSumEdit=null; /* Fase 12 · Brief 09A: la persona con el nombre abierto en el paso 6 */
+function obSumPersona(k){ if(k==='SO') return obPeople[0]; for(var i=0;i<obPeople.length;i++) if(obPeople[i].k===k) return obPeople[i]; return obPersonaDe(k); }
+function obSumRow(k){
+  var nm = k==='SO' ? V.u : PNAME[k], ab = obSumEdit===k;
+  return obFilaFam({k:k, av:obFilaAv(k, INIT[k]), nm: k==='SO' ? fx('{u} · Tú') : nm, quien: k==='SO' ? 'tu nombre' : nm, ab:ab,
+    edit:'data-obsumedit="'+k+'"', campo:obFilaCampo('obSumNm', k==='SO' ? (V.fu || V.u) : nombreCompleto(k), 'data-obsumnm="'+k+'"')});
+}
+/* lo escrito en el paso 6 llega a toda la app, como al salir del paso 3 (obPersonaEscribe) */
+function obSumAplica(k, val){
+  val=(val||'').trim().replace(/\s+/g,' '); if(!val) return;
+  var pe=obSumPersona(k); pe.nm=val;
+  var cambio=false, set=function(key,v){ if(V[key]!==v){ V[key]=v; cambio=true; } };
+  obPersonaEscribe(pe, set);
+  if(cambio){ repaintStatic(); refrescarPersonas(); }
 }
 function renderObFamSum(){
   var box=document.getElementById('obFamSum'); if(!box) return;
-  var rows=obFamSlotRow('SO')+SLOTS.filter(function(k){ return k!=='SO' && !personaFuera(k); }).map(obFamSlotRow).join('');
-  /* Fase 10 · Rediseño · Brief 13 (corrección 9): también las personas nuevas que la detección dejó en la familia. Sin lápiz: no tienen ranura en PICON */
+  var rows=obSumRow('SO')+SLOTS.filter(function(k){ return k!=='SO' && !personaFuera(k); }).map(obSumRow).join(''); /* Fase 12 · Brief 09A: el orden de SLOTS ya es Sofía, Mateo, Marta */
+  /* Fase 10 · Rediseño · Brief 13 (corrección 9): también las personas nuevas que la detección dejó en la familia. Sin botones: no tienen ranura en PICON */
   detExtrasIn().forEach(function(id){
-    rows+=obFamRow('<span class="av" style="background:'+detCol(id)+'">'+detInitials(detNm(id)) /* Fase 11 · Brief 04 */+'</span>', detNm(id));
+    rows+=obFilaFam({av:'<span class="av" style="background:'+detCol(id)+'">'+detInitials(detNm(id))+'</span>', nm:detNm(id)});
   });
-  box.innerHTML='<div class="det-grp">'+rows+'</div>';
-  /* Fase 11 · Brief 08: con solo Sonia, la frase no habla de una familia que no hay */
-  var solo=SLOTS.every(function(k){ return k==='SO' || personaFuera(k); }) && !detExtrasIn().length, ld=document.getElementById('obListoDesc');
-  /* Fase 11 · Brief 09: «Así quedó…» pasa al título (reemplaza los textos de los Briefs 07 y 08); reabierto conserva «Listo» */
+  box.innerHTML='<div class="ob-filas">'+rows+'</div>';
+  /* Fase 11 · Brief 08: con solo Sonia, el título habla de la cuenta. Fase 12 · Brief 09A: el subtítulo y la nota son fijos (index.html) */
+  var solo=SLOTS.every(function(k){ return k==='SO' || personaFuera(k); }) && !detExtrasIn().length;
   var lt=document.getElementById('obListoTitle');
   if(lt) lt.textContent = obReabre ? fx('Listo, {u}') : (solo ? 'Así quedó tu cuenta' : 'Así quedó tu familia');
-  if(ld) ld.textContent = obReabre ? (solo ? 'Así quedó tu cuenta. En Familia puedes agregar a alguien cuando quieras.' : 'Así quedó tu familia. En Familia puedes editar los datos de cada persona.')
-    : (solo ? 'En Familia puedes agregar a alguien cuando quieras.' : 'En Familia puedes editar los datos de cada persona.');
-  paintAvatars(box);
 }
+document.getElementById('obFamSum').addEventListener('click', function(e){
+  var t=e.target.closest('[data-obsumedit]'); if(!t) return;
+  var k=t.getAttribute('data-obsumedit'), inp=document.getElementById('obSumNm');
+  if(inp) obSumAplica(inp.getAttribute('data-obsumnm'), inp.value);
+  obSumEdit = obSumEdit===k ? null : k; renderObFamSum();
+  var f = obSumEdit ? document.getElementById('obSumNm') : document.querySelector('[data-obsumedit="'+k+'"]'); if(f) f.focus();
+});
+/* se aplica al salir del campo (o con Enter); la fila muestra el nombre nuevo sin redibujar, para no perder el toque que sigue */
+document.getElementById('obFamSum').addEventListener('change', function(e){
+  var k=e.target.getAttribute('data-obsumnm'); if(!k) return;
+  obSumAplica(k, e.target.value);
+  var tt=e.target.closest('.ob-fila').querySelector('.card-title'); if(tt) tt.textContent = k==='SO' ? fx('{u} · Tú') : PNAME[k];
+});
+document.getElementById('obFamSum').addEventListener('keydown', function(e){
+  if(e.key==='Enter' && e.target.getAttribute('data-obsumnm')) e.target.blur();
+});
 function obFinish(){
   /* Fase 10 · Rediseño · Brief 13: "Saltar" desde el paso 3 también guarda lo editado. Ya no existe obSkipped: siempre hay historia
      Fase 10 · Rediseño · Brief 13b: solo desde el paso 3 (desde otro paso ya se aplicó al salir de él); si no, pisaba el nivel
@@ -4847,7 +5325,6 @@ function obFinish(){
   buildFamLists();
   ob.classList.add('hidden');
   show('A1');
-  /* Fase 6 · el tour de orientación en el primer Inicio ya explica el modelo mental — este overlay quedaría duplicado justo detrás */
 }
 /* ============================================================
    Fase 10 · Brief 40 · DOCUMENTOS SIN ORGANIZAR
@@ -4911,7 +5388,7 @@ function docPendFin(){
   var to=obReabre; obReabre=null; obReabreSnap=null;
   ob.classList.add('hidden');
   renderBoveda(); renderCalendario(); renderNotif();
-  if(fabPend){ fabPend=false; pendingNote='Guardé todo lo que encontré en tu correo ✓'; } /* Fase 10 · Brief 45 */
+  if(fabPend){ fabPend=false; pendingNote='Guardé todo lo que encontré en tu correo'; } /* Fase 10 · Brief 45 */
   renderInicio();
   if(scanPend){ scanPend=false; finArmar(); return; } /* Fase 10 · Brief 47: después de "¿de quién es?", FIN con lo que se creó */
   show(to);
@@ -4926,31 +5403,54 @@ function obBandejaSi(){
 }
 document.getElementById('obNext').addEventListener('click', function(){
   /* Fase 10 · Rediseño · Brief 13: dentro de la cuenta, el botón de abajo es "Enviarme el código" y luego "Continuar" */
-  if(obStep===2){
-    if(cuentaVista==='mail'){
-      var v=document.getElementById('obMailInput').value.trim();
-      if(!obMailValida(v)) return;
-      obMailDraft=v; cuentaVista='code'; cuentaCode=false; obCuentaView(); return;
+  /* Fase 12 · Brief 03: la cuenta es el paso 1. «Continuar» con 6 números; 000000 muestra el error */
+  if(obStep===1){
+    if(cuentaVista==='mail'){ obMailEnviar(); return; }
+    if(cuentaVista==='code'){
+      var cv=document.getElementById('obCodeInp').value;
+      if(cv.length<6 || obCodeMal) return;
+      if(cv==='000000'){ obCodeMal=true; obCodePinta(); document.getElementById('obCodeInp').focus(); return; }
+      obCuentaLista(false);
     }
-    if(cuentaVista==='code' && cuentaCode) obCuentaLista(false);
     return;
   }
   if(obStep===4 && obBandeja){ obBandejaSi(); return; }
   if(obStep===5){ detConfirmar(); return; } /* Fase 10 · Rediseño · Brief 13b: "Organizar los documentos" guarda y pasa al paso 6 (Fase 11 · Brief 02: «Listo») */
   if(obStep===0){ obEmpezar(); return; } /* Fase 11 · Brief 01 */
-  if(obStep===1){ if(!obAcepto) return; cuentaVista='ini'; cuentaCode=false; obShow(2); return; } /* Fase 11 · Brief 02 */
+  if(obStep===2){ if(!obAcepto) return; obFamInit(); obShow(3); return; } /* Fase 11 · Brief 02. Fase 12 · Brief 03: la política es el paso 2; obFamInit() sale de obCuentaLista() */
   if(obStep<OBN-1) obShow(obStep+1); else obFinish();
 });
-/* Fase 11 · Brief 01: "Empezar" aplica la historia de Sonia (antes lo hacía [data-obfam]). Fase 11 · Brief 02: y va a "Así cuido tus datos" */
-function obEmpezar(){ applyProfile('sonia'); obShow(1); }
+/* Fase 11 · Brief 01: "Empezar" aplica la historia de Sonia (antes lo hacía [data-obfam]).
+   Fase 12 · Brief 03: «Crear cuenta» va a «Crea tu cuenta». applyProfile() ya corre resetDemo(): después de «Cerrar sesión» empieza de cero, sin splash */
+function obEmpezar(){ applyProfile('sonia'); cuentaModo='crear'; cuentaVista='ini'; obShow(1); }
+/* Fase 12 · Brief 03: «Iniciar sesión» abre la cuenta en modo entrar, directo en el correo (sin la vista ini) */
+function obEntrar(){ cuentaModo='entrar'; obMailAbrir(); obShow(1); }
+function obMailAbrir(){
+  document.getElementById('obMailInput').value = obMailDraft || cuentaMail || fx('{mail}');
+  document.getElementById('obMailErr').style.display='none';
+  document.getElementById('obMailInput').classList.remove('err');
+  cuentaVista='mail';
+}
+function obMailEnviar(){
+  var v=document.getElementById('obMailInput').value.trim();
+  if(!obMailValida(v)) return;
+  obMailDraft=v; cuentaVista='code'; obCodeLimpia(); obCuentaView();
+  document.getElementById('obCodeInp').focus();
+}
+document.getElementById('obEntrar').addEventListener('click', obEntrar);
+/* Fase 12 · Brief 03: «Cerrar sesión» vuelve a la Bienvenida sin borrar nada (obHecho sigue: al entrar, todo como se dejó) */
+function obSalir(){ closeSheets(); cuentaModo='crear'; cuentaVista='ini'; obMailDraft=''; obCodeLimpia(); ob.classList.remove('hidden'); obShow(0); }
 document.getElementById('obAcepto').addEventListener('change', function(e){ obAcepto=e.target.checked; document.getElementById('obNext').toggleAttribute('disabled', !obAcepto); }); /* Fase 11 · Brief 02 */
-document.getElementById('obPolitica').addEventListener('click', function(){ document.getElementById('scrimPolitica').style.display='flex'; }); /* Fase 11 · Brief 04 (B): la política se lee en una hoja */
+document.getElementById('obPolitica').addEventListener('click', function(){ abrirHoja('scrimPolitica'); }); /* Fase 11 · Brief 04 (B): la política se lee en una hoja */
 document.getElementById('obBack').addEventListener('click', function(){
   /* Fase 10 · Rediseño · Brief 13: dentro de la cuenta, atrás recorre sus vistas; desde la bandeja vuelve a "traer documentos" */
-  if(obStep===2 && cuentaVista!=='ini'){ cuentaVista = cuentaVista==='code' ? 'mail' : 'ini'; cuentaCode=false; obCuentaView(); return; }
+  /* Fase 12 · Brief 03: la cuenta es el paso 1. En modo entrar, desde el correo vuelve a la Bienvenida */
+  if(obStep===1 && cuentaVista==='code'){ cuentaVista='mail'; obCodeLimpia(); obCuentaView(); return; }
+  if(obStep===1 && cuentaVista==='mail' && cuentaModo==='entrar'){ cuentaModo='crear'; cuentaVista='ini'; obShow(0); return; }
+  if(obStep===1 && cuentaVista==='mail'){ cuentaVista='ini'; obCuentaView(); return; }
   if(obStep===4 && obBandeja){ obBandeja=false; obShow(4); return; }
   if(obReabre && obStep===5){ docPendCerrar(); return; } /* Fase 10 · Brief 40: no se va al paso 4 */
-  if(obStep===3){ cuentaVista='ini'; cuentaCode=false; }
+  if(obStep===2){ cuentaVista='ini'; } /* Fase 12 · Brief 03: de la política vuelve al inicio de la cuenta */
   if(obStep>0) obShow(obStep-1);
 });
 /* Fase 10 · Rediseño · Brief 13: en la bandeja "Ahora no" vuelve al paso 4 sin traer nada
@@ -4974,7 +5474,7 @@ document.getElementById('obSkip').addEventListener('click', function(){
 var DETECT={}, detOk=false, detDupe=null; /* Fase 10 · Rediseño · Brief 13b: sale detResumen (el resumen es el paso 6) */
 var detEvAbre={}; /* Fase 11 · Brief 02: personas con "En N documentos" abierto */
 /* SP solo aparece en Sonia si "No, es otra persona"; CR es el nombre de relleno para mostrar la exclusión */
-var DET_EXTRA={SP:{nm:'Sofia G.', /* Fase 10 · Brief 19 (corrección): respaldo; detExtraNm() lo calcula */ ev:'Carné de vacunación'}, CR:{nm:'Carlos Rincón', ev:'Llegó en un correo reenviado'}};
+var DET_EXTRA={SP:{nm:'Sofia G.', /* Fase 10 · Brief 19 (corrección): respaldo; detExtraNm() lo calcula */ ev:'Carné de vacunación'}, CR:{nm:'Carlos Rincón', ev:'Llegó de un correo reenviado'}} /* Fase 12 · Brief 09A: texto del Figma */;
 function detAplica(){ return !esPropia() && (!!document.getElementById('obMail').getAttribute('data-done') || obScanDone || (!!obReabre && DOCS_PEND.length>0)); } /* Fase 10 · Brief 15: en la propia historia el paso 5 se salta siempre. Fase 10 · Brief 45c: y sí aplica en el paso reabierto con documentos sin organizar */
 function detHayDupe(){ return PROF==='sonia'; }
 /* Fase 10 · Brief 03c: las personas de la historia ya se conocen: llegan resueltas con los datos de PROFILES (r1/r2/r3) */
@@ -5008,9 +5508,10 @@ function detIds(){
   if(SCAN_IDS && (scanPend || obReabre || obScanDone)) ids=ids.filter(function(id){ return SCAN_IDS.indexOf(id)>=0; });
   ids.forEach(function(id){
     if(DETECT[id] && (!detHist(id) || DETECT[id].known===detKnown(id))) return; /* Brief 13c: si cambió lo agregado, la tarjeta se rehace */
-    /* Fase 11 · Brief 02: quien se agregó en el paso 3 llega confirmada; nm = el nombre como aparece en los documentos */
+    /* Fase 11 · Brief 02: nm = el nombre como aparece en los documentos.
+       Fase 12 · Brief 08A: nadie llega con «Sí» elegido (marco O5), tampoco quien se agregó en el paso 3 */
     var kn=detKnown(id);
-    DETECT[id]={si:kn, nm:detLeido(id), fuera:false, known:kn};
+    DETECT[id]={si:kn, nm:detLeido(id), fuera:false, known:kn}; /* Fase 12 · Brief 09A: quien ya agregaste llega confirmado («Coinciden con tu familia», sin «Sí / No») */
   });
   return ids;
 }
@@ -5054,7 +5555,7 @@ function detDocs(id){
 function detEvBtn(id){
   var n=detDocs(id).length;
   if(!n) return '<span class="card-sub">'+(DET_EXTRA[id] ? DET_EXTRA[id].ev : 'En un correo de '+fx('{eps}'))+'</span>'; /* Carlos Rincón: no hay documento que abrir */
-  var ab=!!detEvAbre[id];
+  var ab=!!detEvAbre[id]; /* Fase 12 · Brief 09A: vuelve «Tú · » (sale «Eres tú») */
   return '<button type="button" class="det-evb" data-detev="'+id+'" aria-expanded="'+ab+'">'+(id==='SO' ? 'Tú · ' : '')+'En '+n+' documento'+(n===1?'':'s')+'</button>';
 }
 function detEpisHTML(id){
@@ -5062,7 +5563,7 @@ function detEpisHTML(id){
   var docs=detDocs(id), h='';
   epiOrden().forEach(function(ep){
     var dd=docs.filter(function(d){ return d.ep===ep.id; }); if(!dd.length) return;
-    h+='<div class="epi epi-card'+(ep.id==='na'?' epi-loose':'')+'"><div class="epi-h"><span class="epi-t"><b>'+ep.t+'</b></span>'+epiColaHTML(dd, ep.dcorta)+'</div></div>';
+    h+='<div class="epi epi-card'+(ep.id==='na'?' epi-loose':'')+'"><div class="epi-h"><span class="epi-t"><b>'+ep.t+'</b><small>'+[fechaCorta(ep), nDocs(dd.length)].filter(Boolean).join(' · ')+'</small></span></div></div>'; /* Fase 11 · Brief 19: sin cuadrito; fecha y número en la segunda línea */
   });
   return '<div class="det-epis">'+fx(h)+'</div>';
 }
@@ -5082,44 +5583,35 @@ function detChk(){ return '<span class="det-chk" role="img" aria-label="Confirma
 function detAv(id, color){
   return '<span class="av"'+(color && !DET_EXTRA[id] ? ' data-p="'+id+'"' : '')+' style="background:'+(color ? detCol(id) : 'var(--extra)')+'">'+(DET_EXTRA[id] ? detInitials(detLeido(id)) : INIT[id]) /* Fase 11 · Brief 04 */+'</span>';
 }
+/* Fase 12 · Brief 09A (Figma «Organizar tus documentos»): vuelven los dos grupos (de 0ee2bf4, antes del Brief 05 B).
+   «Coinciden con tu familia»: tú y quien agregaste en el paso 3, con check y sin «Sí / No». «No las agregaste»: una tarjeta por nombre,
+   con su pregunta y dos opciones (.opcion). La respuesta queda marcada (aria-pressed) y se cambia tocando la otra; salen «Deshacer»,
+   «No es de tu familia…», «Eres tú» y la tarjeta plegada de «Sí, es Sofía» */
 function detCoincideRow(id){
-  var so=id==='SO';
-  return '<div class="fam-r-row"><div class="fam-r det-r"><span class="av" data-p="'+(so?'SO':id)+'" style="background:'+PCOL[so?'SO':id]+'">'+INIT[so?'SO':id]+'</span>'+
-    '<span class="card-main"><span class="card-title">'+nombreCompleto(so?'SO':id)+'</span>'+detEvBtn(id)+'</span>'+detChk()+'</div>'+detEpisHTML(id)+'</div>';
+  return '<div class="fam-r-row"><div class="fam-r det-r"><span class="av" data-p="'+id+'" style="background:'+PCOL[id]+'">'+INIT[id]+'</span>'+
+    '<span class="card-main"><span class="card-title">'+nombreCompleto(id)+'</span>'+detEvBtn(id)+'</span>'+detChk()+'</div>'+detEpisHTML(id)+'</div>';
 }
-function detBotones(a, b){
-  return '<div class="det-2b"><button type="button" class="btn-s" '+a[0]+'>'+a[1]+'</button><button type="button" class="btn-s" '+b[0]+'>'+b[1]+'</button></div>';
+/* «opción» (Sistema de diseño §9.1): a y b = [atributos, texto]; sel = 0, 1 o -1 */
+function detBotones(a, b, sel){
+  return '<div class="opciones"><button type="button" class="opcion" '+a[0]+' aria-pressed="'+(sel===0)+'">'+a[1]+'</button><button type="button" class="opcion" '+b[0]+' aria-pressed="'+(sel===1)+'">'+b[1]+'</button></div>';
 }
 function detCardHTML(id){
-  var d=DETECT[id], sf=detNm('SF');
-  /* «Sí, es Sofía»: la tarjeta se pliega en una línea */
-  if(id==='SP' && detDupe==='misma' && !d.fuera && detSofiaEnFam()){ /* Fase 11 · Brief 04 */
-    return '<div class="pcard det-card"><div class="fam-r det-r det-plegada">'+detChk()+
-      '<span class="card-main"><span class="card-title">Es '+sf+' · su carné pasa a ella</span></span>'+
-      '<button type="button" class="ob-link det-link" data-detdupe="">Cambiar</button></div></div>';
-  }
-  var color = d.si && !d.fuera;
+  var d=DETECT[id], sf=detNm('SF'), color = d.si && !d.fuera;
   var h='<div class="pcard det-card"><div class="pcard-h">'+detAv(id, color)+
-     '<span class="card-main"><span class="pcard-nm">'+detLeido(id)+'</span>'+(color && !d.known ? '<span class="card-sub">Lo agregas a tu familia</span>' : detEvBtn(id))+'</span>'+(color ? detChk() : '')+'</div>'+detEpisHTML(id)+'<div class="pcard-b">';
-  if(d.fuera){
-    return h+'<p class="det-q">No es de tu familia. No guardo su documento.</p>'+
-      '<button type="button" class="ob-link det-link" data-detundo="'+id+'">Deshacer</button></div></div>';
+     '<span class="card-main"><span class="pcard-nm">'+detLeido(id)+'</span>'+detEvBtn(id)+'</span></div>'+detEpisHTML(id)+'<div class="pcard-b">';
+  if(id==='SP' && detSofiaEnFam()){ /* Fase 11 · Brief 04: sin Sofía en la familia, pregunta como a cualquiera */
+    h+='<p class="det-q">¿Es la misma persona que '+sf+'?</p>'+detBotones(['data-detdupe="misma"','Sí, es '+sf], ['data-detdupe="otra"','No, es otra'], detDupe==='misma' ? 0 : (detDupe==='otra' ? 1 : -1));
+    if(detDupe!=='otra') return h+'</div></div>';
   }
-  if(id==='SP' && detDupe!=='otra' && detSofiaEnFam()){ /* Fase 11 · Brief 04: sin Sofía en la familia, pregunta como a cualquiera */
-    return h+'<p class="det-q">¿Es la misma '+sf+'?</p>'+detBotones(['data-detdupe="misma"','Sí, es '+sf], ['data-detdupe="otra"','No, es otra'])+'</div></div>';
-  }
-  if(!d.si){
-    return h+'<p class="det-q">¿Es de tu familia?</p>'+detBotones(['data-detsi="'+id+'"','Sí'], ['data-detfuera="'+id+'"','No'])+'</div></div>';
-  }
-  h+='<div class="field"><label for="detNm'+id+'">Nombre</label><input class="ob-inp" type="text" id="detNm'+id+'" data-detnm="'+id+'" value="'+d.nm.replace(/"/g,'&quot;')+'">'+
-     '<p class="helper">Así aparece en sus documentos. Corrígelo si está mal.</p></div>';
-  if(!d.known) h+='<button type="button" class="ob-link det-link" data-detundo="'+id+'">Deshacer</button>'; /* Fase 11 · Brief 04b (A): «Sí» también se deshace, igual que «No» */
-  if(id==='SP') h+='<p class="helper">Su carné no lo guardo en la Bóveda. Si lo necesitas, llévalo en físico.</p>'; /* Fase 10 · Rediseño · Brief 13 (corrección 11) */
+  h+='<p class="det-q">¿Es de tu familia?</p>'+detBotones(['data-detsi="'+id+'"','Sí'], ['data-detfuera="'+id+'"','No'], d.si ? 0 : (d.fuera ? 1 : -1));
+  if(id==='SP' && d.si) h+='<p class="helper">Su carné no lo guardo en la Bóveda. Si lo necesitas, llévalo en físico.</p>'; /* Fase 10 · Rediseño · Brief 13 (corrección 11) */
   return h+'</div></div>';
 }
+/* Fase 12 · Brief 05 (B): el orden del lienzo (Sofía, Mateo, Marta) y debajo las del escaneo y el correo (Sofia G., Carlos Rincón; decisión de Lida, 2 nov) */
+var DET_ORDEN=['SF','MT','MA','SP','CR'];
 function renderDet(){
   var box=document.getElementById('obDet'); if(!box) return;
-  var nb=document.getElementById('obNext'), ids=detIds();
+  var nb=document.getElementById('obNext'), ids=detIds().slice().sort(function(x,y){ return DET_ORDEN.indexOf(x)-DET_ORDEN.indexOf(y); });
   var conocidas=ids.filter(detKnown), nuevas=ids.filter(function(id){ return !detKnown(id); });
   var h='<div class="wgt-lbl">Coinciden con tu familia</div><div class="det-grp">'+detCoincideRow('SO')+conocidas.map(detCoincideRow).join('')+'</div>';
   if(nuevas.length) h+='<div class="wgt-lbl">No las agregaste</div>'+nuevas.map(detCardHTML).join('');
@@ -5145,20 +5637,17 @@ document.getElementById('obDet').addEventListener('click', function(e){
   var t, d;
   if((t=e.target.closest('[data-detev]'))){ var ei=t.getAttribute('data-detev'); detEvAbre[ei]=!detEvAbre[ei]; renderDet();
     var eb=document.querySelector('[data-detev="'+ei+'"]'); if(eb) eb.focus(); return; }
-  if((t=e.target.closest('[data-detsi]'))){ d=DETECT[t.getAttribute('data-detsi')]; d.si=true; renderDet();
-    var ni=document.getElementById('detNm'+t.getAttribute('data-detsi')); if(ni) ni.focus(); return; }
-  if((t=e.target.closest('[data-detfuera]'))) DETECT[t.getAttribute('data-detfuera')].fuera=true;
-  else if((t=e.target.closest('[data-detundo]'))){ d=DETECT[t.getAttribute('data-detundo')]; d.fuera=false; d.si=false; }
-  /* Fase 10 · Brief 03c: la pregunta vive en la tarjeta de «Sofia G.». Fase 11 · Brief 02: "Cambiar" (data-detdupe="") la vuelve a abrir */
-  else if((t=e.target.closest('[data-detdupe]'))){ detDupe=t.getAttribute('data-detdupe')||null; DETECT.SP.si=false; }
+  /* Fase 12 · Brief 09A: «Sí» y «No» se cambian entre sí (sale «Deshacer»); el foco se queda en la opción tocada */
+  if((t=e.target.closest('[data-detsi]'))){ d=DETECT[t.getAttribute('data-detsi')]; d.si=true; d.fuera=false; }
+  else if((t=e.target.closest('[data-detfuera]'))){ d=DETECT[t.getAttribute('data-detfuera')]; d.fuera=true; d.si=false; }
+  /* Fase 10 · Brief 03c: la pregunta vive en la tarjeta de «Sofia G.» */
+  else if((t=e.target.closest('[data-detdupe]'))){ detDupe=t.getAttribute('data-detdupe')||null; DETECT.SP.si=false; DETECT.SP.fuera=false; }
   else return;
+  var sel=['data-detsi','data-detfuera','data-detdupe'].filter(function(a){ return t.hasAttribute(a); })[0], val=t.getAttribute(sel);
   renderDet();
+  var fb=document.querySelector('['+sel+'="'+val+'"]'); if(fb) fb.focus();
 });
-document.getElementById('obDet').addEventListener('input', function(e){
-  var id=e.target.getAttribute('data-detnm'); if(!id) return;
-  DETECT[id].nm=e.target.value;
-  document.getElementById('obNext').toggleAttribute('disabled', !detListo());
-});
+/* Fase 12 · Brief 05 (B): sale el listener del campo del nombre (data-detnm): la tarjeta ya no lo trae */
 /* ---- Familia: tarjetas colapsables, sin preselección (H11, H14) ---- */
 /* Fase 10 · Brief 43: parentesco con autocompletar. REL_TODAS reemplaza a RELS y a detRels(): una sola lista, sin "Otro"
    (lo que no está se usa tal como se escribió). relPickerHTML() dibuja el contenido de #i3RelSheet (Fase 11 · Brief 02: ya no el de #obRelSheet ni #faRelSheet) */
@@ -5314,7 +5803,7 @@ function obReady(){ return obPeople.filter(obEnFam).every(function(p){ return p.
 /* Fase 10 · Brief 30: lo que una tarjeta escribe en V, OB_NAC y OB_APROX (sale de obFamApply(); la comparte #I1). Fase 11 · Brief 01: sin conNivel */
 function obPersonaEscribe(p, set){
     var nm=p.nm.trim().replace(/\s+/g,' '), ini=obIni(p);
-    /* Fase 10 · Rediseño · Brief 13b: la fecha llega al perfil (i3DateRow). {p2} usa la de la historia; las demás, OB_NAC */
+    /* Fase 10 · Rediseño · Brief 13b: la fecha llega al perfil (i3Load). {p2} usa la de la historia; las demás, OB_NAC */
     var nac=p.approx ? '' : (p.nac||'').trim(); /* Fase 10 · Brief 18: con edad aproximada, la fecha no cuenta */
     if(p.k==='MT'){ set('nac2raw', nac); set('nac2', fechaLarga(nac)); }
     else if(nac) OB_NAC[p.k]=nac; else delete OB_NAC[p.k];
@@ -5358,13 +5847,9 @@ function obFamTuHTML(p){
     '</div></div>';
 }
 function obFamFilaHTML(p, i){
-  var vr=OB_VAR[p.k], ab=obEditIx===i, nm=p.nm.trim();
-  var h='<div class="fam-r-row" data-obrow="'+i+'"><div class="fam-r ob-fam-r"><span class="av" style="background:var(--'+vr+')">'+obIni(p)+'</span>'+
-    '<span class="card-main"><span class="card-title">'+(nm||'Sin nombre')+'</span></span>'+
-    '<button type="button" class="icon-btn ob-lapiz" data-obedit="'+i+'" aria-expanded="'+ab+'" aria-label="Editar '+(nm ? 'a '+nm.split(' ')[0] : 'esta persona')+'">'+I3_PENCIL+'</button></div>';
-  if(ab) h+='<div class="ob-fam-ed"><div class="field"><label for="obNm'+i+'">Nombre</label><input class="ob-inp" type="text" id="obNm'+i+'" data-obf="nm" data-obi="'+i+'" placeholder="Nombre" value="'+p.nm.replace(/"/g,'&quot;')+'"></div>'+
-    '<button type="button" class="ob-link ob-quitar" data-obquitar="'+p.k+'">Quitar</button></div>'; /* Fase 10 · Rediseño · Brief 13c */
-  return h+'</div>';
+  var nm=p.nm.trim(), quien = nm ? nm.split(' ')[0] : 'esta persona';
+  return '<div data-obrow="'+i+'">'+obFilaFam({k:p.k, av:obFilaAv(p.k, obIni(p)), nm:nm||'Sin nombre', quien:quien, ab:obEditIx===i, edit:'data-obedit="'+i+'"', /* Fase 12 · Brief 09A: la misma fila del paso 6 */
+    campo:obFilaCampo('obNm'+i, p.nm, 'data-obf="nm" data-obi="'+i+'"', '<button type="button" class="ob-link ob-quitar" data-obquitar="'+p.k+'">Quitar</button>')})+'</div>'; /* Fase 10 · Rediseño · Brief 13c */
 }
 function renderObFam(){
   var box=document.getElementById('obFam'); if(!box) return;
@@ -5372,7 +5857,7 @@ function renderObFam(){
   var filas='';
   obPeople.forEach(function(p,i){ if(!p.me && obEnFam(p)) filas+=obFamFilaHTML(p, i); }); /* Fase 10 · Rediseño · Brief 13c: quien no se agregó no tiene fila */
   h+='<div class="ob-fam-g"><div class="wgt-lbl">Tu familia <span class="ob-opc">Opcional</span></div></div>';
-  if(filas) h+='<div class="det-grp ob-fam-grp">'+filas+'</div>';
+  if(filas) h+='<div class="ob-filas">'+filas+'</div>'; /* Fase 12 · Brief 09A */
   /* Fase 10 · Rediseño · Brief 13c: cada toque agrega a la siguiente persona de la historia; sin nadie más, desaparece */
   if(!obAgregados.length && !obFamQuito) h+='<p class="ob-gnote">Así sé de quién es cada documento que traigas.</p>'; /* Fase 11 · Brief 08b: el motivo, solo con el botón "Agregar a mi familia" */
   if(obSiguiente()) h+='<button type="button" class="btn-s ob-add-b" data-obadd="1">'+OB_PLUS+(obFamQuito ? 'Agregar a alguien' : 'Agregar a mi familia')+'</button>'; /* Fase 11 · Brief 08 */
@@ -5394,10 +5879,10 @@ function renderRelSheet(){
     if(me.eps==='Otra') he+='<div class="m3-other"><input type="text" data-obf="epsOtro" data-obi="0" placeholder="¿Cuál es?" value="'+(me.epsOtro||'').replace(/"/g,'&quot;')+'"></div>';
     if(rt) rt.textContent='¿Cuál es tu EPS?';
     document.getElementById('obRelList').innerHTML=he;
-    sheet.style.display='flex';
+    abrirHoja(sheet); /* Fase 12 · Brief 09D */
     return;
   }
-  sheet.style.display='none'; /* Fase 11 · Brief 02: sale la relación del paso 3 (y obRelListHTML) */
+  cerrarHoja(sheet); /* Fase 12 · Brief 09D: con su animación · Fase 11 · Brief 02: sale la relación del paso 3 (y obRelListHTML) */
 }
 
 /* Fase 10 · Brief 30: lo que comparten la tarjeta del paso 3 (en #ob) y la de «Agregar familiar» (#I1, data-obi="f").
@@ -5406,15 +5891,11 @@ function obP(i){ return i==='f' ? famForm : obPeople[+i]; }
 /* Fase 11 · Brief 02: sale obCardClick() (relación y "No sé la fecha exacta" del paso 3 y de #I1) */
 ob.addEventListener('click', function(e){
   if(e.target.closest('#obAccGoogle')){ obCuentaLista(true); return; }
-  if(e.target.closest('#obAccMail')){
-    document.getElementById('obMailInput').value = obMailDraft || fx('{mail}');
-    document.getElementById('obMailErr').style.display='none';
-    document.getElementById('obMailInput').classList.remove('err');
-    cuentaVista='mail'; obCuentaView(); return;
-  }
-  if(e.target.closest('#obCodeSim')){ cuentaCode=true; obCuentaView(); return; }
+  if(e.target.closest('#obEntrarGoogle')){ obCuentaLista(true); return; } /* Fase 12 · Brief 03: Google lleva directo a Inicio */
+  if(e.target.closest('#obMailSend')){ obMailEnviar(); return; } /* Fase 12 · Brief 03 */
+  if(e.target.closest('#obAccMail')){ obMailAbrir(); obCuentaView(); return; } /* Fase 12 · Brief 03: sale a obMailAbrir() */
   if(e.target.closest('#obCodeResend')) return; /* "Reenviar" no hace nada nuevo en la demo */
-  if(e.target.closest('#obCodeChange')){ cuentaVista='mail'; cuentaCode=false; obCuentaView(); return; }
+  if(e.target.closest('#obCodeChange')){ cuentaVista='mail'; obCodeLimpia(); obCuentaView(); return; }
   /* Fase 10 · Rediseño · Brief 13c: agregar a la siguiente persona de la historia / quitarla (vuelve a "no agregada") */
   /* Fase 11 · Brief 02: la fila nueva llega con su campo "Nombre" abierto */
   if(e.target.closest('[data-obadd]')){
@@ -5478,6 +5959,7 @@ ob.addEventListener('input', function(e){
     var merr=document.getElementById('obMailErr');
     var mok = obMailValida(v);
     if(mbtn) mbtn.toggleAttribute('disabled', !mok);
+    document.getElementById('obMailSend').toggleAttribute('disabled', !mok); /* Fase 12 · Brief 03: el botón de «Inicia sesión» */
     if(merr) merr.style.display = (v.trim() && !mok) ? 'flex' : 'none';
     e.target.classList.toggle('err', !!(v.trim() && !mok));
     return;
@@ -5550,10 +6032,10 @@ function famAgregar(){
     var fl=document.getElementById('famDocsList'), fp=fx(docs[0].p); /* Fase 10 · Brief 46: la fila de la Bóveda, sin tocar y sin línea (solo el punto) */
     fl.style.setProperty('--pc', PCOL[fp]||'');
     fl.innerHTML=fx(docs.map(function(d){ return docRowHTML(d, false, true, true); }).join(''));
-    document.getElementById('scrimFamDocs').style.display='flex';
+    abrirHoja('scrimFamDocs');
   }
 }
-function famDocsCerrar(){ famOferta=null; document.getElementById('scrimFamDocs').style.display='none'; buildFamLists(); }
+function famDocsCerrar(){ famOferta=null; cerrarHoja(document.getElementById('scrimFamDocs')); /* Fase 12 · Brief 09D */ buildFamLists(); }
 function famDocsNo(){ if(!famOferta) return; famToast='Agregué a '+V['p'+OB_N[famOferta.k]]+' a tu familia.'; famDocsCerrar(); }
 function famDocsSi(){
   if(!famOferta) return;
@@ -5590,13 +6072,39 @@ function markObDone(){
   var c=document.getElementById(cardId), t=document.getElementById(txtId);
   if(!c||!t) return;
   c.setAttribute('data-done','1');
-  c.style.borderColor='var(--r-exito)'; c.style.background='var(--r-exito-suave)';
-  var msg = obMailActive
-    ? 'Guardé todo lo que encontré en tu correo ✓' /* Fase 11 · Brief 02 */ /* Fase 10 · Rediseño · Brief 13 · Brief 16: en la propia historia también encuentra la orden */ /* Fase 10 · Rediseño · Brief 13 */
-    : 'Guardé todo lo que escaneaste ✓';
-  t.innerHTML='<h5 style="color:var(--r-exito);">'+msg+'</h5>';
+  /* Fase 12 · Brief 09A (Figma «Trae tus documentos»): la tarjeta hecha va en .ob-hecha (sin estilos inline), con su ícono de check de Lucide
+     (mail-check, folder-check, file-check) en un cuadro blanco y sin el «✓» al final */
+  c.classList.add('ob-hecha'); fundir(c, 'ob-recien'); /* Fase 12 · Brief 09D: fondo, borde y contenido cambian con fundido de 200 ms */
+  var ic=c.querySelector('.ob-card-ic'), cual = obMailActive ? 'mail' : (obScanSource==='gal' ? 'file' : 'folder');
+  if(ic){ if(!c.hasAttribute('data-ic')) c.setAttribute('data-ic', ic.innerHTML); ic.innerHTML=OB_HECHA_IC[cual]; }
+  var msg = obMailActive ? 'Guardé lo que encontré en tu correo' : (obScanSource==='gal' ? 'Guardé lo que subiste' : 'Guardé lo que escaneaste');
+  t.innerHTML='<h5>'+msg+'</h5>';
 }
+var OB_HECHA_IC={
+  mail:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg>',
+  folder:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="m9 13 2 2 4-4"/></svg>',
+  file:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>'
+};
 obShow(0);
+/* Fase 12 · Brief 03 · Splash A: corre una sola vez, al cargar la página, y termina en la Bienvenida.
+   Antes de empezar mide el punto del logo y la silueta grande (--spl-t, --spl-s) para que la silueta nazca del punto
+   y termine en el mismo lugar que la de la Bienvenida. Con prefers-reduced-motion, solo el fundido (ver styles.css) */
+(function splash(){
+  var sp=document.getElementById('splash'); if(!sp) return;
+  /* Fase 12 · Brief 08A: el splash entra en la Bienvenida, encima de su silueta y debajo de su contenido. Antes iba sobre todo (z 600)
+     y su silueta pasaba por delante de la mascota de 950 a 1250 ms, hasta que se quitaba */
+  ob.insertBefore(sp, ob.querySelector('.ob-bar'));
+  var sil=sp.querySelector('.spl-sil'), sb=sil.getBoundingClientRect(), sr=sil.querySelector('path').getBoundingClientRect(),
+      pr=sp.querySelector('.spl-cuerpo').getBoundingClientRect();
+  var s=pr.width/sr.width, ox=sb.left+sb.width/2, oy=sb.top+sb.height/2;
+  var tx=(pr.left+pr.width/2)-ox-s*((sr.left+sr.width/2)-ox), ty=(pr.top+pr.height/2)-oy-s*((sr.top+sr.height/2)-oy);
+  sil.style.setProperty('--spl-t', 'translate('+(tx/MARCO).toFixed(1)+'px,'+(ty/MARCO).toFixed(1)+'px)'); /* ÷ MARCO: medidas de pantalla → del marco */
+  sil.style.setProperty('--spl-s', s.toFixed(4));
+  ob.classList.add('spl');
+  void sp.offsetWidth; sp.classList.add('on'); /* en el mismo cuadro que .spl, para que la Bienvenida y el splash vayan al mismo reloj */
+  var quieto=(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) || CONTRASTE==='alto'; /* Fase 12 · Brief 07 (A): con alto contraste, el mismo fundido */
+  setTimeout(function(){ sp.remove(); ob.classList.add('ob-quieto'); ob.classList.remove('spl'); }, quieto ? 750 : 1250); /* Fase 12 · Brief 08Ab: ob-quieto evita que pop corra otra vez (salto de 9 px); obShow() la quita */ /* Fase 12 · Brief 04 (A): la Bienvenida termina de subir a los 1200 ms */
+})();
 
 /* Fase Móvil · Punto 1: el panel externo (selector de perfil, saltos a flujos, Modo presentación,
    goTrabado()/goNegado()) se quitó del todo — lo que resolvía ahora vive en el onboarding (1a),
@@ -5612,7 +6120,8 @@ function resetObCards(){
   defs.forEach(function(d){
     var card=document.getElementById(d[0]), txt=document.getElementById(d[1]);
     if(!card) return;
-    card.removeAttribute('data-done'); card.style.borderColor=''; card.style.background='';
+    card.removeAttribute('data-done'); card.classList.remove('ob-hecha'); /* Fase 12 · Brief 09A: sin estilos inline; vuelve el ícono original */
+    var oic=card.querySelector('.ob-card-ic'); if(oic && card.hasAttribute('data-ic')){ oic.innerHTML=card.getAttribute('data-ic'); card.removeAttribute('data-ic'); }
     if(txt) txt.innerHTML=d[2];
     /* Fase 10 · Brief 15: en la propia historia, Escanear y Subir aún no traen nada propio */
     var tg=card.querySelector('.tag-soon'); if(tg) tg.remove();
@@ -5624,7 +6133,7 @@ function resetObCards(){
 function resetDemo(){
   for(var ka in AVISOS_ON0) AVISOS_ON[ka]=AVISOS_ON0[ka]; /* Fase 11 · Brief 06e */
   clearTimers();
-  CARDS = JSON.parse(JSON.stringify(CARDS0));
+  CARDS = JSON.parse(JSON.stringify(CARDS0)); huboUrgente=false; /* Fase 12 · Brief 08A */
   /* Fase 10 · Brief 16: el control de la propia historia escribe p, CITA.ped y QLLEVAR.ped; el reinicio los devuelve */
   for(var qk in QLLEVAR0) QLLEVAR[qk]=JSON.parse(JSON.stringify(QLLEVAR0[qk])); /* Fase 10 · Brief 21 (corrección 2) */
   CITA.ped=JSON.parse(JSON.stringify(CITA_PED0)); QLLEVAR.ped=JSON.parse(JSON.stringify(QLLEVAR_PED0)); proPend=null;
@@ -5637,14 +6146,14 @@ function resetDemo(){
   DOCS=JSON.parse(JSON.stringify(DOCS0)); ordScanKey=null; citaGrabStop();
   if(esPropia()) DOCS=[]; /* Fase 10 · Brief 15: la propia historia arranca (y reinicia) sin documentos ni consultas */
   setOffline(false); failOnce=false; loadFail=false; lastSlot=null;
-  obScanActive=false; obScanSource=null; obScanDone=false; obMailActive=false; mailConnected=false; mailRevisado=null; camUsada=false; micUsado=false; cfgToast=null; /* Fase 10 · Brief 48 */ appVacia=false; tourSeen=false; PICON={}; if(tourStep>=0){ tourClose(true); tourSeen=false; } A1_ULT={}; /* Fase 10 · Brief 08e */
+  obScanActive=false; obScanSource=null; obScanDone=false; obMailActive=false; mailConnected=false; mailRevisado=null; camUsada=false; micUsado=false; cfgToast=null; /* Fase 10 · Brief 48 */ appVacia=false; PICON={};
   /* Fase 10 · Rediseño · Brief 13: un reinicio vuelve a la bienvenida sin cuenta y con la familia de la historia */
-  cuentaMail=null; cuentaGoogle=false; cuentaVista='ini'; cuentaCode=false; obMailDraft=''; obBandeja=false; obPeople=[]; obEditIx=-1; obAgregados=[]; obAcepto=false; /* Fase 10 · Rediseño · Brief 13c. Fase 11 · Brief 02: obAcepto */
+  cuentaMail=null; cuentaGoogle=false; cuentaVista='ini'; cuentaModo='crear'; obCodeLimpia(); /* Fase 12 · Brief 03 */ obMailDraft=''; obBandeja=false; obPeople=[]; obEditIx=-1; obAgregados=[]; obAcepto=false; /* Fase 10 · Rediseño · Brief 13c. Fase 11 · Brief 02: obAcepto */
   /* Fase 8 · Brief 6.1: reiniciar la bandera y el toast del correo desde el FAB */
   fabMailActive=false; pendingNote=null;
   /* Fase 6 · reinicia también las ediciones visuales de sesión de I3 */
   /* Fase 8 · Reauditoría Yifrah: i3EditOrig es estado nuevo, también se reinicia aquí */
-  PROFILE_EDITS={}; i3Editing=false; i3Edit=null; i3EditOrig=null;
+  PROFILE_EDITS={}; i3Edit=null; i3EditOrig=null;
   /* Fase 10 · Brief 03: la detección vuelve a empezar (DOCS ya se restauró desde DOCS0 arriba) y Pegar texto queda vacío */
   DETECT={}; detOk=false; detDupe=null; DOCS_PEND=[]; obReabre=null; obReabreSnap=null; /* Fase 10 · Brief 40 */ DOCS_BANDEJA=[]; fabPend=false; /* Fase 10 · Brief 45 */ SCAN_IDS=null; scanPend=false; FIN_ULT={}; /* Fase 10 · Brief 47 */ pegPend=false; pegPendPrev=null; /* Fase 10 · Brief 47b */ obHecho=false; lastMain='A1'; /* Fase 10 · Brief 45b: también para "Cambiar de historia" (verHistorias → resetDemo) */ OB_NAC=JSON.parse(JSON.stringify(PROFILES[PROF].nac||{})); /* Fase 10 · Rediseño · Brief 13b: OB_NAC (corrección 2: vuelve a las fechas de la historia) */ OB_APROX={}; OB_NIVEL={}; /* Fase 10 · Brief 18 */ detEvAbre={}; /* Fase 11 · Brief 02 (sale detMenuId) */ pegReset();
   /* Fase 8 · Estructura 1: deshace también lo que propagateI3Edit ya escribió en V, y refresca
@@ -5701,13 +6210,7 @@ function applyProfile(key){
   buildPeople();
   repaintStatic();
   buildFamLists();
-  /* Fase 8 · Brief 6.3: "Familia" decía "4 perfiles" fijo en cualquier perfil — ahora usa el conteo real de SLOTS */
-  var famSec=document.getElementById('FAM');
-  if(famSec){
-    var nfam='Toca a alguien para editar sus datos.'; /* Fase 10 · Brief 03b: sin contar personas, igual en las tres historias */
-    famSec.setAttribute('data-sub', nfam);
-    if(cur==='FAM') tSub.textContent=nfam;
-  }
+  /* Fase 12 · Brief 02: Familia ya no lleva subtítulo */
   obPeople=[]; obEditIx=-1; /* Fase 10 · Rediseño · Brief 13: obFamInit() la llena al crear la cuenta */
   resetDemo();
   paintAvatars(document);
@@ -5727,14 +6230,15 @@ function initA11yDialogs(){
   var lastTrigger=null;
 
   dialogs.forEach(function(d, i){
-    d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true');
+    if(!d.getAttribute('role')) d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true'); /* Fase 12 · Brief 06 (B): respeta el alertdialog de #scrimExit */
     var h=d.querySelector('h3,h4');
     if(h){ if(!h.id) h.id='a11yTtl'+i; d.setAttribute('aria-labelledby', h.id); }
 
     new MutationObserver(function(){
       var open = getComputedStyle(d).display!=='none';
       if(open){
-        lastTrigger=document.activeElement;
+        /* Fase 12 · Brief 09D: si se reabre a mitad de un cierre, el foco quedó en body (la hoja que bajaba era inert): se conserva quien la abrió */
+        if(document.activeElement && document.activeElement!==document.body) lastTrigger=document.activeElement;
         var f=d.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
         if(f) f.focus();
       } else if(lastTrigger && document.body.contains(lastTrigger)){
@@ -5744,7 +6248,7 @@ function initA11yDialogs(){
   });
 
   document.addEventListener('keydown', function(e){
-    var open = dialogs.filter(function(d){ return getComputedStyle(d).display!=='none'; });
+    var open = dialogs.filter(function(d){ return getComputedStyle(d).display!=='none' && !d.classList.contains('cerrando'); }); /* Fase 12 · Brief 09D: la que baja ya no cuenta */
     if(!open.length) return;
     var d=open[open.length-1];
 
@@ -5753,7 +6257,7 @@ function initA11yDialogs(){
          tenía lastTrigger ya no existe cuando el observer intenta devolver el foco: se re-enfoca a mano
          con un selector estable en vez de depender del MutationObserver genérico. */
       if(d.id==='i3RelSheet'){
-        d.style.display='none'; renderI3();
+        cerrarHoja(d); renderI3(); /* Fase 12 · Brief 09D */
         var t1=document.querySelector('[data-i3relopen]'); if(t1) t1.focus();
       } else if(d.id==='obRelSheet' && obEpsMenu){
         /* Fase 10 · Brief 15: la hoja de la EPS */
